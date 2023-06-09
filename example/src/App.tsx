@@ -1,21 +1,21 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-stallion';
+import { StyleSheet, View, Button } from 'react-native';
+import {
+  withStallion,
+  useStallionModal,
+} from 'react-native-stallion';
 
-export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
-
+const App: React.FC = () => {
+  const { setShowModal } = useStallionModal();
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Button title="OpenModal" onPress={() => setShowModal(true)} />
     </View>
   );
-}
+};
+
+export default withStallion(App);
 
 const styles = StyleSheet.create({
   container: {
