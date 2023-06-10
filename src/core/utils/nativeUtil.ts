@@ -37,7 +37,7 @@ export const toggleStallionSwitch = (stallionBundleIsOn: boolean): void => {
 
 interface IUseStallionModal {
   setShowModal: (showModal: boolean) => void;
-};
+}
 
 export const useStallionModal = (): IUseStallionModal => {
   const { setShowModal } = useContext(StallionContext);

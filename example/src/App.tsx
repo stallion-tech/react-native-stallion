@@ -1,10 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import {
-  withStallion,
-  useStallionModal,
-} from 'react-native-stallion';
+import { withStallion, useStallionModal } from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { setShowModal } = useStallionModal();

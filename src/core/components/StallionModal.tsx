@@ -26,13 +26,14 @@ const StallionModal: React.FC = () => {
 
   const onBackPress = useCallback(() => setShowModal(false), [setShowModal]);
 
-  const { listData, isLoading, listError, handleBucketPress } = useStallionList();
+  const { listData, isLoading, listError, handleBucketPress } =
+    useStallionList();
 
   useEffect(() => {
-    if (authTokens) {
+    if (authTokens && showModal) {
       fetchBuckets();
     }
-  }, [fetchBuckets, authTokens]);
+  }, [fetchBuckets, authTokens, showModal]);
 
   const activeBucketName = useMemo<string>(() => {
     const targetBucket = bucketData?.data?.filter(
@@ -45,7 +46,6 @@ const StallionModal: React.FC = () => {
     if (authTokens?.apiKey && authTokens?.secretKey) return false;
     return true;
   }, [authTokens]);
-  
   return (
     <Modal
       animationType="slide"
@@ -56,7 +56,7 @@ const StallionModal: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <Header onBackPress={onBackPress} />
         <View style={styles.listingSection}>
-          {isLoading || listError ? (
+          {isLoading || listError || noAuthState ? (
             <ListActionBlock
               isLoading={isLoading}
               error={noAuthState ? NO_AUTH_ERROR_MESSAGE : listError}

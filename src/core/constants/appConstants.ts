@@ -22,11 +22,13 @@ export const BUCKET_CARD_AUTHOR_TEXT = 'Author: ';
 
 export const DOWNLOAD_PROGRESS_EVENT = 'StallionDownloadProgress';
 
-export const DEFAULT_ERROR_MESSAGE = 'Something went wrong';
+export const DEFAULT_ERROR_MESSAGE =
+  'Something went wrong. Check your network connection';
 export const EMPTY_ERROR_MESSAGE = 'No items found';
 export const EMPTY_ERROR_MESSAGE_BUNDLE = 'No bundles found';
+export const DEFAULT_ERROR_PREFIX = 'Error: ';
 export const NO_AUTH_ERROR_MESSAGE =
-  'Auth keys not configured correctly on native';
+  'Problem in initialising Stallion native SDK. Verify that auth keys are configured correctly on native and that stallion SDK is correctly installed and enabled';
 
 export const VERSION_PREFIX = 'V';
 

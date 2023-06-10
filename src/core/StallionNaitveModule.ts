@@ -17,4 +17,4 @@ const StallionNativeModule = NativeModules.Stallion
       }
     );
 
-  export default StallionNativeModule;
+export default StallionNativeModule;

@@ -52,7 +52,7 @@ const Footer: React.FC<IFooter> = ({
               <Text
                 style={[
                   styles.infoTitle,
-                  { color: switchIsOn ? 'green' : 'red' },
+                  switchIsOn ? styles.greenColor : styles.redColor,
                 ]}
               >
                 {SWITCH_TITLE}
@@ -61,15 +61,13 @@ const Footer: React.FC<IFooter> = ({
               <Switch
                 onValueChange={handleToggle}
                 value={switchIsOn}
-                style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                style={styles.switchComponent}
               />
             </View>
           </>
         ) : (
           <View style={styles.noDownloadContainer}>
-            <Text style={{ alignSelf: 'center' }}>
-              No bundle is downloaded yet
-            </Text>
+            <Text style={styles.selfCenter}>No bundle is downloaded yet</Text>
           </View>
         )}
       </View>
@@ -126,6 +124,18 @@ const styles = StyleSheet.create({
   },
   switchButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
+  },
+  switchComponent: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+  },
+  selfCenter: {
+    alignSelf: 'center',
+  },
+  greenColor: {
+    color: COLORS.green,
+  },
+  redColor: {
+    color: COLORS.red,
   },
 });
 

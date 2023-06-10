@@ -14,7 +14,8 @@ import {
 const StallionContextProvider: React.FC = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBucketId, setSelectedBucketId] = useState<string>();
-  const { stallionMeta, refreshStallionMeta, toggleStallionSwitch } = useStallionMeta();
+  const { stallionMeta, refreshStallionMeta, toggleStallionSwitch } =
+    useStallionMeta();
   const { buckets, fetchBuckets } = useStallionBuckets();
   const { bundles, fetchBundles } = useStallionBundles();
   const { authTokens } = useAuthTokens();

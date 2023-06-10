@@ -1,4 +1,6 @@
-type IWithStallion = (BaseComponent: React.ComponentType) => React.ComponentType;
+type IWithStallion = (
+  BaseComponent: React.ComponentType
+) => React.ComponentType;
 interface IUseStallionModal {
   setShowModal: (showModal: boolean) => void;
 }

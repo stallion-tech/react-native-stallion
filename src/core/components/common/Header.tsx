@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     color: COLORS.black,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
   actionButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
