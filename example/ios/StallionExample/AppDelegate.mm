@@ -1,6 +1,7 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
+#import <react-native-stallion/StallionModule.h>
 
 @implementation AppDelegate
 
@@ -19,7 +20,7 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [StallionModule getBundleURL:[[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"]];
 #endif
 }
 

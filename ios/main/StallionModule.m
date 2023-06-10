@@ -8,23 +8,24 @@
 #import "StallionModule.h"
 
 @implementation StallionModule
-+ (NSURL *)bundleURL
-{
-    NSURL *defaultBundle = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
++ (NSURL *)getBundleURL:(NSURL *)defaultBundleURL {
+    NSURL *defaultRNBundlePath = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     NSString *documentDirectoryPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *bundleFilePath = [documentDirectoryPath stringByAppendingPathComponent:@"StallionPackage/build/main.jsbundle"];
     NSURL *targetBundleUrl = [NSURL URLWithString:bundleFilePath];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[targetBundleUrl path]]) {
-        return defaultBundle;
+        if(defaultBundleURL != nil) return defaultBundleURL;
+        return defaultRNBundlePath;
     } else {
         NSString *switchState = [[NSUserDefaults standardUserDefaults]
             stringForKey:@"switchState"];
         if([switchState isEqual:@"STALLION_ON"]) {
             return targetBundleUrl;
         } else {
-            return defaultBundle;
+            if(defaultBundleURL != nil) return defaultBundleURL;
+            return defaultRNBundlePath;
         }
     }
 }

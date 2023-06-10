@@ -15,7 +15,7 @@ const ListActionBlock: React.FC<IListActionBlock> = ({ error, isLoading }) => {
   return (
     <View style={styles.loaderContainer}>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator color={COLORS.indigo} size={'large'} />
       ) : error ? (
         <Text style={styles.errorText}>
           <Text style={styles.boldText}>{DEFAULT_ERROR_PREFIX}</Text>
