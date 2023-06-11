@@ -28,7 +28,7 @@ async function prepRelease() {
     await fs.cp(iosModulePath, `${rootPath}/ios/`, { recursive: true });
     
     //copy podspec
-    await fs.copyfile(podspecPath, `${rootPath}/react-native-stallion.podspec`);
+    await fs.copyFile(podspecPath, `${rootPath}/react-native-stallion.podspec`);
 
     // copy package.json to package root
     await fs.copyFile(pkgJsonPath, `${rootPath}/package.json`);
