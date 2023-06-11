@@ -39,6 +39,7 @@ async function prepRelease() {
     delete file['eslintConfig'];
     delete file['eslintIgnore'];
     delete file['scripts'];
+    
     await fs.writeFile(
       `${rootPath}/package.json`,
       prettier.format(JSON.stringify(file), { parser: 'json' })
