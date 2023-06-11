@@ -29,17 +29,17 @@ async function prepRelease() {
     // copy package.json to package root
     await fs.copyFile(pkgJsonPath, `${rootPath}/package.json`);
     const file = require(`${rootPath}/package.json`);
-    delete file['devDependencies'];
+    delete file.devDependencies;
     delete file['react-native-builder-bob'];
-    delete file['prettier'];
-    delete file['files'];
-    delete file['engines'];
-    delete file['packageManager'];
-    delete file['commitlint'];
-    delete file['eslintConfig'];
-    delete file['eslintIgnore'];
-    delete file['scripts'];
-    
+    delete file.prettier;
+    delete file.files;
+    delete file.engines;
+    delete file.packageManager;
+    delete file.commitlint;
+    delete file.eslintConfig;
+    delete file.eslintIgnore;
+    delete file.scripts;
+
     await fs.writeFile(
       `${rootPath}/package.json`,
       prettier.format(JSON.stringify(file), { parser: 'json' })
