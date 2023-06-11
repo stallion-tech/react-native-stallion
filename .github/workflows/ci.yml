@@ -3,13 +3,11 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  lint:
+  build-and-publish:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,9 +21,6 @@ jobs:
       - name: Typecheck files
         run: yarn typecheck
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -35,14 +30,24 @@ jobs:
       - name: Run unit tests
         run: yarn test --maxWorkers=2 --coverage
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build package
-        run: yarn prepack
+      - name: Setup git user
+        run: |
+          git config --global user.name super-admin
+          git config --global user.email admin@redhorse.tech
+
+      - name: Prep release
+        run: npm run pre-release-patch && npm run prep-release
+
+      - name: Release package
+        run: cd sdk-package && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push changes
+        run: git push
