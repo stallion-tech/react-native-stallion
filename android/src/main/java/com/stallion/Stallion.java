@@ -8,7 +8,7 @@ public class Stallion {
     return getJSBundleFile(applicationContext, null);
   }
 
-  public static String getJSBundleFile (Context applicationContext, String bundlePath) {
+  public static String getJSBundleFile (Context applicationContext, String defaultBundlePath) {
     StallionStorage.getInstance().Initialize(applicationContext);
     StallionStorage stallionStorageInstance =  StallionStorage.getInstance();
     if(
@@ -18,7 +18,7 @@ public class Stallion {
     ) {
       return applicationContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH + StallionConstants.BUNDLE_DEST_FOLDER_DIR + "/" + StallionConstants.UNZIP_FOLDER_NAME + "/" + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
     } else {
-      if(bundlePath != null) return bundlePath;
+      if(defaultBundlePath != null) return defaultBundlePath;
       return StallionConstants.DEFAULT_JS_BUNDLE_LOCATION_BASE + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
     }
   }
