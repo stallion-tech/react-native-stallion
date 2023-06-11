@@ -9,6 +9,7 @@ const androidModulePath = path.resolve(__dirname, '../', 'android');
 const iosModulePath = path.resolve(__dirname, '../', 'ios');
 const typesPath = path.resolve(__dirname, '../', 'lib/typescript');
 const pkgJsonPath = path.resolve(__dirname, '../', 'package.json');
+const podspecPath = path.resolve(__dirname, '../', 'react-native-stallion.podspec');
 async function prepRelease() {
   try {
     //create package dir
@@ -25,9 +26,13 @@ async function prepRelease() {
 
     //copy types dir to package types
     await fs.cp(iosModulePath, `${rootPath}/ios/`, { recursive: true });
+    
+    //copy podspec
+    await fs.copyfile(podspecPath, `${rootPath}/react-native-stallion.podspec`);
 
     // copy package.json to package root
     await fs.copyFile(pkgJsonPath, `${rootPath}/package.json`);
+    
     const file = require(`${rootPath}/package.json`);
     delete file.devDependencies;
     delete file['react-native-builder-bob'];
