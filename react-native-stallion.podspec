@@ -6,8 +6,8 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 # Stallion file read
 stallionConfig = {}
 
-stallionConfigPath = "./example/stallion.config.json" # DEV MODE
-# stallionConfigPath = "../../../stallion.config.json" # PROD MODE
+# stallionConfigPath = "./example/stallion.config.json" # DEV MODE
+stallionConfigPath = "../../../stallion.config.json" # PROD MODE
 
 begin
   stallionConfig = JSON.parse(File.read(File.join(__dir__, stallionConfigPath)))

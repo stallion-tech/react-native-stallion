@@ -9,8 +9,8 @@ interface IStallionConfig {
   isEnabled: boolean;
 }
 
-const STALLION_CONFIG_PATH = '../example/stallion.config.json'; // DEV MODE
-// const STALLION_CONFIG_PATH = '../../../../stallion.config.json'; // PROD MODE
+// const STALLION_CONFIG_PATH = '../example/stallion.config.json'; // DEV MODE
+const STALLION_CONFIG_PATH = '../../../../stallion.config.json'; // PROD MODE
 let withStallion: IWithStallion;
 let useStallionModal: () => IUseStallionModal;
 let StallionConfig: IStallionConfig;
