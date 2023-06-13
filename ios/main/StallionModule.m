@@ -8,6 +8,9 @@
 #import "StallionModule.h"
 
 @implementation StallionModule
++ (NSURL *)getBundleURL {
+    return [self getBundleURL:nil];
+}
 + (NSURL *)getBundleURL:(NSURL *)defaultBundleURL {
     NSURL *defaultRNBundlePath = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     NSString *documentDirectoryPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];

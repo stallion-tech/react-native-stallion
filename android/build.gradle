@@ -31,8 +31,8 @@ def getExtOrIntegerDefault(name) {
 }
 
 def stallionEnabled = false
-def stallionConfigFilePath = '../example/stallion.config.json' // DEV MODE
-// def stallionConfigFilePath = '../../../../stallion.config.json' // PROD MODE
+// def stallionConfigFilePath = '../example/stallion.config.json' // DEV MODE
+def stallionConfigFilePath = '../../../../stallion.config.json' // PROD MODE
 try {
   // StallionConfig file read
   def jsonFile = file(stallionConfigFilePath) // PROD MODE
