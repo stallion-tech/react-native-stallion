@@ -19,9 +19,12 @@ const StallionContextProvider: React.FC = ({ children }) => {
   const { buckets, fetchBuckets } = useStallionBuckets();
   const { bundles, fetchBundles } = useStallionBundles();
   const { authTokens } = useAuthTokens();
-  const { downloadData, handleDownloadBundle } =
-    useDownloadData(refreshStallionMeta);
-  const { currentDownloadFraction } = useDownloadProgressListener();
+  const { currentDownloadFraction, setCurrentDownloadFraction } =
+    useDownloadProgressListener();
+  const { downloadData, handleDownloadBundle } = useDownloadData(
+    refreshStallionMeta,
+    setCurrentDownloadFraction
+  );
   const stallionContextValue = useMemo<IStallionContext>(
     () => ({
       showModal,
@@ -39,6 +42,7 @@ const StallionContextProvider: React.FC = ({ children }) => {
       downloadData,
       handleDownloadBundle,
       authTokens,
+      setCurrentDownloadFraction,
     }),
     [
       showModal,
@@ -56,6 +60,7 @@ const StallionContextProvider: React.FC = ({ children }) => {
       downloadData,
       handleDownloadBundle,
       authTokens,
+      setCurrentDownloadFraction,
     ]
   );
   return (

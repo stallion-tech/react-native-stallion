@@ -8,17 +8,18 @@ public class Stallion {
     return getJSBundleFile(applicationContext, null);
   }
 
-  public static String getJSBundleFile (Context applicationContext, String defaultBundlePath) {
+  public static String getJSBundleFile(Context applicationContext, String defaultBundlePath) {
     StallionStorage.getInstance().Initialize(applicationContext);
-    StallionStorage stallionStorageInstance =  StallionStorage.getInstance();
-    if(
+    StallionStorage stallionStorageInstance = StallionStorage.getInstance();
+    if (
       stallionStorageInstance.get(StallionConstants.ACTIVE_BUCKET_IDENTIFIER) != null &&
         stallionStorageInstance.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER) != null &&
         stallionStorageInstance.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER).equals(StallionConstants.STALLION_SWITCH_ON)
     ) {
-      return applicationContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH + StallionConstants.BUNDLE_DEST_FOLDER_DIR + "/" + StallionConstants.UNZIP_FOLDER_NAME + "/" + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
+      int currentActiveSlot = stallionStorageInstance.getInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER);
+      return applicationContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH + StallionConstants.BUNDLE_DEST_FOLDER_DIR + StallionConstants.SLOT_FOLDER_DIR + currentActiveSlot + "/" + StallionConstants.UNZIP_FOLDER_NAME + "/" + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
     } else {
-      if(defaultBundlePath != null) return defaultBundlePath;
+      if (defaultBundlePath != null) return defaultBundlePath;
       return StallionConstants.DEFAULT_JS_BUNDLE_LOCATION_BASE + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
     }
   }

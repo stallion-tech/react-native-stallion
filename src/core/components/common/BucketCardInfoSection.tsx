@@ -6,6 +6,7 @@ import commonStyles from '../styles/commonStyles';
 import CardDescriptionContent from './CardDescriptionContent';
 import { parseDateTime } from '../../utils/dateUtil';
 import { StallionContext } from '../../state/StallionController';
+import { COLORS } from '../../../core/constants/colors';
 
 interface IBucketCardInfoSection {
   name: string;
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  appliedText: { color: 'green', fontWeight: 'bold', fontSize: 14 },
+  appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
   container: {
     margin: 15,
   },

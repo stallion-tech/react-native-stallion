@@ -15,7 +15,7 @@ export enum SWITCH_TEXTS {
   OFF = 'OFF',
 }
 
-export const SWITCH_TITLE = 'Stallion ';
+export const SWITCH_TITLE = 'Switch ';
 export const BUCKET_CARD_UPDATED_TEXT = 'Updated at: ';
 export const BUCKET_CARD_BUNDLE_COUNT_TEXT = 'Bundles: ';
 export const BUCKET_CARD_AUTHOR_TEXT = 'Author: ';
@@ -40,3 +40,4 @@ export enum CARD_TYPES {
 }
 
 export const BUNDLE_APPLIED_TEXT = 'Applied';
+export const DOWNLOADING_TEXT = 'Downloading';

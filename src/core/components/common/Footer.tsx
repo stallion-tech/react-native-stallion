@@ -31,11 +31,11 @@ const Footer: React.FC<IFooter> = ({
   return (
     <>
       {errorMessage ? (
-        <View style={styles.errorInfoSection}>
+        <View style={[styles.errorInfoSection, styles.shadowContainer]}>
           <Text style={styles.errTxt}>{errorMessage}</Text>
         </View>
       ) : null}
-      <View style={styles.footerContainer}>
+      <View style={[styles.footerContainer, styles.shadowContainer]}>
         {activeBundle?.bucketName ? (
           <>
             <View>
@@ -53,20 +53,17 @@ const Footer: React.FC<IFooter> = ({
                 style={[
                   styles.infoTitle,
                   switchIsOn ? styles.greenColor : styles.redColor,
+                  styles.evenMargin,
                 ]}
               >
                 {SWITCH_TITLE}
                 {switchIsOn ? 'Enabled' : 'Disabled'}
               </Text>
-              <Switch
-                onValueChange={handleToggle}
-                value={switchIsOn}
-                style={styles.switchComponent}
-              />
+              <Switch onValueChange={handleToggle} value={switchIsOn} />
             </View>
           </>
         ) : (
-          <View style={styles.noDownloadContainer}>
+          <View style={[styles.noDownloadContainer, styles.shadowContainer]}>
             <Text style={styles.selfCenter}>No bundle is downloaded yet</Text>
           </View>
         )}
@@ -76,6 +73,11 @@ const Footer: React.FC<IFooter> = ({
 };
 
 const styles = StyleSheet.create({
+  shadowContainer: {
+    shadowOpacity: 0.1,
+    shadowOffset: { height: -10, width: 10 },
+    shadowRadius: 10,
+  },
   noDownloadContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -94,8 +96,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   footerContainer: {
-    height: 60,
-    padding: STD_MARGIN,
+    paddingHorizontal: STD_MARGIN,
+    paddingVertical: STD_MARGIN / 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -114,19 +116,8 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
-  switchButton: {
-    height: HEADER_SLAB_HEIGHT / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: STD_MARGIN,
-    borderRadius: STD_MARGIN,
-    backgroundColor: 'red',
-  },
   switchButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
-  },
-  switchComponent: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   selfCenter: {
     alignSelf: 'center',
@@ -136,6 +127,9 @@ const styles = StyleSheet.create({
   },
   redColor: {
     color: COLORS.red,
+  },
+  evenMargin: {
+    marginVertical: STD_MARGIN / 4,
   },
 });
 

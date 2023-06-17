@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.stallion">
-
+  <application>
+    <activity
+      android:name="com.stallion.StallionDefaultErrorActivity">
+    </activity>
+  </application>
 </manifest>
