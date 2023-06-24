@@ -40,4 +40,5 @@ class StallionConstants {
     }
     static let apiKey = Bundle.main.object(forInfoDictionaryKey: "StallionApiKey") as? String
     static let secretKey = Bundle.main.object(forInfoDictionaryKey: "StallionSecretKey") as? String
+    static let DOWNLOAD_PROGRESS_EVENT = "StallionDownloadProgress";
 }

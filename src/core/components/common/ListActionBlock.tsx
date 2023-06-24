@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import {
   DEFAULT_ERROR_PREFIX,
   HEADER_SLAB_HEIGHT,
@@ -8,15 +8,12 @@ import { COLORS } from '../../constants/colors';
 
 interface IListActionBlock {
   error?: string | null;
-  isLoading: boolean;
 }
 
-const ListActionBlock: React.FC<IListActionBlock> = ({ error, isLoading }) => {
+const ListActionBlock: React.FC<IListActionBlock> = ({ error }) => {
   return (
     <View style={styles.loaderContainer}>
-      {isLoading ? (
-        <ActivityIndicator color={COLORS.indigo} size={'large'} />
-      ) : error ? (
+      {error ? (
         <Text style={styles.errorText}>
           <Text style={styles.boldText}>{DEFAULT_ERROR_PREFIX}</Text>
           {error}
@@ -32,6 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: HEADER_SLAB_HEIGHT / 2,
+    backgroundColor: COLORS.background_grey,
   },
   errorText: {
     color: COLORS.error,

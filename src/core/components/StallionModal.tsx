@@ -22,11 +22,12 @@ const StallionModal: React.FC = () => {
     downloadData,
     bucketData,
     authTokens,
+    currentDownloadFraction,
   } = useContext(StallionContext);
 
   const onBackPress = useCallback(() => setShowModal(false), [setShowModal]);
 
-  const { listData, isLoading, listError, handleBucketPress } =
+  const { listData, isLoading, listError, handleBucketPress, handleRefresh } =
     useStallionList();
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const StallionModal: React.FC = () => {
     if (authTokens?.apiKey && authTokens?.secretKey) return false;
     return true;
   }, [authTokens]);
+
   return (
     <Modal
       animationType="slide"
@@ -56,18 +58,21 @@ const StallionModal: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <Header onBackPress={onBackPress} />
         <View style={styles.listingSection}>
-          {isLoading || listError || noAuthState ? (
+          {listError || noAuthState ? (
             <ListActionBlock
-              isLoading={isLoading}
               error={noAuthState ? NO_AUTH_ERROR_MESSAGE : listError}
             />
           ) : (
             <DataList
               listData={listData}
               handleBucketPress={handleBucketPress}
+              isLoading={isLoading}
+              handleRefresh={handleRefresh}
             />
           )}
-          {downloadData?.loading ? <OverlayLoader /> : null}
+          {downloadData?.loading ? (
+            <OverlayLoader currentDownloadFraction={currentDownloadFraction} />
+          ) : null}
         </View>
         <Footer
           activeBundle={{
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignContent: 'center',
-    backgroundColor: COLORS.background_grey,
+    backgroundColor: COLORS.white,
   },
   listingSection: {
     flex: 1,

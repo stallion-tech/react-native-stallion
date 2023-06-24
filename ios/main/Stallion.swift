@@ -1,7 +1,18 @@
 import Foundation
 
 @objc(Stallion)
-class Stallion: NSObject {
+class Stallion: RCTEventEmitter {
+    public static var shared: RCTEventEmitter?
+    
+    override init() {
+        super.init()
+        Stallion.shared = self
+    }
+    
+    override func supportedEvents() -> [String]! {
+        return [StallionConstants.DOWNLOAD_PROGRESS_EVENT]
+    }
+    
     @objc(downloadPackage:withResolver:withRejecter:)
     func downloadPackage(bundleInfo: NSDictionary, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
         guard let receivedBucketId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.BucketId) else {return}
@@ -15,20 +26,18 @@ class Stallion: NSObject {
             reqJson[StallionConstants.DownloadReqBodyKeys.Version] = receivedVersion
         }
         guard let fromUrl = URL(string: StallionConstants.DownloadApiUrl) else { return }
-        StallionDownloader.load(
-            url: fromUrl,
-            reqBody: reqJson,
-            completion: {
-                resolve(StallionConstants.DownloadPromiseResponses.Success)
-                StallionUtil.setLs(key: StallionUtil.LSKeys.bucketKey, value: bucketId)
-                if let receivedVersion {
-                    StallionUtil.setLs(key: StallionUtil.LSKeys.versionKey, value: String(receivedVersion))
-                }
-            },
-            onError: {errorString in
-                reject("500", errorString, NSError(domain: errorString, code: 500))
-            }
-        )
+        
+        do {
+                try StallionDownloader().load(
+                    url: fromUrl,
+                    reqBody: reqJson,
+                    resolve: resolve,
+                    reject: reject
+                )
+        } catch {
+            let errorString = StallionConstants.DownloadPromiseResponses.GenericError
+            reject("500", errorString, NSError(domain: errorString, code: 500))
+        }
     }
     
     @objc(toggleStallionSwitch:)

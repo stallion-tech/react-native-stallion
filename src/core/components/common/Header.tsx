@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: COLORS.black,
     shadowOpacity: 0.2,
-    shadowOffset: { height: 10, width: 10 },
+    shadowOffset: { height: 20, width: 10 },
     shadowRadius: 10,
     backgroundColor: COLORS.white,
     elevation: 5,

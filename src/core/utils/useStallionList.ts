@@ -15,6 +15,7 @@ const useStallionList = () => {
     setSelectedBucketId,
     bundleData,
     fetchBundles,
+    fetchBuckets,
   } = useContext(StallionContext);
   const listData = useMemo<(IBucketCard | IBundleCard)[] | null>(() => {
     return selectedBucketId
@@ -59,11 +60,20 @@ const useStallionList = () => {
     [setSelectedBucketId, fetchBundles]
   );
 
+  const handleRefresh = useCallback(() => {
+    if (selectedBucketId) {
+      fetchBundles(selectedBucketId);
+    } else {
+      fetchBuckets();
+    }
+  }, [selectedBucketId, fetchBundles, fetchBuckets]);
+
   return {
     listData,
     isLoading,
     listError,
     handleBucketPress,
+    handleRefresh,
   };
 };
 

@@ -103,6 +103,7 @@ export interface IStallionContext {
   currentDownloadFraction: number;
   downloadData: IDownloadData;
   handleDownloadBundle: (bucketId: string, version?: number) => void;
+  setCurrentDownloadFraction: (fraction: number) => void;
 }
 
 export const StallionContext = createContext<IStallionContext>({
@@ -120,6 +121,7 @@ export const StallionContext = createContext<IStallionContext>({
   currentDownloadFraction: 0,
   downloadData: DEFAULT_DOWNLOAD_DATA,
   handleDownloadBundle: () => {},
+  setCurrentDownloadFraction: () => {},
 });
 
 interface IUseStallionBuckets {
@@ -137,10 +139,10 @@ export const useStallionBuckets = (): IUseStallionBuckets => {
   const [currentBucketData, setCurrentBucketData] =
     useState<IBucketData>(DEFAULT_BUCKET_DATA);
   const fetchBuckets = useCallback((): IBucketListPromise => {
-    setCurrentBucketData({
-      ...DEFAULT_BUCKET_DATA,
+    setCurrentBucketData((currentData) => ({
+      ...currentData,
       loading: true,
-    });
+    }));
     return StallionNetworkClient.getBuckets()
       .then((res) => {
         if (res?.data) {
@@ -173,10 +175,10 @@ export const useStallionBundles = (): IUseStallionBundles => {
   const [currentBundleData, setCurrentBundleData] =
     useState<IBundleData>(DEFAULT_BUNDLE_DATA);
   const fetchBundles = useCallback((bucketId: string) => {
-    setCurrentBundleData({
-      ...DEFAULT_BUNDLE_DATA,
+    setCurrentBundleData((currentData) => ({
+      ...currentData,
       loading: true,
-    });
+    }));
     return StallionNetworkClient.getBundles(bucketId)
       .then((res) => {
         if (res?.data) {
@@ -231,6 +233,7 @@ export const useStallionMeta = (): IUseStallionMeta => {
 
 interface IUseDownloadProgress {
   currentDownloadFraction: number;
+  setCurrentDownloadFraction: (fraction: number) => void;
 }
 
 export const useDownloadProgressListener = (): IUseDownloadProgress => {
@@ -241,7 +244,6 @@ export const useDownloadProgressListener = (): IUseDownloadProgress => {
     eventEmitter.addListener(
       DOWNLOAD_PROGRESS_EVENT,
       (downloadFraction: number) => {
-        // console.log('new download progress', downloadFraction);
         if (downloadFraction) {
           setCurrentDownloadFraction(downloadFraction);
         }
@@ -253,6 +255,7 @@ export const useDownloadProgressListener = (): IUseDownloadProgress => {
   }, []);
   return {
     currentDownloadFraction,
+    setCurrentDownloadFraction,
   };
 };
 
@@ -262,13 +265,15 @@ interface IUseDownloadData {
 }
 
 export const useDownloadData = (
-  refreshStallionMeta: () => void
+  refreshStallionMeta: () => void,
+  setCurrentDownloadFraction: (fraction: number) => void
 ): IUseDownloadData => {
   const [downloadState, setDownloadState] = useState<IDownloadData>(
     DEFAULT_DOWNLOAD_DATA
   );
   const handleDownloadBundle = useCallback(
     (bucketId: string, version?: number) => {
+      setCurrentDownloadFraction(0);
       setDownloadState({
         loading: true,
         error: null,
@@ -293,7 +298,7 @@ export const useDownloadData = (
           });
       });
     },
-    [refreshStallionMeta]
+    [refreshStallionMeta, setCurrentDownloadFraction]
   );
   return {
     downloadData: downloadState,

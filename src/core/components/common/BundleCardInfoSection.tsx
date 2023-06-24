@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  appliedText: { color: 'green', fontWeight: 'bold', fontSize: 14 },
+  appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
   container: {
     margin: 15,
   },
