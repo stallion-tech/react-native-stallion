@@ -11,15 +11,14 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.core.ReactChoreographer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,6 +28,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @ReactModule(name = StallionConstants.MODULE_NAME)
 public class StallionModule extends ReactContextBaseJavaModule {
@@ -46,7 +47,6 @@ public class StallionModule extends ReactContextBaseJavaModule {
     this.baseDir = reactContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH;
     StallionStorage.getInstance().Initialize(reactContext);
     this.stallionStorage = StallionStorage.getInstance();
-    this.initAuthKeys();
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
@@ -54,15 +54,12 @@ public class StallionModule extends ReactContextBaseJavaModule {
         _exceptionThread = thread;
         _exceptionThrowable = throwable;
         String stackTraceString = Log.getStackTraceString(throwable);
-        Log.d("stackTraceString", stackTraceString);
         toggleStallionSwitch(false);
         Activity currentActivity = getCurrentActivity();
-        Log.d("currentActivity", currentActivity.getTitle().toString());
         Intent myIntent = new Intent(currentActivity, StallionDefaultErrorActivity.class);
-        myIntent.putExtra("stack_trace_string", stackTraceString); //Optional parameters
+        myIntent.putExtra("stack_trace_string", stackTraceString);
         currentActivity.startActivity(myIntent);
         currentActivity.finish();
-//        _androidUncaughtExceptionHandler.uncaughtException(thread, throwable);
       }
     });
   }
@@ -71,21 +68,23 @@ public class StallionModule extends ReactContextBaseJavaModule {
     _androidUncaughtExceptionHandler.uncaughtException(_exceptionThread, _exceptionThrowable);
   }
 
-  private void initAuthKeys () {
-    Resources res = this.currentReactContext.getResources();
-    String parentPackageName = this.currentReactContext.getPackageName();
-    int StallionApiKeyId = res.getIdentifier(StallionConstants.API_KEY_IDENTIFIER, "string", parentPackageName);
-    int StallionSecretKeyId = res.getIdentifier(StallionConstants.SECRET_KEY_IDENTIFIER, "string", parentPackageName);
-    if (StallionApiKeyId > 0 && StallionSecretKeyId > 0) {
-      StallionConstants.API_KEY_VALUE = this.currentReactContext.getString(StallionApiKeyId);
-      StallionConstants.SECRET_KEY_VALUE = this.currentReactContext.getString(StallionSecretKeyId);
-    }
-  }
 
   @Override
   @NonNull
   public String getName() {
     return StallionConstants.MODULE_NAME;
+  }
+
+  @ReactMethod
+  public void setApiKey(String apiKey) {
+    this.stallionStorage.set(StallionConstants.API_KEY_IDENTIFIER, apiKey);
+  }
+
+  @ReactMethod
+  public void getApiKey(Callback callback) {
+    callback.invoke(
+      this.stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER)
+    );
   }
 
   @ReactMethod
@@ -104,14 +103,6 @@ public class StallionModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getAuthTokens(Callback callback) {
-    WritableMap authKeys = Arguments.createMap();
-    authKeys.putString(StallionConstants.API_KEY_APP_IDENTIFIER, StallionConstants.API_KEY_VALUE);
-    authKeys.putString(StallionConstants.SECRET_KEY_APP_IDENTIFIER, StallionConstants.SECRET_KEY_VALUE);
-    callback.invoke(authKeys);
-  }
-
-  @ReactMethod
   public void toggleStallionSwitch(Boolean stallionBundleIsOn) {
     this.stallionStorage.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, stallionBundleIsOn ? StallionConstants.STALLION_SWITCH_ON : StallionConstants.STALLION_SWITCH_OFF);
   }
@@ -123,17 +114,16 @@ public class StallionModule extends ReactContextBaseJavaModule {
     return this.eventEmitter;
   }
 
-  private void sendDownloadEvent(Double downloadFraction) {
-    this.getEventEmitter().emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, downloadFraction);
-  }
-
   @ReactMethod
   public void downloadPackage(ReadableMap bundleInfo, Promise promise) {
-    AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Handler handler = new Handler(Looper.getMainLooper());
 
+    executor.execute(new Runnable() {
       @Override
-      protected Void doInBackground(Void... params) {
+      public void run() {
         String receivedBucketId = bundleInfo.getString("bucketId");
+        String receivedProjectId = bundleInfo.getString("projectId");
         Integer receivedVersion = bundleInfo.getInt("version");
         String platformValue = "android";
         DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter =  getEventEmitter();
@@ -150,11 +140,10 @@ public class StallionModule extends ReactContextBaseJavaModule {
           URL url = new URL(StallionConstants.API_BASE + StallionConstants.DOWNLOAD_API_PATH);
           connection = (HttpURLConnection) url.openConnection();
           connection.setRequestMethod( "POST" );
-          connection.setRequestProperty("api-key", StallionConstants.API_KEY_VALUE);
-          connection.setRequestProperty("secret-key", StallionConstants.SECRET_KEY_VALUE);
+          connection.setRequestProperty("x-access-token", stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER));
           connection.setRequestProperty("Content-Type", "application/json");
 
-          String jsonInputString = String.format("{\"bucketId\":\"%s\",\"version\":%d,\"platform\":\"%s\"}", receivedBucketId , receivedVersion, platformValue);
+          String jsonInputString = String.format("{\"bucketId\":\"%s\",\"projectId\":\"%s\",\"version\":%d,\"platform\":\"%s\"}", receivedBucketId, receivedProjectId, receivedVersion, platformValue);
 
           connection.setDoOutput(true);
           connection.setDoInput(true);
@@ -218,14 +207,13 @@ public class StallionModule extends ReactContextBaseJavaModule {
             if (inputStream != null) inputStream.close();
             if (connection != null) connection.disconnect();
           } catch (IOException e) {
-            Log.d("IO Exception", e.toString());
             promise.reject(e.toString());
           }
         }
 
         if (!isZip) {
           promise.reject("Not a zip file");
-          return null;
+          return;
         }
 
         try {
@@ -240,8 +228,8 @@ public class StallionModule extends ReactContextBaseJavaModule {
           }
           StallionZip.unzipFile(downloadedZip.getAbsolutePath(), baseDir + StallionConstants.BUNDLE_DEST_FOLDER_DIR + StallionConstants.SLOT_FOLDER_DIR + targetSlot);
           // setting active bucket ID, slot and version after downloading and all other jobs done
-            stallionStorage.setInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER, targetSlot);
-            stallionStorage.set(StallionConstants.ACTIVE_BUCKET_IDENTIFIER, receivedBucketId);
+          stallionStorage.setInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER, targetSlot);
+          stallionStorage.set(StallionConstants.ACTIVE_BUCKET_IDENTIFIER, receivedBucketId);
           if (receivedVersion != null) {
             stallionStorage.setInt(StallionConstants.ACTIVE_VERSION_IDENTIFIER, receivedVersion);
           }
@@ -250,10 +238,9 @@ public class StallionModule extends ReactContextBaseJavaModule {
           promise.reject(e.toString());
         } finally {
           StallionZip.deleteFileOrFolderSilently(downloadedZip);
-          return null;
+          return;
         }
-      };
-    };
-    asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      }
+    });
   }
 }

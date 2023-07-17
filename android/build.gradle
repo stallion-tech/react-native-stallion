@@ -30,22 +30,7 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["Stallion_" + name]).toInteger()
 }
 
-def stallionEnabled = false
-// def stallionConfigFilePath = '../example/stallion.config.json' // DEV MODE
-def stallionConfigFilePath = '../../../../stallion.config.json' // PROD MODE
-try {
-  // StallionConfig file read
-  def jsonFile = file(stallionConfigFilePath) // PROD MODE
-  def parsedJson = new groovy.json.JsonSlurper().parseText(jsonFile.text)
-  if(parsedJson.isEnabled === true) {
-    stallionEnabled = true
-  }
-} catch (Exception exception) {
-  // write a new JSON file
-  file(stallionConfigFilePath).write("{}")
-  println "Error while reading Stallion config file"
-  println exception.toString()
-}
+def stallionEnabled = true
 
 android {
   sourceSets {

@@ -12,6 +12,7 @@ class StallionUtil {
         static let bucketKey = "activeBucket"
         static let versionKey = "activeVersion"
         static let switchStateKey = "switchState"
+        static let apiKey = "apiKey"
     }
     public struct SwitchStates {
         static let ON = "STALLION_ON"

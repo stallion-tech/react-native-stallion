@@ -9,7 +9,8 @@ RCT_EXTERN_METHOD(downloadPackage:(NSDictionary *)bundleInfo
                   )
 
 RCT_EXTERN_METHOD(getStallionMeta: (RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(getAuthTokens: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(getApiKey: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(setApiKey: (NSString *)apiKey)
 RCT_EXTERN_METHOD(toggleStallionSwitch: (BOOL *)isOn)
 
 + (BOOL)requiresMainQueueSetup

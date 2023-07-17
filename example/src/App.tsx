@@ -1,16 +1,13 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import {
-  withStallion,
-  useStallionModal,
-} from '@redhorse-tech/react-native-stallion';
+import { withStallion, useStallionModal } from './Stallion';
 
 const App: React.FC = () => {
-  const { setShowModal } = useStallionModal();
+  const { showModal } = useStallionModal();
   return (
     <View style={styles.container}>
-      <Button title="OpenModal" onPress={() => setShowModal(true)} />
+      <Button title="OpenModal" onPress={showModal} />
     </View>
   );
 };
