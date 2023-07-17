@@ -1,6 +1,3 @@
-const path = require('path');
-const pak = require('../package.json');
-
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
   plugins: [
@@ -9,9 +6,13 @@ module.exports = {
       {
         extensions: ['.tsx', '.ts', '.js', '.json'],
         alias: {
-          [pak.name]: path.join(__dirname, '..', pak.source),
+          '@main': '../src/main',
+          '@noop': '../src/noop',
+          '@stallionTypes': '../src/types',
+          'react-native-stallion': '../src/index',
         },
       },
     ],
+    'jest-hoist',
   ],
 };

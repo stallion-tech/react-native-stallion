@@ -2,7 +2,10 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-stallion": ["./src/index"]
+      "react-native-stallion": ["./src/index"],
+      "@main/*": ["./src/main/*/index", "./src/main/*"],
+      "@noop/*": ["./src/noop/*/index", "./src/noop/*"],
+      "@stallionTypes/*": ["./src/types/*/index", "./src/types/*"],
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

@@ -16,10 +16,11 @@ class Stallion: RCTEventEmitter {
     @objc(downloadPackage:withResolver:withRejecter:)
     func downloadPackage(bundleInfo: NSDictionary, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
         guard let receivedBucketId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.BucketId) else {return}
+        guard let receiveProjectId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.ProjectId) else {return}
         let receivedVersion = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.Version) as? Int ?? nil
-        let bucketId = receivedBucketId as? String ?? ""
         var reqJson: [String: Any] = [
-            StallionConstants.DownloadReqBodyKeys.BucketId: bucketId,
+            StallionConstants.DownloadReqBodyKeys.BucketId: receivedBucketId,
+            StallionConstants.DownloadReqBodyKeys.ProjectId: receiveProjectId,
             StallionConstants.DownloadReqBodyKeys.Platform: StallionConstants.PlatformValue,
         ]
         if (receivedVersion != nil) {
@@ -40,18 +41,20 @@ class Stallion: RCTEventEmitter {
         }
     }
     
+    @objc(setApiKey:)
+    func setApiKey(apiKey: String) {
+        StallionUtil.setLs(key: StallionUtil.LSKeys.apiKey, value: apiKey)
+    }
+    
+    @objc(getApiKey:)
+    func getApiKey(_ callback: RCTResponseSenderBlock) {
+        let apiKey = StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey)
+        callback([apiKey ?? ""])
+    }
+    
     @objc(toggleStallionSwitch:)
     func toggleStallionSwitch(isOn: Bool) {
         StallionUtil.setLs(key: StallionUtil.LSKeys.switchStateKey, value: isOn ? StallionUtil.SwitchStates.ON : StallionUtil.SwitchStates.OFF)
-    }
-    
-    @objc(getAuthTokens:)
-    func getAuthTokens(_ callback: RCTResponseSenderBlock) {
-        var authDictionary = [String:Any]()
-        authDictionary[StallionConstants.AuthTokens.ApiKey] = StallionConstants.apiKey
-        authDictionary[StallionConstants.AuthTokens.SecretKey] = StallionConstants.secretKey
-        let stallionAuth = NSDictionary(dictionary: authDictionary)
-        callback([stallionAuth])
     }
     
     @objc(getStallionMeta:)

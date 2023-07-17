@@ -3,23 +3,23 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
-# Stallion file read
-stallionConfig = {}
+# # Stallion file read
+# stallionConfig = {}
 
-# stallionConfigPath = "./example/stallion.config.json" # DEV MODE
-stallionConfigPath = "../../../stallion.config.json" # PROD MODE
+# # stallionConfigPath = "./example/stallion.config.json" # DEV MODE
+# stallionConfigPath = "../../../stallion.config.json" # PROD MODE
 
-begin
-  stallionConfig = JSON.parse(File.read(File.join(__dir__, stallionConfigPath)))
-rescue
-  File.open(File.join(__dir__, stallionConfigPath), "w") do |f|
-    f.write(stallionConfig.to_json)
-  end
-  print "Error reading stallion.config.json file"
-end
+# begin
+#   stallionConfig = JSON.parse(File.read(File.join(__dir__, stallionConfigPath)))
+# rescue
+#   File.open(File.join(__dir__, stallionConfigPath), "w") do |f|
+#     f.write(stallionConfig.to_json)
+#   end
+#   print "Error reading stallion.config.json file"
+# end
 
-print "stallionConfig file parsed:"
-print stallionConfig
+# print "stallionConfig file parsed:"
+# print stallionConfig
 
 Pod::Spec.new do |s|
   s.name         = "react-native-stallion"
@@ -32,11 +32,14 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "12.0" }
   s.source       = { :git => "https://github.com/redhorse-tech/react-native-stallion.git", :tag => "#{s.version}" }
 
-  if stallionConfig["isEnabled"] == true
-    s.source_files = "ios/main/**/*.{h,m,mm,swift}"
-  else
-    s.source_files = "ios/noop/**/*.{h,m,mm,swift}"
-  end
+  # if stallionConfig["isEnabled"] == true
+  #   s.source_files = "ios/main/**/*.{h,m,mm,swift}"
+  # else
+  #   s.source_files = "ios/noop/**/*.{h,m,mm,swift}"
+  # end
+
+  # TEMP ADDITION
+  s.source_files = "ios/main/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
   s.dependency 'ZIPFoundation'

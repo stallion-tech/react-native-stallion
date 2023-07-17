@@ -36,11 +36,9 @@ class StallionDownloader: NSObject {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.httpBody = reqBody
-            
-            request.setValue(StallionConstants.apiKey, forHTTPHeaderField: StallionConstants.HeaderKeys.ApiKey)
-            request.setValue(StallionConstants.secretKey, forHTTPHeaderField: StallionConstants.HeaderKeys.SecretKey)
+    
             request.setValue("application/json", forHTTPHeaderField: StallionConstants.HeaderKeys.ContentType)
-        
+        request.setValue(StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey) ?? "", forHTTPHeaderField: StallionConstants.HeaderKeys.AccessKey)
             let task = urlSession.downloadTask(with: request)
             task.resume()
             self.downloadTask = task
@@ -63,11 +61,14 @@ extension StallionDownloader: URLSessionDownloadDelegate {
         }
     }
     
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard error != nil else { return }
+        self._reject?("500", StallionConstants.DownloadPromiseResponses.ApiError, NSError(domain: StallionConstants.DownloadPromiseResponses.ApiError, code: 500))
+    }
+    
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
                     didFinishDownloadingTo location: URL) {
-        
         let response = downloadTask.response as? HTTPURLResponse
-        
         if (response?.statusCode == 200) {
             do  {
                 let tempDownloadDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
@@ -116,6 +117,8 @@ extension StallionDownloader: URLSessionDownloadDelegate {
                 let errorString = StallionConstants.DownloadPromiseResponses.FileSystemError
                 self._reject?("500", errorString, NSError(domain: errorString, code: 500))
             }
+        } else {
+            self._reject?("500", StallionConstants.DownloadPromiseResponses.GenericError, NSError(domain: StallionConstants.DownloadPromiseResponses.GenericError, code: 500))
         }
     }
 }

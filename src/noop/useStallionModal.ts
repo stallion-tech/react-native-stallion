@@ -1,15 +1,12 @@
+import { IUseStallionModal } from '@stallionTypes/utils.types';
 import { useCallback } from 'react';
 
-interface IUseRStallionModal {
-  setShowModal: (showModal: boolean) => void;
-}
-
-const useStallionModal = (): IUseRStallionModal => {
-  const setShowModal = useCallback(() => {
+const useStallionModal = (): IUseStallionModal => {
+  const showModal = useCallback(() => {
     console.error('Error: Stallion is disabled');
   }, []);
   return {
-    setShowModal,
+    showModal,
   };
 };
 
