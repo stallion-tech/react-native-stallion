@@ -5,8 +5,8 @@ import {
   Keyboard,
 } from 'react-native';
 
-import { GlobalContext } from '@main/state';
-import { TextChangeEventType } from '@stallionTypes/utils.types';
+import { GlobalContext } from '../../../../state';
+import { TextChangeEventType } from '../../../../../types/utils.types';
 
 interface IUseLoginFlow {
   email?: string;

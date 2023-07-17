@@ -2,7 +2,7 @@ import {
   IUserAction,
   IUserData,
   UserActionKind,
-} from '@stallionTypes/user.types';
+} from '../../../types/user.types';
 
 export const setUserLoading = (): IUserAction => {
   return {

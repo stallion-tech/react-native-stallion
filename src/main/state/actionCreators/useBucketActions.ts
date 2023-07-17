@@ -1,20 +1,20 @@
 import React, { useCallback } from 'react';
 
-import { API_BASE_URL, API_PATHS } from '@main/constants/apiConstants';
-import { apiAuthMiddleware, getApiHeaders } from '@main/utils/apiUtils';
+import SharedDataManager from '../../utils/SharedDataManager';
+import { extractError } from '../../utils/errorUtil';
+import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
 import {
   setBucketData,
   setBucketError,
   setBucketLoading,
 } from '../actions/bucketActions';
-import SharedDataManager from '@main/utils/SharedDataManager';
 
 import {
   DEFAULT_ERROR_MESSAGE,
   EMPTY_ERROR_MESSAGE,
-} from '@main/constants/appConstants';
-import { extractError } from '@main/utils/errorUtil';
-import { IBucketAction, IBucketDataList } from '@stallionTypes/bucket.types';
+} from '../../constants/appConstants';
+import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
+import { IBucketAction, IBucketDataList } from '../../../types/bucket.types';
 
 const useBucketActions = (
   dispatch: React.Dispatch<IBucketAction>,

@@ -2,7 +2,7 @@ import {
   DownloadActionKind,
   IDownloadAction,
   IDownloadData,
-} from '@stallionTypes/download.types';
+} from '../../../types/download.types';
 
 export const setDownloadLoading = (): IDownloadAction => {
   return {

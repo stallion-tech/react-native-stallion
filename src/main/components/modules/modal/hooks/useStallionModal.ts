@@ -1,11 +1,11 @@
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 
-import { GlobalContext } from '@main/state';
+import { GlobalContext } from '../../../../state';
 import {
   getApiKeyNative,
   toggleStallionSwitchNative,
-} from '@main/utils/StallionNaitveModule';
-import SharedDataManager from '@main/utils/SharedDataManager';
+} from '../../../../utils/StallionNaitveModule';
+import SharedDataManager from '../../../../utils/SharedDataManager';
 
 const useStallionModal = () => {
   const {

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { COLORS } from '@main/constants/colors';
+import { COLORS } from '../../../../constants/colors';
 
 interface ICardDescriptionContent {
   title: string;

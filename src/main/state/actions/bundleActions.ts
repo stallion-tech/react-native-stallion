@@ -2,7 +2,7 @@ import {
   BundleActionKind,
   IBundleAction,
   IBundleDataList,
-} from '@stallionTypes/bundle.types';
+} from '../../../types/bundle.types';
 
 export const setBundleLoading = (): IBundleAction => {
   return {

@@ -2,13 +2,13 @@ import React from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import Login from '../login';
-import Header from '@main/components/common/Header';
-import Footer from '@main/components/common/Footer';
+import Header from '../../../components/common/Header';
+import Footer from '../../../components/common/Footer';
 
-import { COLORS } from '@main/constants/colors';
+import { COLORS } from '../../../constants/colors';
 import Listing from '../listing';
 import useStallionModal from './hooks/useStallionModal';
-import OverlayLoader from '@main/components/common/OverlayLoader';
+import OverlayLoader from '../../../components/common/OverlayLoader';
 
 const StallionModal: React.FC = () => {
   const {

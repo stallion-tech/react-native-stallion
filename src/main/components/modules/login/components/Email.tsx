@@ -6,11 +6,11 @@ import {
   TextInputChangeEventData,
 } from 'react-native';
 
-import ButtonFullWidth from '@main/components/common/ButtonFullWidth';
+import ButtonFullWidth from '../../../../components/common/ButtonFullWidth';
 import {
   LOGIN_PAGE_KEYS,
   SUBMIT_BUTTON_TEXT,
-} from '@main/constants/appConstants';
+} from '../../../../constants/appConstants';
 
 import styles from './styles';
 

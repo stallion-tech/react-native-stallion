@@ -2,7 +2,7 @@ import {
   BucketActionKind,
   IBucketAction,
   IBucketState,
-} from '@stallionTypes/bucket.types';
+} from '../../../types/bucket.types';
 
 const bucketReducer = (
   state: IBucketState,

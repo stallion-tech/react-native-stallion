@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { View, Text } from 'react-native';
 
 import styles from './styles';
-import { DEFAULT_ERROR_PREFIX } from '@main/constants/appConstants';
+import { DEFAULT_ERROR_PREFIX } from '../../../constants/appConstants';
 
 interface IErrorView {
   error?: string | null;

@@ -7,7 +7,7 @@ import {
   SWITCH_TITLE,
   SWITCH_TEXTS,
   EMPTY_DOWNLOAD_MESSAGE,
-} from '@main/constants/appConstants';
+} from '../../../constants/appConstants';
 
 import styles from './styles';
 

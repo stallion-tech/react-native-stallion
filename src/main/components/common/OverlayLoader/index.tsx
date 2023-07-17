@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 
-import { COLORS } from '@main/constants/colors';
-import { DOWNLOADING_TEXT } from '@main/constants/appConstants';
+import { COLORS } from '../../../constants/colors';
+import { DOWNLOADING_TEXT } from '../../../constants/appConstants';
 
 import styles from './styles';
 

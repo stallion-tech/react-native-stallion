@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT } from '@main/constants/appConstants';
-import { COLORS } from '@main/constants/colors';
+import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
+import { COLORS } from '../../../constants/colors';
 
 const styles = StyleSheet.create({
   errorContainer: {

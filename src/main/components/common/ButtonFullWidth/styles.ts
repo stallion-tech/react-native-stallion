@@ -1,7 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT, STD_MARGIN } from '@main/constants/appConstants';
-import { COLORS } from '@main/constants/colors';
+import {
+  HEADER_SLAB_HEIGHT,
+  STD_MARGIN,
+} from '../../../constants/appConstants';
+import { COLORS } from '../../../constants/colors';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -14,6 +17,7 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: COLORS.indigo,
     elevation: 5,
+    zIndex: 5,
     shadowColor: COLORS.black7,
     shadowOpacity: 0.2,
     shadowOffset: { height: 10, width: 10 },

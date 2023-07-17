@@ -132,7 +132,8 @@
       [
         "commonjs",
         {
-          "sourceMaps": false
+          "sourceMaps": false,
+          "configFile": true
         }
       ],
       "module",

@@ -1,18 +1,18 @@
 import React, { useEffect, useCallback } from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import SharedDataManager from '@main/utils/SharedDataManager';
+import SharedDataManager from '../../utils/SharedDataManager';
 import StallionNativeModule, {
   downloadBundleNative,
-} from '@main/utils/StallionNaitveModule';
+} from '../../utils/StallionNaitveModule';
 import {
   setDownloadData,
   setDownloadError,
   setDownloadLoading,
 } from '../actions/downloadActions';
 
-import { DOWNLOAD_PROGRESS_EVENT } from '@main/constants/appConstants';
-import { IDownloadAction } from '@stallionTypes/download.types';
+import { DOWNLOAD_PROGRESS_EVENT } from '../../constants/appConstants';
+import { IDownloadAction } from '../../../types/download.types';
 
 const useDownloadActions = (
   dispatch: React.Dispatch<IDownloadAction>,

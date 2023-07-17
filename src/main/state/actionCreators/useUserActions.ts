@@ -1,25 +1,25 @@
 import React, { useCallback } from 'react';
 
-import SharedDataManager from '@main/utils/SharedDataManager';
+import SharedDataManager from '../../utils/SharedDataManager';
 
-import { DEFAULT_ERROR_MESSAGE } from '@main/constants/appConstants';
-import { extractError } from '@main/utils/errorUtil';
+import { DEFAULT_ERROR_MESSAGE } from '../../constants/appConstants';
+import { extractError } from '../../utils/errorUtil';
 import {
   setRequiresLogin,
   setTempOtp,
   setUserData,
   setUserError,
-} from '@main/state/actions/userActions';
-import { getApiHeaders } from '@main/utils/apiUtils';
-import { setUserLoading } from '@main/state/actions/userActions';
+} from '../../state/actions/userActions';
+import { getApiHeaders } from '../../utils/apiUtils';
+import { setUserLoading } from '../../state/actions/userActions';
 
-import { API_BASE_URL, API_PATHS } from '@main/constants/apiConstants';
-import { IUserAction, IUserData, IUserState } from '@stallionTypes/user.types';
+import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
+import { IUserAction, IUserData, IUserState } from '../../../types/user.types';
 import {
   ILoginActionPayload,
   IVerifyOtpPayload,
-} from '@stallionTypes/globalProvider.types';
-import { setApiKeyNative } from '@main/utils/StallionNaitveModule';
+} from '../../../types/globalProvider.types';
+import { setApiKeyNative } from '../../utils/StallionNaitveModule';
 
 const useUserActions = (
   dispatch: React.Dispatch<IUserAction>,

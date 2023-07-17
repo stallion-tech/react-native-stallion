@@ -5,7 +5,7 @@ import {
   BACK_BUTTON_TEXT,
   CLOSE_BUTTON_TEXT,
   HEADER_TITLE,
-} from '@main/constants/appConstants';
+} from '../../../constants/appConstants';
 
 import styles from './styles';
 

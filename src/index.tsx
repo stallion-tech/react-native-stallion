@@ -2,7 +2,7 @@ import {
   IStallionConfig,
   IUseStallionModal,
   IWithStallion,
-} from '@stallionTypes/utils.types';
+} from './types/utils.types';
 class Stallion {
   withStallion: IWithStallion;
   useStallionModal: () => IUseStallionModal;

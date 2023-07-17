@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import CardDescriptionContent from './CardDescriptionContent';
-import { parseDateTime } from '@main/utils/dateUtil';
+import { parseDateTime } from '../../../../utils/dateUtil';
 
-import { COLORS } from '@main/constants/colors';
+import { COLORS } from '../../../../constants/colors';
 import {
   BUCKET_CARD_TEXTS,
   NOT_APPLICABLE_TEXT,
   VERSION_PREFIX,
-} from '@main/constants/appConstants';
+} from '../../../../constants/appConstants';
 
 import styles from './styles';
 

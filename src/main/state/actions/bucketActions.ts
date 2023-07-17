@@ -2,7 +2,7 @@ import {
   BucketActionKind,
   IBucketAction,
   IBucketDataList,
-} from '@stallionTypes/bucket.types';
+} from '../../../types/bucket.types';
 
 export const setBucketLoading = (): IBucketAction => {
   return {

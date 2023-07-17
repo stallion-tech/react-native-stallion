@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 
-import { getStallionMeta } from '@main/utils/StallionNaitveModule';
+import { getStallionMeta } from '../../utils/StallionNaitveModule';
 import { setMeta } from '../actions/metaActions';
 
-import { IMetaAction } from '@stallionTypes/meta.types';
+import { IMetaAction } from '../../../types/meta.types';
 
 const useMetaActions = (dispatch: React.Dispatch<IMetaAction>) => {
   const refreshMeta = useCallback(() => {

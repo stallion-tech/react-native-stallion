@@ -2,11 +2,11 @@ import React from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
 
 import useListing from './hooks/useListing';
-import ErrorView from '@main/components/common/ErrorView';
+import ErrorView from '../../../components/common/ErrorView';
 
 import styles from './styles';
 import BucketCard from './components/BucketCard';
-import { CARD_TYPES } from '@main/constants/appConstants';
+import { CARD_TYPES } from '../../../constants/appConstants';
 import BundleCard from './components/BundleCard';
 
 const Listing: React.FC = () => {
@@ -36,7 +36,10 @@ const Listing: React.FC = () => {
             handlePress={() => setBucketSelection(listItem.id)}
           />
         ) : (
-          <BundleCard key={listItem.id} {...listItem} />
+          (listItem?.type === CARD_TYPES.BUNDLE && (
+            <BundleCard key={listItem.id} {...listItem} />
+          )) ||
+          null
         )
       )}
     </ScrollView>

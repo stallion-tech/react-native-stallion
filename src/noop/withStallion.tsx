@@ -1,6 +1,6 @@
 import React, { ComponentType } from 'react';
 
-import { IWithStallion } from '@stallionTypes/utils.types';
+import { IWithStallion } from '../types/utils.types';
 
 const withStallion: IWithStallion = <T,>(BaseComponent: ComponentType<T>) => {
   const StallionProvider: React.FC<T> = ({ children, ...props }) => {

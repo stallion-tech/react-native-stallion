@@ -8,10 +8,10 @@ import {
   DEFAULT_ERROR_PREFIX,
   KEYBOARD_AVOIDING_BEHAVIOUR,
   Login_TITLE,
-} from '@main/constants/appConstants';
+} from '../../../constants/appConstants';
 import useLoginFlow from './hooks/useLoginFlow';
 import styles from './styles';
-import Spinner from '@main/components/common/Spinner';
+import Spinner from '../../common/Spinner';
 
 const Login: React.FC = () => {
   const {

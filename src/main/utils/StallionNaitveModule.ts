@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 
-import { IStallionMeta } from '@stallionTypes/meta.types';
+import { IStallionMeta } from '../../types/meta.types';
 
 const LINKING_ERROR =
   `The package 'react-native-stallion' doesn't seem to be linked. Make sure: \n\n` +

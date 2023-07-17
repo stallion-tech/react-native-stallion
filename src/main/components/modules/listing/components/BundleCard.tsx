@@ -4,8 +4,8 @@ import { View } from 'react-native';
 import BundleCardInfoSection from './BundleCardInfoSection';
 
 import styles from './styles';
-import { GlobalContext } from '@main/state';
-import { CARD_TYPES } from '@main/constants/appConstants';
+import { GlobalContext } from '../../../../state';
+import { CARD_TYPES } from '../../../../constants/appConstants';
 
 export interface IBundleCard {
   type: CARD_TYPES.BUNDLE;

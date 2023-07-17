@@ -1,10 +1,10 @@
 import React, { memo, useContext, useMemo } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 
-import { GlobalContext } from '@main/state';
+import { GlobalContext } from '../../../../state';
 import BucketCardInfoSection from './BucketCardInfoSection';
 
-import { CARD_TYPES } from '@main/constants/appConstants';
+import { CARD_TYPES } from '../../../../constants/appConstants';
 import styles from './styles';
 
 export interface IBucketCard {

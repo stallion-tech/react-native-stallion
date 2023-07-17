@@ -2,7 +2,7 @@ import {
   IMetaAction,
   IStallionMeta,
   MetaActionKind,
-} from '@stallionTypes/meta.types';
+} from '../../../types/meta.types';
 
 export const setMeta = (newMeta: IStallionMeta): IMetaAction => {
   return {

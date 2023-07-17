@@ -1,4 +1,4 @@
-import { IUseStallionModal } from '@stallionTypes/utils.types';
+import { IUseStallionModal } from '../types/utils.types';
 import { useCallback } from 'react';
 
 const useStallionModal = (): IUseStallionModal => {

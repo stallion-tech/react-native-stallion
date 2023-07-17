@@ -2,7 +2,7 @@ import {
   IUserAction,
   IUserState,
   UserActionKind,
-} from '@stallionTypes/user.types';
+} from '../../../types/user.types';
 
 const userReducer = (state: IUserState, action: IUserAction): IUserState => {
   const { type } = action;

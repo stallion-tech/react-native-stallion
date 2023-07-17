@@ -11,10 +11,10 @@ import useMetaActions from './actionCreators/useMetaActions';
 import useBundleActions from './actionCreators/useBundleActions';
 import useUserActions from './actionCreators/useUserActions';
 
-import { EMPTY_STATE } from '@main/constants/appConstants';
-import { IStallionMeta } from '@stallionTypes/meta.types';
-import { IGlobalContext } from '@stallionTypes/globalProvider.types';
-import { IDownloadState } from '@stallionTypes/download.types';
+import { EMPTY_STATE } from '../constants/appConstants';
+import { IStallionMeta } from '../../types/meta.types';
+import { IGlobalContext } from '../../types/globalProvider.types';
+import { IDownloadState } from '../../types/download.types';
 import useDownloadActions from './actionCreators/useDownloadActions';
 
 export const GlobalContext = createContext({} as IGlobalContext);

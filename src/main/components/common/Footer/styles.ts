@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
-import { STD_MARGIN } from '@main/constants/appConstants';
-import { COLORS } from '@main/constants/colors';
+import { STD_MARGIN } from '../../../constants/appConstants';
+import { COLORS } from '../../../constants/colors';
 
 const styles = StyleSheet.create({
   shadowContainer: {

@@ -2,7 +2,7 @@ import {
   DownloadActionKind,
   IDownloadAction,
   IDownloadState,
-} from '@stallionTypes/download.types';
+} from '../../../types/download.types';
 
 const DEFAULT_DOWNLOAD_DATA = {
   currentProgress: 0,

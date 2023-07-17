@@ -2,7 +2,7 @@ import {
   BundleActionKind,
   IBundleAction,
   IBundleState,
-} from '@stallionTypes/bundle.types';
+} from '../../../types/bundle.types';
 
 const bundleReducer = (
   state: IBundleState,

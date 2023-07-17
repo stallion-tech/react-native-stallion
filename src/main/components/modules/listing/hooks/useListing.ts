@@ -4,8 +4,8 @@ import {
   CARD_TYPES,
   IS_ANDROID,
   VERSION_PREFIX,
-} from '@main/constants/appConstants';
-import { GlobalContext } from '@main/state';
+} from '../../../../constants/appConstants';
+import { GlobalContext } from '../../../../state';
 import { IBucketCard } from '../components/BucketCard';
 import { IBundleCard } from '../components/BundleCard';
 

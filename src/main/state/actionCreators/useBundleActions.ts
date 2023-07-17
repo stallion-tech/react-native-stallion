@@ -1,20 +1,20 @@
 import React, { useCallback } from 'react';
 
-import { API_BASE_URL, API_PATHS } from '@main/constants/apiConstants';
-import { apiAuthMiddleware, getApiHeaders } from '@main/utils/apiUtils';
-import SharedDataManager from '@main/utils/SharedDataManager';
+import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
+import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
+import SharedDataManager from '../../utils/SharedDataManager';
 
 import {
   DEFAULT_ERROR_MESSAGE,
   EMPTY_ERROR_MESSAGE_BUNDLE,
   IS_ANDROID,
-} from '@main/constants/appConstants';
-import { extractError } from '@main/utils/errorUtil';
+} from '../../constants/appConstants';
+import { extractError } from '../../utils/errorUtil';
 import {
   IBundleAction,
   IBundleDataList,
   IBundleState,
-} from '@stallionTypes/bundle.types';
+} from '../../../types/bundle.types';
 import {
   setBundleData,
   setBundleError,

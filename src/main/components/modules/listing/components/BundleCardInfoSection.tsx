@@ -1,10 +1,10 @@
 import React, { useCallback, useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import { GlobalContext } from '@main/state';
+import { GlobalContext } from '../../../../state';
 
 import CardDescriptionContent from './CardDescriptionContent';
-import { parseDateTime } from '@main/utils/dateUtil';
+import { parseDateTime } from '../../../../utils/dateUtil';
 
 import {
   BUCKET_CARD_TEXTS,
@@ -15,8 +15,8 @@ import {
   DOWNLOAD_BUTTON_TEXT,
   NO_RELEASE_NOTE_TEXT,
   SWITCH_STATE_KEYS,
-} from '@main/constants/appConstants';
-import { COLORS } from '@main/constants/colors';
+} from '../../../../constants/appConstants';
+import { COLORS } from '../../../../constants/colors';
 
 import styles from './styles';
 

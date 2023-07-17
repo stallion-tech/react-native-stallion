@@ -1,7 +1,7 @@
 import { useContext, useCallback } from 'react';
 
-import { GlobalContext } from '@main/state';
-import { IUseStallionModal } from '@stallionTypes/utils.types';
+import { GlobalContext } from '../../main/state';
+import { IUseStallionModal } from '../../types/utils.types';
 
 const useStallionModal = (): IUseStallionModal => {
   const {

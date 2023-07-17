@@ -7,13 +7,13 @@ import {
   TextInputChangeEventData,
 } from 'react-native';
 
-import ButtonFullWidth from '@main/components/common/ButtonFullWidth';
+import ButtonFullWidth from '../../../../components/common/ButtonFullWidth';
 import {
   OTP_BACK_BUTTON_TEXT,
   OTP_INPUT_KEY,
   OTP_LENGTH,
   SUBMIT_BUTTON_TEXT,
-} from '@main/constants/appConstants';
+} from '../../../../constants/appConstants';
 
 import styles from './styles';
 

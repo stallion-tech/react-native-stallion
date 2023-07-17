@@ -15,9 +15,6 @@ module.exports = {
           '.ios.tsx',
         ],
         alias: {
-          '@main': './src/main',
-          '@noop': './src/noop',
-          '@stallionTypes': './src/types',
           'react-native-stallion': './src/index',
         },
       },

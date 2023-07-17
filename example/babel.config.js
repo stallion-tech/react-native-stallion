@@ -6,9 +6,6 @@ module.exports = {
       {
         extensions: ['.tsx', '.ts', '.js', '.json'],
         alias: {
-          '@main': '../src/main',
-          '@noop': '../src/noop',
-          '@stallionTypes': '../src/types',
           'react-native-stallion': '../src/index',
         },
       },
