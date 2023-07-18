@@ -23,15 +23,6 @@
       android:padding="10dp"
       android:text="Stallion Error Boundary"/>
 
-    <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="119dp"
-      android:adjustViewBounds="true"
-      android:maxWidth="50dp"
-      android:maxHeight="50dp"
-      android:scaleType="fitCenter"
-      android:src="@android:drawable/ic_dialog_info" />
-
     <TextView
       android:id="@+id/textView"
       android:layout_width="match_parent"
@@ -66,6 +57,4 @@
       />
 
   </LinearLayout>
-
-
 </ScrollView>

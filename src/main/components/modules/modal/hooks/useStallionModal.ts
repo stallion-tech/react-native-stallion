@@ -12,6 +12,7 @@ const useStallionModal = () => {
     isModalVisible,
     userState,
     metaState,
+    bucketState,
     bundleState,
     downloadState,
     actions: {
@@ -45,13 +46,16 @@ const useStallionModal = () => {
     [bundleState.selectedBucketId]
   );
 
-  const activeBucketMeta = useMemo(
-    () => ({
-      bucketName: metaState.activeBucket || '',
+  const activeBucketMeta = useMemo(() => {
+    const bucketName =
+      bucketState.data?.filter(
+        (bucketData) => bucketData.id === metaState.activeBucket
+      )?.[0]?.name || '';
+    return {
+      bucketName,
       version: metaState.activeVersion || '',
-    }),
-    [metaState.activeBucket, metaState.activeVersion]
-  );
+    };
+  }, [metaState.activeBucket, metaState.activeVersion, bucketState.data]);
 
   const toggleStallionSwitch = useCallback(() => {
     toggleStallionSwitchNative(!metaState.switchState);

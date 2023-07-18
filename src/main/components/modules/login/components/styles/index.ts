@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     height: HEADER_SLAB_HEIGHT,
     borderWidth: 1,
     borderColor: COLORS.black2,
-    borderRadius: HEADER_SLAB_HEIGHT / 2,
+    borderRadius: STD_MARGIN,
     margin: STD_MARGIN,
     paddingHorizontal: STD_MARGIN * 2,
   },

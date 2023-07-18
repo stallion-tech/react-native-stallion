@@ -7,9 +7,9 @@ const styles = StyleSheet.create({
   shadowContainer: {
     elevation: 5,
     zIndex: 5,
-    shadowOpacity: 0.3,
-    shadowOffset: { height: -10, width: 0 },
-    shadowRadius: 5,
+    shadowOpacity: 0.1,
+    shadowOffset: { height: -20, width: 0 },
+    shadowRadius: 10,
   },
   noDownloadContainer: {
     justifyContent: 'center',
@@ -42,15 +42,18 @@ const styles = StyleSheet.create({
   },
   infoSubTitle: {
     fontSize: STD_MARGIN * 1.2,
+    marginTop: STD_MARGIN / 2,
   },
   alignCenter: {
     alignItems: 'center',
   },
   dividerSection: {
     flex: 1,
+    justifyContent: 'flex-start',
   },
   dividerSection2: {
     flex: 0.7,
+    justifyContent: 'flex-start',
   },
   bold: {
     fontWeight: 'bold',

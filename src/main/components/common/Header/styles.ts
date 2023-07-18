@@ -13,9 +13,9 @@ const styles = StyleSheet.create({
     zIndex: 5,
     elevation: 5,
     shadowColor: COLORS.black,
-    shadowOpacity: 0.2,
-    shadowOffset: { height: 10, width: 0 },
-    shadowRadius: 5,
+    shadowOpacity: 0.05,
+    shadowOffset: { height: 20, width: 0 },
+    shadowRadius: 10,
     backgroundColor: COLORS.white,
   },
   headerSideSection: {

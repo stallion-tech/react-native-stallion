@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
-export const Login_TITLE = 'Login';
+export const Login_TITLE = 'Stallion';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
 

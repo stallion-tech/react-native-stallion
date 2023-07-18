@@ -4,6 +4,7 @@ import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 import Login from '../login';
 import Header from '../../../components/common/Header';
 import Footer from '../../../components/common/Footer';
+import { HEADER_TITLE } from '../../../constants/appConstants';
 
 import { COLORS } from '../../../constants/colors';
 import Listing from '../listing';
@@ -34,6 +35,7 @@ const StallionModal: React.FC = () => {
       {isModalVisible ? (
         <SafeAreaView style={styles.container}>
           <Header
+            title={loginRequired ? null : HEADER_TITLE}
             onClosePress={onClosePress}
             onBackPress={isBackEnabled ? onBackPress : null}
           />
