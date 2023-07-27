@@ -54,12 +54,16 @@ public class StallionModule extends ReactContextBaseJavaModule {
         _exceptionThread = thread;
         _exceptionThrowable = throwable;
         String stackTraceString = Log.getStackTraceString(throwable);
-        toggleStallionSwitch(false);
-        Activity currentActivity = getCurrentActivity();
-        Intent myIntent = new Intent(currentActivity, StallionDefaultErrorActivity.class);
-        myIntent.putExtra("stack_trace_string", stackTraceString);
-        currentActivity.startActivity(myIntent);
-        currentActivity.finish();
+        if(stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER) == StallionConstants.STALLION_SWITCH_ON) {
+          toggleStallionSwitch(false);
+          Activity currentActivity = getCurrentActivity();
+          Intent myIntent = new Intent(currentActivity, StallionDefaultErrorActivity.class);
+          myIntent.putExtra("stack_trace_string", stackTraceString);
+          currentActivity.startActivity(myIntent);
+          currentActivity.finish();
+        } else {
+          continueExcetionFlow();
+        }
       }
     });
   }
