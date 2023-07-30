@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 
-import { getStallionMeta } from '../../utils/StallionNaitveModule';
+import { getStallionMeta } from '../../utils/StallionNaitveUtils';
 import { setMeta } from '../actions/metaActions';
 
 import { IMetaAction } from '../../../types/meta.types';

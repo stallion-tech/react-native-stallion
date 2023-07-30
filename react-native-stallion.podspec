@@ -14,10 +14,24 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "12.0" }
   s.source       = { :git => "https://github.com/redhorse-tech/react-native-stallion.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/main/**/*.{h,m,mm,swift}"
+isStallionEnabled = false
+begin
+  isStallionEnabled = JSON.parse(`node ./src/nativeScripts/getStallionEnabled.js`)
+rescue
+    throw "Error evaluating stallion enabled script. Make sure node is installed on your system"
+end
+
+  if isStallionEnabled then
+    s.source_files = "ios/main/**/*.{h,m,mm,swift}"
+  else
+    s.source_files = "ios/noop/**/*.{h,m,mm,swift}"
+    puts "Stallion is disabled, falling back to noop version. Check your stallion.config.js file"
+  end
 
   s.dependency "React-Core"
-  s.dependency 'ZIPFoundation'
+  if isStallionEnabled then 
+    s.dependency "ZIPFoundation"
+  end
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then

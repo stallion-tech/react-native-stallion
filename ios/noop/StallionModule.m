@@ -5,12 +5,16 @@
 //  Created by Thor963 on 17/05/23.
 //
 
-#import "Stallion.h"
+#import "StallionModule.h"
 
-@implementation Stallion
+@implementation StallionModule
 + (NSURL *)bundleURL
 {
-    NSURL *defaultBundle = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-    return defaultBundle;
+    return [self getBundleURL:nil];
+}
++ (NSURL *)getBundleURL:(NSURL *)defaultBundleURL {
+    if(defaultBundleURL != nil) return defaultBundleURL;
+    NSURL *defaultRNBundlePath = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    return defaultRNBundlePath;
 }
 @end
