@@ -122,4 +122,3 @@ extension StallionDownloader: URLSessionDownloadDelegate {
         }
     }
 }
-

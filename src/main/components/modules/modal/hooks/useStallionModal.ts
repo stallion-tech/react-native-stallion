@@ -4,7 +4,7 @@ import { GlobalContext } from '../../../../state';
 import {
   getApiKeyNative,
   toggleStallionSwitchNative,
-} from '../../../../utils/StallionNaitveModule';
+} from '../../../../utils/StallionNaitveUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
 
 const useStallionModal = () => {

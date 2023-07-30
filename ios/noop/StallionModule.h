@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Stallion : NSObject
+@interface StallionModule : NSObject
 + (NSURL *)bundleURL;
++ (NSURL *)getBundleURL:(NSURL *)defaultBundleURL;
 @end

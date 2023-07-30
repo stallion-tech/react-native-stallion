@@ -2,9 +2,8 @@ import React, { useEffect, useCallback } from 'react';
 import { NativeEventEmitter } from 'react-native';
 
 import SharedDataManager from '../../utils/SharedDataManager';
-import StallionNativeModule, {
-  downloadBundleNative,
-} from '../../utils/StallionNaitveModule';
+import StallionNativeModule from '../../../StallionNativeModule';
+import { downloadBundleNative } from '../../utils/StallionNaitveUtils';
 import {
   setDownloadData,
   setDownloadError,

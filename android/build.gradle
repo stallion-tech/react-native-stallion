@@ -30,14 +30,27 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["Stallion_" + name]).toInteger()
 }
 
-def stallionEnabled = true
+def enabledOutput = new ByteArrayOutputStream()
+try {
+  exec {
+    commandLine "node", "../src/nativeScripts/getStallionEnabled.js"
+    standardOutput = enabledOutput;
+  }
+  enabledOutput = enabledOutput.toString().trim()
+} catch(Exception e) {
+  this.logger.error("Error evaluating stallion enabled script. Make sure node is installed on your system")
+  throw e;
+}
+
+def stallionEnabled = enabledOutput == "true"
 
 android {
   sourceSets {
      if(stallionEnabled) {
-       main.java.srcDirs = ['src/main/java']
+       main.java.srcDirs = ["src/main/java"]
      } else {
-       main.java.srcDirs = ['src/noop/java']
+       main.java.srcDirs = ["src/noop/java"]
+       this.logger.warn("Stallion is disabled, falling back to noop version. Check your stallion.config.js file")
      }
    }
 
