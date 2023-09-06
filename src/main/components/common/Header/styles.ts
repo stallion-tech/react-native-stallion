@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
 import { COLORS } from '../../../constants/colors';
 
+const PROFILE_BUTTON_EDGE = HEADER_SLAB_HEIGHT / 2;
+
 const styles = StyleSheet.create({
   headerContainer: {
     height: HEADER_SLAB_HEIGHT,
@@ -24,6 +26,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: HEADER_SLAB_HEIGHT / 5,
   },
+  headerProfileButton: {
+    height: PROFILE_BUTTON_EDGE,
+    width: PROFILE_BUTTON_EDGE,
+    borderRadius: PROFILE_BUTTON_EDGE / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.indigo,
+  },
   headerCenterSection: {
     flex: 2,
     justifyContent: 'center',
@@ -39,6 +49,14 @@ const styles = StyleSheet.create({
   },
   alignStart: {
     alignItems: 'flex-start',
+  },
+  headerLogo: {
+    width: HEADER_SLAB_HEIGHT * 2,
+    flex: 1,
+  },
+  profileInitial: {
+    fontSize: HEADER_SLAB_HEIGHT / 3,
+    color: COLORS.white,
   },
 });
 

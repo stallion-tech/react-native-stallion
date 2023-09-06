@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
 export const Login_TITLE = 'Stallion';
+export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
 
@@ -9,6 +10,7 @@ export const CLOSE_BUTTON_TEXT = 'close';
 export const BACK_BUTTON_TEXT = 'back';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
+export const LOGOUT_BUTTON_TEXT = 'Logout';
 
 export const FOOTER_INFO_TITLE = 'Active Bucket: ';
 export const FOOTER_INFO_SUBTITLE = 'Version: ';
@@ -80,3 +82,6 @@ export enum SWITCH_STATE_KEYS {
 }
 
 export const NO_RELEASE_NOTE_TEXT = 'No release note provided';
+
+export const STALLION_LOGO_URL =
+  'https://d2shjbuzwp1rpv.cloudfront.net/stallion_logo.png';
