@@ -34,8 +34,13 @@ const GlobalProvider: React.FC = ({ children }) => {
   );
 
   const { refreshMeta } = useMetaActions(metaDispatch);
-  const { loginUser, verifyOtp, retryLogin, setUserRequiresLogin } =
-    useUserActions(userDispatch, userState);
+  const {
+    loginUser,
+    verifyOtp,
+    retryLogin,
+    setUserRequiresLogin,
+    getUserProfile,
+  } = useUserActions(userDispatch, userState);
   const { fetchBuckets } = useBucketActions(
     bucketDispatch,
     setUserRequiresLogin
@@ -65,6 +70,7 @@ const GlobalProvider: React.FC = ({ children }) => {
       fetchBundles,
       selectBucket,
       downloadBundle,
+      getUserProfile,
     },
   };
 

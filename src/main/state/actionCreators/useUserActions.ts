@@ -10,7 +10,7 @@ import {
   setUserData,
   setUserError,
 } from '../../state/actions/userActions';
-import { getApiHeaders } from '../../utils/apiUtils';
+import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
 import { setUserLoading } from '../../state/actions/userActions';
 
 import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
@@ -26,6 +26,15 @@ const useUserActions = (
   userState: IUserState
 ) => {
   const dataManager = SharedDataManager.getInstance();
+
+  const setUserRequiresLogin = useCallback(
+    (requiresLogin: boolean) => {
+      dispatch(setUserData({} as IUserData));
+      dispatch(setRequiresLogin(requiresLogin));
+    },
+    [dispatch]
+  );
+
   const loginUser = useCallback(
     (loginPayload: ILoginActionPayload) => {
       dispatch(setUserLoading());
@@ -64,7 +73,7 @@ const useUserActions = (
         }),
         headers: getApiHeaders(),
       })
-        .then((res) => res.json())
+        .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
         .then((otpResponse) => {
           const accessToken: string = otpResponse?.data?.accessToken;
           if (accessToken) {
@@ -85,26 +94,43 @@ const useUserActions = (
           dispatch(setUserError(DEFAULT_ERROR_MESSAGE));
         });
     },
-    [dispatch, userState.tempOtpToken, dataManager]
+    [dispatch, userState.tempOtpToken, dataManager, setUserRequiresLogin]
   );
 
   const retryLogin = useCallback(() => {
     dispatch(setTempOtp(null));
   }, [dispatch]);
 
-  const setUserRequiresLogin = useCallback(
-    (requiresLogin: boolean) => {
-      dispatch(setUserData({} as IUserData));
-      dispatch(setRequiresLogin(requiresLogin));
-    },
-    [dispatch]
-  );
+  const getUserProfile = useCallback(() => {
+    dispatch(setUserLoading());
+    fetch(API_BASE_URL + API_PATHS.USER_PROFILE, {
+      method: 'GET',
+      headers: getApiHeaders(),
+    })
+      .then((res) => res.json())
+      .then((userProfileResponse) => {
+        if (userProfileResponse?.data?.email) {
+          dispatch(
+            setUserData({
+              fullName: userProfileResponse?.data?.fullName,
+              email: userProfileResponse?.data?.email,
+            })
+          );
+        } else {
+          dispatch(setUserError(extractError(userProfileResponse)));
+        }
+      })
+      .catch((_) => {
+        dispatch(setUserError(DEFAULT_ERROR_MESSAGE));
+      });
+  }, [dispatch]);
 
   return {
     loginUser,
     verifyOtp,
     retryLogin,
     setUserRequiresLogin,
+    getUserProfile,
   };
 };
 

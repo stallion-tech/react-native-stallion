@@ -1,8 +1,9 @@
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GlobalContext } from '../../../../state';
 import {
   getApiKeyNative,
+  setApiKeyNative,
   toggleStallionSwitchNative,
 } from '../../../../utils/StallionNaitveUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
@@ -75,12 +76,27 @@ const useStallionModal = () => {
     [downloadState.error]
   );
 
+  const [showProfileSection, setShowProfileSection] = useState(false);
+  const closeProfileSection = useCallback(() => {
+    setShowProfileSection(false);
+  }, []);
+
+  const presentProfileSection = useCallback(() => {
+    setShowProfileSection(true);
+  }, []);
+
+  const performLogout = useCallback(() => {
+    closeProfileSection();
+    setApiKeyNative('');
+    SharedDataManager.getInstance()?.setAccessToken('');
+    setUserRequiresLogin(true);
+  }, [setUserRequiresLogin, closeProfileSection]);
+
   return {
     isModalVisible,
     onBackPress,
     onClosePress,
     loginRequired,
-    setUserRequiresLogin,
     metaState,
     isBackEnabled,
     activeBucketMeta,
@@ -88,6 +104,11 @@ const useStallionModal = () => {
     isDownloading,
     downloadProgress,
     downloadError,
+    userState,
+    showProfileSection,
+    closeProfileSection,
+    presentProfileSection,
+    performLogout,
   };
 };
 

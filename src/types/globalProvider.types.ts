@@ -24,6 +24,7 @@ interface IGlobalContextActions {
   refreshMeta: () => void;
   selectBucket: (bucketId?: string | null) => void;
   downloadBundle: (version: number, bucketId: string) => void;
+  getUserProfile: () => void;
 }
 
 export interface IGlobalContext {
