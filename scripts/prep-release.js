@@ -4,7 +4,7 @@ const rimraf = require('rimraf');
 const prettier = require('prettier');
 
 const rootPath = path.resolve(__dirname, '../', 'sdk-package');
-const commonJsModulePath = path.resolve(__dirname, '../', 'lib/commonjs');
+const commonJsModulePath = path.resolve(__dirname, '../', 'lib/module');
 const androidModulePath = path.resolve(__dirname, '../', 'android');
 const iosModulePath = path.resolve(__dirname, '../', 'ios');
 const typesPath = path.resolve(__dirname, '../', 'lib/typescript');
