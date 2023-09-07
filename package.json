@@ -129,13 +129,6 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      [
-        "commonjs",
-        {
-          "sourceMaps": false,
-          "configFile": true
-        }
-      ],
       "module",
       [
         "typescript",
