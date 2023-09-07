@@ -1,6 +1,6 @@
 {
   "name": "@redhorse-tech/react-native-stallion",
-  "version": "1.0.0-alpha.15",
+  "version": "1.0.0-alpha.16",
   "description": "React native stallion official repository",
   "main": "index",
   "types": "types/index.d.ts",
