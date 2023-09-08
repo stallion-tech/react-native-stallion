@@ -9,11 +9,13 @@ const androidModulePath = path.resolve(__dirname, '../', 'android');
 const iosModulePath = path.resolve(__dirname, '../', 'ios');
 const typesPath = path.resolve(__dirname, '../', 'lib/typescript');
 const pkgJsonPath = path.resolve(__dirname, '../', 'package.json');
+const readmePath = path.resolve(__dirname, '../', 'README.md');
 const podspecPath = path.resolve(
   __dirname,
   '../',
   'react-native-stallion.podspec'
 );
+
 async function prepRelease() {
   try {
     //create package dir
@@ -36,6 +38,9 @@ async function prepRelease() {
 
     // copy package.json to package root
     await fs.copyFile(pkgJsonPath, `${rootPath}/package.json`);
+
+    // copy readme file
+    await fs.copyFile(readmePath, `${rootPath}/README.md`);
 
     const file = require(`${rootPath}/package.json`);
     delete file.devDependencies;
