@@ -8,9 +8,6 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: "16.x"
-        registry-url: "https://npm.pkg.github.com"
-        scope: "@redhorse-tech"
-
     - name: Cache dependencies
       id: yarn-cache
       uses: actions/cache@v3

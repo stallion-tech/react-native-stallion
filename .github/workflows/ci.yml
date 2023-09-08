@@ -35,16 +35,18 @@ jobs:
 
       - name: Setup git user
         run: |
-          git config --global user.name super-admin
-          git config --global user.email admin@redhorse.tech
+          git config --global user.name ${{ secrets.GH_DEPLOY_NAME }}
+          git config --global user.email ${{ secrets.GH_DEPLOY_EMAIL }}
 
       - name: Prep release
-        run: npm run pre-release-patch && npm run prep-release
+        run: yarn prepare-release
 
       - name: Release package
-        run: cd sdk-package && npm publish
+        run: yarn semantic-release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push changes
-        run: git push
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
+          GIT_AUTHOR_NAME : ${{ secrets.GH_DEPLOY_NAME }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
+          GIT_COMMITTER_NAME: ${{ secrets.GH_DEPLOY_NAME }}
