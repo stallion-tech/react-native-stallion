@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "12.0" }
-  s.source       = { :git => "https://github.com/redhorse-tech/react-native-stallion.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/stallion-tech/react-native-stallion.git", :tag => "#{s.version}" }
 
 isStallionEnabled = false
 begin
