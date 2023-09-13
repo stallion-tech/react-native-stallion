@@ -8,7 +8,7 @@
 #import "StallionModule.h"
 
 @implementation StallionModule
-+ (NSURL *)bundleURL
++ (NSURL *)getBundleURL
 {
     return [self getBundleURL:nil];
 }
