@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.0...v1.0.1) (2023-09-13)
+
+
+### Bug Fixes
+
+* added fix for error boundary, corrected repo and homepage url, corrected docs url ([77f4f4b](https://github.com/stallion-tech/react-native-stallion/commit/77f4f4b5934a63b77988e306a565217bb54dbba3))
+
 # 1.0.0 (2023-09-08)
 
 
