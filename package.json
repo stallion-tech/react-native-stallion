@@ -42,11 +42,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/redhorse-tech/react-native-stallion.git"
+    "url": "https://github.com/stallion-tech/react-native-stallion.git"
   },
   "author": "Sherlock <sherlock@redhorse.tech> (https://github.com/sherlock-redhorse)",
   "license": "MIT",
-  "homepage": "https://github.com/redhorse-tech/react-native-stallion",
+  "homepage": "https://stalliontech.io/",
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",

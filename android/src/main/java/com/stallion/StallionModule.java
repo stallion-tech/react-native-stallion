@@ -54,7 +54,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
         _exceptionThread = thread;
         _exceptionThrowable = throwable;
         String stackTraceString = Log.getStackTraceString(throwable);
-        if(stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER) == StallionConstants.STALLION_SWITCH_ON) {
+        if(stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER).equals(StallionConstants.STALLION_SWITCH_ON)) {
           toggleStallionSwitch(false);
           Activity currentActivity = getCurrentActivity();
           Intent myIntent = new Intent(currentActivity, StallionDefaultErrorActivity.class);
