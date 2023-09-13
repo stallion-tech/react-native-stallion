@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.1...v1.0.2) (2023-09-13)
+
+
+### Bug Fixes
+
+* corrected ios noop version getBundleUrl function name ([9f862e7](https://github.com/stallion-tech/react-native-stallion/commit/9f862e7b8627d407a4f205051b2696c450727e95))
+
 ## [1.0.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.0...v1.0.1) (2023-09-13)
 
 
