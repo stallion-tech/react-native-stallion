@@ -189,12 +189,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
             double currentDownloadFraction = (double) receivedBytes / (double) totalBytes;
             if(currentDownloadFraction - prevDownloadFraction > progressEventThrehold) {
               prevDownloadFraction = currentDownloadFraction;
-              getReactApplicationContext().runOnUiQueueThread(new Runnable() {
-                @Override
-                public void run() {
-                  getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, currentDownloadFraction);
-                }
-              });
+              getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, currentDownloadFraction));
             }
           }
 
@@ -237,6 +232,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
           if (receivedVersion != null) {
             stallionStorage.setInt(StallionConstants.ACTIVE_VERSION_IDENTIFIER, receivedVersion);
           }
+          getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, 1));
           promise.resolve("Success");
         } catch (Exception e) {
           promise.reject(e.toString());
