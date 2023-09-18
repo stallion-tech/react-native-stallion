@@ -1,10 +1,13 @@
-import React, { Component, ErrorInfo } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
 
 import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
-import { toggleStallionSwitchNative } from './StallionNaitveUtils';
+import {
+  getStallionMeta,
+  toggleStallionSwitchNative,
+} from './StallionNaitveUtils';
 import {
   STALLION_EB_BTN_TXT,
   STALLION_EB_INFO,
@@ -28,15 +31,27 @@ class ErrorBoundary extends Component<
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
-  componentDidCatch(_: Error, errorInfo: ErrorInfo): void {
-    toggleStallionSwitchNative(false);
-    console.error(
-      'Exception occured in js layer:',
-      errorInfo,
-      ', turning off the stallion switch'
-    );
-    this.setState({
-      errorText: errorInfo.toString(),
+  componentDidCatch(error: Error): void {
+    const errorString: string = [
+      error.name,
+      error.message,
+      error.cause?.toString(),
+      error.stack,
+    ].join(' ');
+    getStallionMeta((stallionMeta) => {
+      if (stallionMeta?.switchState) {
+        toggleStallionSwitchNative(false);
+        console.error(
+          'Exception occured in js layer:',
+          error,
+          ', turning off the stallion switch'
+        );
+        this.setState({
+          errorText: errorString,
+        });
+      } else {
+        throw new Error(errorString);
+      }
     });
   }
   continueCrash() {
@@ -45,7 +60,7 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.errorText) {
       return (
-        <View style={styles.ebContainer}>
+        <SafeAreaView style={styles.ebContainer}>
           <Header />
           <View style={styles.ebContentContainer}>
             <View style={styles.ebInfoTextContainer}>
@@ -62,7 +77,7 @@ class ErrorBoundary extends Component<
               <Text style={styles.ebErrorText}>{this.state.errorText}</Text>
             </ScrollView>
           </View>
-        </View>
+        </SafeAreaView>
       );
     }
     return this.props.children;
