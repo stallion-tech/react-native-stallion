@@ -13,8 +13,8 @@ interface IHeader {
   userName?: string | null;
   title?: string | null;
   onBackPress?: (() => void) | null;
-  onClosePress: () => void;
-  onProfilePress: () => void;
+  onClosePress?: () => void;
+  onProfilePress?: () => void;
 }
 
 const Header: React.FC<IHeader> = ({
@@ -39,7 +39,7 @@ const Header: React.FC<IHeader> = ({
         </TouchableOpacity>
       ) : (
         <View style={[styles.headerSideSection, styles.alignStart]}>
-          {userName ? (
+          {userName && onProfilePress ? (
             <TouchableOpacity
               style={styles.headerProfileButton}
               onPress={onProfilePress}
@@ -63,9 +63,16 @@ const Header: React.FC<IHeader> = ({
           />
         )}
       </View>
-      <TouchableOpacity style={styles.headerSideSection} onPress={onClosePress}>
-        <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
-      </TouchableOpacity>
+      {onClosePress ? (
+        <TouchableOpacity
+          style={styles.headerSideSection}
+          onPress={onClosePress}
+        >
+          <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.headerSideSection} />
+      )}
     </View>
   );
 };
