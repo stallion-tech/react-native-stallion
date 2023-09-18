@@ -172,7 +172,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
           long receivedBytes = 0;
           int numBytesRead;
           double prevDownloadFraction = 0;
-          double progressEventThrehold = 0.02;
+          double progressEventThreshold = 0.1;
           while ((numBytesRead = inputStream.read(data, 0, DOWNLOAD_BUFFER_SIZE)) >= 0) {
             if (receivedBytes < 4) {
               for (int i = 0; i < numBytesRead; i++) {
@@ -187,14 +187,9 @@ public class StallionModule extends ReactContextBaseJavaModule {
             receivedBytes += numBytesRead;
             bout.write(data, 0, numBytesRead);
             double currentDownloadFraction = (double) receivedBytes / (double) totalBytes;
-            if(currentDownloadFraction - prevDownloadFraction > progressEventThrehold) {
+            if(currentDownloadFraction - prevDownloadFraction > progressEventThreshold) {
               prevDownloadFraction = currentDownloadFraction;
-              getReactApplicationContext().runOnUiQueueThread(new Runnable() {
-                @Override
-                public void run() {
-                  getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, currentDownloadFraction);
-                }
-              });
+              getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, currentDownloadFraction));
             }
           }
 
@@ -238,6 +233,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
             stallionStorage.setInt(StallionConstants.ACTIVE_VERSION_IDENTIFIER, receivedVersion);
           }
           promise.resolve("Success");
+          getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, 1));
         } catch (Exception e) {
           promise.reject(e.toString());
         } finally {

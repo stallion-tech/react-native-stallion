@@ -85,3 +85,7 @@ export const NO_RELEASE_NOTE_TEXT = 'No release note provided';
 
 export const STALLION_LOGO_URL =
   'https://d2shjbuzwp1rpv.cloudfront.net/stallion_logo.png';
+
+export const STALLION_EB_INFO =
+  'A crash occurred in the app. We have switched Stallion off. Check crash report below. Continue crash to invoke other exception handlers.';
+export const STALLION_EB_BTN_TXT = 'Continue Crash';
