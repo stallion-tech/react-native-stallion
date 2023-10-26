@@ -22,6 +22,7 @@ class StallionDownloader: NSObject {
     
     var _resolve: RCTPromiseResolveBlock?;
     var _reject: RCTPromiseRejectBlock?;
+    var lastSentProgress: Float = 0;
     
     override init() {
         super.init()
@@ -29,16 +30,13 @@ class StallionDownloader: NSObject {
 
     func load(url: URL, reqBody: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) throws {
             self.reqJson = reqBody
-            let reqBody = try? JSONSerialization.data(withJSONObject: reqBody)
             self._resolve = resolve
             self._reject = reject
             
             var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.httpBody = reqBody
-    
-            request.setValue("application/json", forHTTPHeaderField: StallionConstants.HeaderKeys.ContentType)
-        request.setValue(StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey) ?? "", forHTTPHeaderField: StallionConstants.HeaderKeys.AccessKey)
+            request.httpMethod = "GET"
+
+            request.setValue(StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey) ?? "", forHTTPHeaderField: StallionConstants.HeaderKeys.AccessKey)
             let task = urlSession.downloadTask(with: request)
             task.resume()
             self.downloadTask = task
@@ -54,9 +52,12 @@ extension StallionDownloader: URLSessionDownloadDelegate {
                     totalBytesExpectedToWrite: Int64) {
         if downloadTask == self.downloadTask {
             let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            DispatchQueue.main.async {
-                print("progress: \(calculatedProgress)))")
-                Stallion.shared?.sendEvent(withName: StallionConstants.DOWNLOAD_PROGRESS_EVENT, body: calculatedProgress)
+            if((calculatedProgress - self.lastSentProgress) > StallionConstants.PROGRESS_EVENT_THRESHOLD) {
+                self.lastSentProgress = calculatedProgress
+                DispatchQueue.main.async {
+                    print("progress: \(calculatedProgress)))")
+                    Stallion.shared?.sendEvent(withName: StallionConstants.DOWNLOAD_PROGRESS_EVENT, body: calculatedProgress)
+                }
             }
         }
     }

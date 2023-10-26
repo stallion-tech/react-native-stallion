@@ -33,6 +33,8 @@ const bundleReducer = (
         data: null,
         isLoading: false,
         error: bundleError,
+        pageOffset: null,
+        isNextPageLoading: false,
       };
 
     case BundleActionKind.SET_SELECTED_BUCKET:
@@ -41,6 +43,31 @@ const bundleReducer = (
         ...state,
         selectedBucketId: selectedBucketId,
         data: null,
+        pageOffset: null,
+      };
+
+    case BundleActionKind.SET_PAGINATION_OFFSET:
+      const { payload: paginationOffset } = action;
+      return {
+        ...state,
+        isNextPageLoading: false,
+        pageOffset: paginationOffset,
+      };
+
+    case BundleActionKind.SET_PAGINATED_BUNDLE_DATA:
+      const { payload: paginatedBundleData } = action;
+      return {
+        ...state,
+        data: state.data?.slice()?.concat(paginatedBundleData),
+        isNextPageLoading: false,
+        error: null,
+      };
+
+    case BundleActionKind.SET_NEXT_PAGE_LOADING:
+      return {
+        ...state,
+        isNextPageLoading: true,
+        error: null,
       };
     default:
       return state;

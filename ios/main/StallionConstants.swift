@@ -19,6 +19,7 @@ class StallionConstants {
         static let ContentType = "Content-Type"
     }
     public struct DownloadReqBodyKeys {
+        static let DownloadUrl = "url"
         static let BucketId = "bucketId"
         static let Version = "version"
         static let Platform = "platform"
@@ -39,4 +40,5 @@ class StallionConstants {
         static let SecretKey = "secretKey"
     }
     static let DOWNLOAD_PROGRESS_EVENT = "StallionDownloadProgress";
+    static let PROGRESS_EVENT_THRESHOLD: Float = 0.05;
 }

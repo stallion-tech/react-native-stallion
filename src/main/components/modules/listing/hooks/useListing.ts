@@ -24,6 +24,11 @@ const useListing = () => {
     return bucketState.isLoading;
   }, [bucketState.isLoading, bundleState.isLoading, bundlesListingEnabled]);
 
+  const nextPageLoading = useMemo(() => {
+    if (bundlesListingEnabled) return bundleState.isNextPageLoading;
+    return false;
+  }, [bundleState.isNextPageLoading, bundlesListingEnabled]);
+
   const listingData = useMemo<(IBucketCard | IBundleCard)[]>(() => {
     if (bundlesListingEnabled) {
       return (
@@ -35,6 +40,7 @@ const useListing = () => {
           description: bundleData.releaseNote,
           updatedAt: bundleData.updatedAt,
           author: bundleData.author.fullName,
+          downloadUrl: bundleData.downloadUrl,
         })) || []
       );
     }
@@ -71,6 +77,24 @@ const useListing = () => {
     [selectBucket, fetchBundles]
   );
 
+  const fetchNextPage = useCallback(() => {
+    if (
+      bundlesListingEnabled &&
+      !bundleState.isNextPageLoading &&
+      !bundleState.isLoading &&
+      bundleState.pageOffset
+    ) {
+      fetchBundles(bundleState.selectedBucketId, bundleState.pageOffset);
+    }
+  }, [
+    fetchBundles,
+    bundlesListingEnabled,
+    bundleState.selectedBucketId,
+    bundleState.pageOffset,
+    bundleState.isNextPageLoading,
+    bundleState.isLoading,
+  ]);
+
   useEffect(() => {
     fetchListing();
     getUserProfile();
@@ -83,6 +107,8 @@ const useListing = () => {
     listingLoading,
     fetchListing,
     setBucketSelection,
+    fetchNextPage,
+    nextPageLoading,
   };
 };
 

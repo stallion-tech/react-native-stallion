@@ -19,11 +19,11 @@ interface IGlobalContextActions {
   verifyOtp: (verifyOtpPayload: IVerifyOtpPayload) => void;
   retryLogin: () => void;
   fetchBuckets: () => void;
-  fetchBundles: (bucketId?: string | null) => void;
+  fetchBundles: (bucketId?: string | null, pageOffset?: string | null) => void;
   setUserRequiresLogin: (requiresLogin: boolean) => void;
   refreshMeta: () => void;
   selectBucket: (bucketId?: string | null) => void;
-  downloadBundle: (version: number, bucketId: string) => void;
+  downloadBundle: (version: number, bucketId: string, url: string) => void;
   getUserProfile: () => void;
 }
 

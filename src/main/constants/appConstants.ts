@@ -5,6 +5,7 @@ export const Login_TITLE = 'Stallion';
 export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
+export const END_REACH_THRESHOLD = 0;
 
 export const CLOSE_BUTTON_TEXT = 'close';
 export const BACK_BUTTON_TEXT = 'back';
@@ -37,7 +38,8 @@ export const EMPTY_DOWNLOAD_MESSAGE = 'No bundle is downloaded yet';
 export const DEFAULT_ERROR_PREFIX = 'Error: ';
 export const VERSION_PREFIX = 'V';
 
-export const IS_ANDROID = Platform.OS === 'android';
+export const CURRENT_PLATFORM = Platform.OS;
+export const IS_ANDROID = CURRENT_PLATFORM === 'android';
 
 export const KEYBOARD_AVOIDING_BEHAVIOUR = IS_ANDROID ? 'height' : 'padding';
 

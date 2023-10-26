@@ -19,14 +19,15 @@ const useDownloadActions = (
 ) => {
   const dataManager = SharedDataManager.getInstance();
   const downloadBundle = useCallback(
-    (version: number, bucketId: string) => {
+    (version: number, bucketId: string, apiDownloadUrl: string) => {
       dispatch(setDownloadLoading());
       const projectId = dataManager?.getProjectId() || '';
+      const url = `${apiDownloadUrl}?projectId=${projectId}`;
       requestAnimationFrame(() => {
         downloadBundleNative({
-          projectId,
-          bucketId,
           version,
+          bucketId,
+          url,
         })
           .then((_) => {
             dispatch(

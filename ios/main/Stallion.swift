@@ -16,17 +16,16 @@ class Stallion: RCTEventEmitter {
     @objc(downloadPackage:withResolver:withRejecter:)
     func downloadPackage(bundleInfo: NSDictionary, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
         guard let receivedBucketId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.BucketId) else {return}
-        guard let receiveProjectId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.ProjectId) else {return}
+        guard var receiveDownloadUrl = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.DownloadUrl) else {return}
         let receivedVersion = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.Version) as? Int ?? nil
         var reqJson: [String: Any] = [
             StallionConstants.DownloadReqBodyKeys.BucketId: receivedBucketId,
-            StallionConstants.DownloadReqBodyKeys.ProjectId: receiveProjectId,
             StallionConstants.DownloadReqBodyKeys.Platform: StallionConstants.PlatformValue,
         ]
         if (receivedVersion != nil) {
             reqJson[StallionConstants.DownloadReqBodyKeys.Version] = receivedVersion
         }
-        guard let fromUrl = URL(string: StallionConstants.DownloadApiUrl) else { return }
+        guard let fromUrl = URL(string: receiveDownloadUrl as? String ?? "") else { return }
         
         do {
                 try StallionDownloader().load(

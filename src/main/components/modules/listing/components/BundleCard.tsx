@@ -15,6 +15,7 @@ export interface IBundleCard {
   description: string;
   updatedAt: string;
   author: string;
+  downloadUrl: string;
 }
 
 const BundleCard: React.FC<IBundleCard> = ({
@@ -23,6 +24,7 @@ const BundleCard: React.FC<IBundleCard> = ({
   description,
   updatedAt,
   author,
+  downloadUrl,
 }) => {
   const { metaState, bundleState } = useContext(GlobalContext);
   const isApplied = useMemo<boolean>(() => {
@@ -48,6 +50,7 @@ const BundleCard: React.FC<IBundleCard> = ({
           author={author}
           updatedAt={updatedAt}
           isApplied={isApplied}
+          downloadUrl={downloadUrl}
         />
       </View>
     </View>

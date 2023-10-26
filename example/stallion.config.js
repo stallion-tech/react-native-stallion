@@ -1,4 +1,4 @@
 module.exports = {
   stallionEnabled: true,
-  projectId: '64f5f341a4aeb5ccf93548e4',
+  projectId: '6500583aa4aeb5ccf9354b8d',
 };

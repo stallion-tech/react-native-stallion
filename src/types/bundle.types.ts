@@ -1,4 +1,4 @@
-export interface IBucketData {
+export interface IBundleData {
   version: number;
   id: string;
   createdAt: string;
@@ -7,15 +7,18 @@ export interface IBucketData {
     fullName: string;
   };
   releaseNote: string;
+  downloadUrl: string;
 }
 
-export type IBundleDataList = IBucketData[];
+export type IBundleDataList = IBundleData[];
 
 export interface IBundleState {
   data?: IBundleDataList | null;
   selectedBucketId?: string | null;
   isLoading: boolean;
   error?: string | null;
+  pageOffset?: string | null;
+  isNextPageLoading?: boolean;
 }
 
 export enum BundleActionKind {
@@ -23,6 +26,9 @@ export enum BundleActionKind {
   SET_BUNDLE_DATA = 'SET_BUNDLE_DATA',
   SET_BUNDLE_ERROR = 'SET_BUNDLE_ERROR',
   SET_SELECTED_BUCKET = 'SET_SELECTED_BUCKET',
+  SET_PAGINATION_OFFSET = 'SET_PAGINATION_OFFSET',
+  SET_PAGINATED_BUNDLE_DATA = 'SET_PAGINATED_BUNDLE_DATA',
+  SET_NEXT_PAGE_LOADING = 'SET_NEXT_PAGE_LOADING',
 }
 
 interface IBundleLoadingAction {
@@ -44,8 +50,26 @@ interface IBundleSelectedBucketAction {
   payload?: string | null;
 }
 
+interface IBundlePaginationOffsetAction {
+  type: BundleActionKind.SET_PAGINATION_OFFSET;
+  payload?: string | null;
+}
+
+interface IBundlePaginatedBundleDataAction {
+  type: BundleActionKind.SET_PAGINATED_BUNDLE_DATA;
+  payload: IBundleDataList;
+}
+
+interface IBundleNextPageLoadingAction {
+  type: BundleActionKind.SET_NEXT_PAGE_LOADING;
+  payload: boolean;
+}
+
 export type IBundleAction =
   | IBundleLoadingAction
   | IBundleDataAction
   | IBundleErrorAction
-  | IBundleSelectedBucketAction;
+  | IBundleSelectedBucketAction
+  | IBundlePaginationOffsetAction
+  | IBundlePaginatedBundleDataAction
+  | IBundleNextPageLoadingAction;
