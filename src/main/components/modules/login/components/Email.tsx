@@ -11,6 +11,7 @@ import {
   LOGIN_PAGE_KEYS,
   SUBMIT_BUTTON_TEXT,
 } from '../../../../constants/appConstants';
+import { COLORS } from '../../../../constants/colors';
 
 import styles from './styles';
 
@@ -40,14 +41,17 @@ const Email: React.FC<IEmail> = ({
       <TextInput
         style={styles.textInp}
         placeholder={LOGIN_PAGE_KEYS.email}
+        placeholderTextColor={COLORS.black5}
         editable={isEditable}
         value={email}
         onChange={handleEmailChange}
+        autoCapitalize="none"
       />
       <TextInput
         secureTextEntry={true}
         style={styles.textInp}
         placeholder={LOGIN_PAGE_KEYS.password}
+        placeholderTextColor={COLORS.black5}
         editable={isEditable}
         value={password}
         onChange={handlePasswordChange}

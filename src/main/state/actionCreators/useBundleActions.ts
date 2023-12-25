@@ -46,13 +46,9 @@ const useBundleActions = (
         body: JSON.stringify({
           projectId: dataManager?.getProjectId(),
           bucketId: selectedBucketId,
-          // TODO, remove hardcoded platform
           platform: CURRENT_PLATFORM,
-          // platform: 'android',
           pageSize: BUNDLE_API_PAGE_SIZE,
           paginationOffset: pageOffsetReceivedValue,
-          // TODO, remove this hardcoding
-          currentPage: 1,
         }),
         headers: getApiHeaders(),
       })

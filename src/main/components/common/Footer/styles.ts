@@ -39,10 +39,12 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     fontSize: STD_MARGIN * 1.2,
+    color: COLORS.text_major,
   },
   infoSubTitle: {
     fontSize: STD_MARGIN * 1.2,
     marginTop: STD_MARGIN / 2,
+    color: COLORS.text_major,
   },
   alignCenter: {
     alignItems: 'center',
@@ -58,8 +60,9 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
-  selfCenter: {
+  noDownloadText: {
     alignSelf: 'center',
+    color: COLORS.black5,
   },
   greenColor: {
     color: COLORS.green,

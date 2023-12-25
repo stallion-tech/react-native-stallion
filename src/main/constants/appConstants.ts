@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
-export const Login_TITLE = 'Stallion';
+export const Login_TITLE = 'Login';
 export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
@@ -37,6 +37,7 @@ export const EMPTY_ERROR_MESSAGE_BUNDLE = 'No bundles found';
 export const EMPTY_DOWNLOAD_MESSAGE = 'No bundle is downloaded yet';
 export const DEFAULT_ERROR_PREFIX = 'Error: ';
 export const VERSION_PREFIX = 'V';
+export const RETRY_BUTTON_TEXT = 'Retry';
 
 export const CURRENT_PLATFORM = Platform.OS;
 export const IS_ANDROID = CURRENT_PLATFORM === 'android';

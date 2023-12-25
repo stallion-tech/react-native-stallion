@@ -8,12 +8,14 @@ import {
 } from 'react-native';
 
 import ButtonFullWidth from '../../../../components/common/ButtonFullWidth';
+
 import {
   OTP_BACK_BUTTON_TEXT,
   OTP_INPUT_KEY,
   OTP_LENGTH,
   SUBMIT_BUTTON_TEXT,
 } from '../../../../constants/appConstants';
+import { COLORS } from '../../../../constants/colors';
 
 import styles from './styles';
 
@@ -43,10 +45,11 @@ const Otp: React.FC<IOtp> = ({
   );
   return (
     <>
-      <Text>Otp is sent to {email}</Text>
+      <Text style={styles.otpInfoText}>Otp is sent to {email}</Text>
       <TextInput
         style={styles.textInp}
         placeholder={OTP_INPUT_KEY}
+        placeholderTextColor={COLORS.black5}
         value={otp}
         onChange={handleNumberFormating}
         maxLength={OTP_LENGTH}

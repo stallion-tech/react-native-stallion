@@ -7,6 +7,9 @@ class Stallion: RCTEventEmitter {
     override init() {
         super.init()
         Stallion.shared = self
+        StallionErrorBoundary.initErrorBoundary()
+        let stallionIsOn = StallionUtil.getLs(key: StallionUtil.LSKeys.switchStateKey) == StallionUtil.SwitchStates.ON;
+        StallionErrorBoundary.toggleExceptionHandler(stallionIsOn)
     }
     
     override func supportedEvents() -> [String]! {
@@ -54,6 +57,7 @@ class Stallion: RCTEventEmitter {
     @objc(toggleStallionSwitch:)
     func toggleStallionSwitch(isOn: Bool) {
         StallionUtil.setLs(key: StallionUtil.LSKeys.switchStateKey, value: isOn ? StallionUtil.SwitchStates.ON : StallionUtil.SwitchStates.OFF)
+        StallionErrorBoundary.toggleExceptionHandler(isOn)
     }
     
     @objc(getStallionMeta:)

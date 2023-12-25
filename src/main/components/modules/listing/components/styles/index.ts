@@ -41,14 +41,21 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
     marginBottom: STD_MARGIN / 2,
+    color: COLORS.text_major,
   },
   titleText: {
-    fontSize: 16,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.text_major,
   },
   bold: {
     fontWeight: 'bold',
   },
-  releaseNoteText: { fontSize: 12, fontWeight: '500', marginTop: 10 },
+  releaseNoteText: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 10,
+    color: COLORS.text_major,
+  },
   releaseNoteDescriptionText: {
     fontSize: 14,
     marginTop: 5,

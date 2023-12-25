@@ -8,6 +8,4 @@ export enum API_PATHS {
   FETCH_BUNDLES_ADVANCED = '/api/v1/bundle/advance-listing',
   USER_PROFILE = '/api/v1/auth/user-profile',
 }
-
-// TODO, change to 10
-export const BUNDLE_API_PAGE_SIZE = 5;
+export const BUNDLE_API_PAGE_SIZE = 10;

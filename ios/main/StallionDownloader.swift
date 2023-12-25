@@ -55,7 +55,6 @@ extension StallionDownloader: URLSessionDownloadDelegate {
             if((calculatedProgress - self.lastSentProgress) > StallionConstants.PROGRESS_EVENT_THRESHOLD) {
                 self.lastSentProgress = calculatedProgress
                 DispatchQueue.main.async {
-                    print("progress: \(calculatedProgress)))")
                     Stallion.shared?.sendEvent(withName: StallionConstants.DOWNLOAD_PROGRESS_EVENT, body: calculatedProgress)
                 }
             }

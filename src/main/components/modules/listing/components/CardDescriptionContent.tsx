@@ -20,7 +20,7 @@ const CardDescriptionContent: React.FC<ICardDescriptionContent> = ({
 
 const styles = StyleSheet.create({
   centerContainer: { justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 12, fontWeight: '500' },
+  title: { fontSize: 12, fontWeight: '500', color: COLORS.black7 },
   subtitle: {
     fontSize: 14,
     fontWeight: '600',

@@ -40,10 +40,12 @@ const bundleReducer = (
     case BundleActionKind.SET_SELECTED_BUCKET:
       const { payload: selectedBucketId } = action;
       return {
-        ...state,
         selectedBucketId: selectedBucketId,
+        error: null,
         data: null,
         pageOffset: null,
+        isLoading: false,
+        isNextPageLoading: false,
       };
 
     case BundleActionKind.SET_PAGINATION_OFFSET:

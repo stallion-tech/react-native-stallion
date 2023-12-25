@@ -8,6 +8,7 @@ import BucketCard, { IBucketCard } from './components/BucketCard';
 import {
   CARD_TYPES,
   END_REACH_THRESHOLD,
+  IS_ANDROID,
 } from '../../../constants/appConstants';
 import BundleCard, { IBundleCard } from './components/BundleCard';
 import FooterLoader from '../../common/FooterLoader';
@@ -25,7 +26,10 @@ const Listing: React.FC = () => {
     nextPageLoading,
   } = useListing();
   if (listingError) {
-    return <ErrorView error={listingError} />;
+    return <ErrorView error={listingError} onRetry={fetchListing} />;
+  }
+  if (listingLoading && !listingData.length && !IS_ANDROID) {
+    return <FooterLoader />;
   }
   return (
     <FlatList
