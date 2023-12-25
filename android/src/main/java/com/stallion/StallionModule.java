@@ -39,10 +39,10 @@ public class StallionModule extends ReactContextBaseJavaModule {
     this.baseDir = reactContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH;
     StallionStorage.getInstance().Initialize(reactContext);
     this.stallionStorage = StallionStorage.getInstance();
-    StallionErrorBoundary.initErrorBoundary();
+    StallionErrorBoundary.initErrorBoundary(reactContext);
     String switchState = this.stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
     Boolean isStallionEnabled = switchState == null ? false : switchState.equals(StallionConstants.STALLION_SWITCH_ON);
-    StallionErrorBoundary.toggleExceptionHandler(isStallionEnabled, getCurrentActivity());
+    StallionErrorBoundary.toggleExceptionHandler(isStallionEnabled);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void toggleStallionSwitch(Boolean stallionBundleIsOn) {
     this.stallionStorage.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, stallionBundleIsOn ? StallionConstants.STALLION_SWITCH_ON : StallionConstants.STALLION_SWITCH_OFF);
-    StallionErrorBoundary.toggleExceptionHandler(stallionBundleIsOn, getCurrentActivity());
+    StallionErrorBoundary.toggleExceptionHandler(stallionBundleIsOn);
   }
 
   private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
