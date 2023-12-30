@@ -81,7 +81,6 @@ public class StallionModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void toggleStallionSwitch(Boolean stallionBundleIsOn) {
     this.stallionStorage.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, stallionBundleIsOn ? StallionConstants.STALLION_SWITCH_ON : StallionConstants.STALLION_SWITCH_OFF);
-    StallionErrorBoundary.toggleExceptionHandler(stallionBundleIsOn);
   }
 
   private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {

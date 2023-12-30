@@ -6,6 +6,7 @@
 //
 
 #import "StallionModule.h"
+#import "StallionErrorBoundary.h"
 
 @implementation StallionModule
 + (NSURL *)getBundleURL {
@@ -25,6 +26,8 @@
         NSString *switchState = [[NSUserDefaults standardUserDefaults]
             stringForKey:@"switchState"];
         if([switchState isEqual:@"STALLION_ON"]) {
+            [StallionErrorBoundary initErrorBoundary];
+            [StallionErrorBoundary toggleExceptionHandler:TRUE];
             return targetBundleUrl;
         } else {
             if(defaultBundleURL != nil) return defaultBundleURL;

@@ -12,7 +12,9 @@
 NSUncaughtExceptionHandler *_defaultExceptionHandler;
 
 + (void)initErrorBoundary {
-    _defaultExceptionHandler = NSGetUncaughtExceptionHandler();
+    if(_defaultExceptionHandler == nil) {
+        _defaultExceptionHandler = NSGetUncaughtExceptionHandler();
+    }
 }
 
 + (void)toggleExceptionHandler:(BOOL)shouldEnableErrorHandler {

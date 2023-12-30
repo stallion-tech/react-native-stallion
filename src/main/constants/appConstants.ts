@@ -92,3 +92,9 @@ export const STALLION_LOGO_URL =
 export const STALLION_EB_INFO =
   'A crash occurred in the app. We have switched Stallion off. Check crash report below. Continue crash to invoke other exception handlers.';
 export const STALLION_EB_BTN_TXT = 'Continue Crash';
+
+export const DOWNLOAD_ALERT_HEADER = 'Download Successful';
+export const DOWNLOAD_ALERT_SWITCH_MESSAGE = 'Stallion has been switched on. ';
+export const DOWNLOAD_ALERT_MESSAGE =
+  'Restart the app for changes to take effect.';
+export const DOWNLOAD_ALERT_BUTTON = 'Ok';
