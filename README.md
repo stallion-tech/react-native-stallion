@@ -24,7 +24,9 @@ npm install --save react-native-stallion
 yarn add react-native-stallion
 ```
 
-check complete SDK installation steps from [here](https://docs.stalliontech.io/docs/install)
+### Complete installation steps
+
+Check complete SDK installation steps from [here](https://docs.stalliontech.io/docs/install)
 
 ## Documentation
 
