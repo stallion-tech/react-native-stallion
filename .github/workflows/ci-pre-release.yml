@@ -1,0 +1,35 @@
+name: CI
+on:
+  pull_request:
+    types: [labeled, synchronize]
+  merge_group:
+
+jobs:
+  pre-release-check:
+    runs-on: ubuntu-latest
+    if: (github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'pre-release'))
+    permissions: write-all
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Typecheck files
+        run: yarn typecheck
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run unit tests
+        run: yarn test --maxWorkers=2 --coverage
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prep release
+        run: yarn prepare-release
+
+      - name: Finally
+        run: echo "Pre release checks passed!"
