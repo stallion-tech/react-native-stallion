@@ -72,7 +72,7 @@ const Footer: React.FC<IFooter> = ({
           </>
         ) : (
           <View style={[styles.noDownloadContainer]}>
-            <Text style={styles.selfCenter}>{EMPTY_DOWNLOAD_MESSAGE}</Text>
+            <Text style={styles.noDownloadText}>{EMPTY_DOWNLOAD_MESSAGE}</Text>
           </View>
         )}
       </View>

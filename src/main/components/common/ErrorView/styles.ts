@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
+import {
+  HEADER_SLAB_HEIGHT,
+  STD_MARGIN,
+} from '../../../constants/appConstants';
 import { COLORS } from '../../../constants/colors';
 
 const styles = StyleSheet.create({
@@ -13,9 +16,19 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: COLORS.error,
+    fontSize: STD_MARGIN * 2,
   },
   boldText: {
     fontWeight: 'bold',
+  },
+  retryButtonContainer: {
+    alignSelf: 'center',
+    marginVertical: STD_MARGIN * 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  retryText: {
+    fontSize: STD_MARGIN * 1.5,
   },
 });
 

@@ -10,6 +10,15 @@ export const setBundleLoading = (): IBundleAction => {
   };
 };
 
+export const setBundleNextPageLoading = (
+  isNextPageLoading: boolean
+): IBundleAction => {
+  return {
+    type: BundleActionKind.SET_NEXT_PAGE_LOADING,
+    payload: isNextPageLoading,
+  };
+};
+
 export const setBundleData = (bundleData: IBundleDataList): IBundleAction => {
   return {
     type: BundleActionKind.SET_BUNDLE_DATA,
@@ -30,5 +39,23 @@ export const setSelectedBucketId = (
   return {
     type: BundleActionKind.SET_SELECTED_BUCKET,
     payload: bucketId,
+  };
+};
+
+export const setBundlePaginationOffset = (
+  paginationOffset?: string | null
+): IBundleAction => {
+  return {
+    type: BundleActionKind.SET_PAGINATION_OFFSET,
+    payload: paginationOffset,
+  };
+};
+
+export const setPaginatedBundleData = (
+  bundleData: IBundleDataList
+): IBundleAction => {
+  return {
+    type: BundleActionKind.SET_PAGINATED_BUNDLE_DATA,
+    payload: bundleData,
   };
 };

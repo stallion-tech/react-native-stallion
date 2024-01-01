@@ -3,8 +3,8 @@ import { IStallionMeta } from './meta.types';
 
 interface IBundleInfo {
   bucketId: string;
-  projectId: string;
   version: number;
+  url: string;
 }
 type TCallback = (apiKey: string) => void;
 type TMetaCallback = (newMeta: IStallionMeta) => void;

@@ -22,6 +22,6 @@ public class StallionDefaultErrorActivity extends Activity {
     continueButton.setOnClickListener(view -> continueExceptionFlow());
   }
   private void continueExceptionFlow() {
-    StallionModule.continueExcetionFlow();
+    StallionErrorBoundary.continueExceptionFlow();
   }
 }

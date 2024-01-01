@@ -11,6 +11,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  otpInfoText: {
+    color: COLORS.text_major,
+  },
   textInp: {
     width: '80%',
     height: HEADER_SLAB_HEIGHT,
@@ -19,6 +22,7 @@ const styles = StyleSheet.create({
     borderRadius: STD_MARGIN,
     margin: STD_MARGIN,
     paddingHorizontal: STD_MARGIN * 2,
+    color: COLORS.text_major,
   },
   buttonContainer: {
     width: '80%',

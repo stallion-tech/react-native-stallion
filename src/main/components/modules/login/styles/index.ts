@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: HEADER_SLAB_HEIGHT,
+    color: COLORS.text_major,
   },
   inputSection: {
     flex: 2,

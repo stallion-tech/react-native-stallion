@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo, memo } from 'react';
 import { Text, View } from 'react-native';
 
 import { GlobalContext } from '../../../../state';
@@ -27,6 +27,7 @@ interface IBundleCardInfoSection {
   version?: number;
   author?: string;
   isApplied?: boolean;
+  downloadUrl: string;
 }
 
 const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
@@ -35,6 +36,7 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
   updatedAt,
   author,
   isApplied,
+  downloadUrl,
 }) => {
   const {
     metaState,
@@ -54,9 +56,9 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
 
   const handleDownloadPress = useCallback(() => {
     if (!isApplied && selectedBucketId && version) {
-      downloadBundle(version, selectedBucketId);
+      downloadBundle(version, selectedBucketId, downloadUrl);
     }
-  }, [isApplied, selectedBucketId, version, downloadBundle]);
+  }, [isApplied, selectedBucketId, version, downloadBundle, downloadUrl]);
 
   return (
     <View style={styles.container}>
@@ -100,4 +102,4 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
   );
 };
 
-export default BundleCardInfoSection;
+export default memo(BundleCardInfoSection);

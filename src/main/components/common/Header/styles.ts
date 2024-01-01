@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
 import { COLORS } from '../../../constants/colors';
 
-const PROFILE_BUTTON_EDGE = HEADER_SLAB_HEIGHT / 2;
+const PROFILE_BUTTON_EDGE = HEADER_SLAB_HEIGHT / 1.7;
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3.5,
+    color: COLORS.text_major,
   },
   alignStart: {
     alignItems: 'flex-start',

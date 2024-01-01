@@ -8,6 +8,8 @@ export const COLORS = {
   red: '#d60027',
   black7: 'rgba(0,0,0,0.7)',
   black2: 'rgba(0,0,0,0.2)',
+  black5: 'rgba(0,0,0,0.5)',
   orange: 'orange',
   blue: 'blue',
+  text_major: '#0f0f0f',
 };

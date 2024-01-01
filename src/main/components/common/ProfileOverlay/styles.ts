@@ -17,10 +17,12 @@ const styles = StyleSheet.create({
   profileTitle: {
     fontSize: HEADER_SLAB_HEIGHT,
     marginVertical: STD_MARGIN,
+    color: COLORS.text_major,
   },
   profileInfoText: {
     fontSize: HEADER_SLAB_HEIGHT / 2.5,
     marginVertical: STD_MARGIN,
+    color: COLORS.text_major,
   },
   buttonContainer: {
     width: '80%',

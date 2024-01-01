@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View, Button, Text } from 'react-native';
 import { withStallion, useStallionModal } from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
   return (
     <View style={styles.container}>
+      <Text>Hello world</Text>
       <Button title="OpenModal" onPress={showModal} />
     </View>
   );

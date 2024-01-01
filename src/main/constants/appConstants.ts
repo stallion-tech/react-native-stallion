@@ -1,10 +1,11 @@
 import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
-export const Login_TITLE = 'Stallion';
+export const Login_TITLE = 'Login';
 export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
+export const END_REACH_THRESHOLD = 0;
 
 export const CLOSE_BUTTON_TEXT = 'close';
 export const BACK_BUTTON_TEXT = 'back';
@@ -36,8 +37,10 @@ export const EMPTY_ERROR_MESSAGE_BUNDLE = 'No bundles found';
 export const EMPTY_DOWNLOAD_MESSAGE = 'No bundle is downloaded yet';
 export const DEFAULT_ERROR_PREFIX = 'Error: ';
 export const VERSION_PREFIX = 'V';
+export const RETRY_BUTTON_TEXT = 'Retry';
 
-export const IS_ANDROID = Platform.OS === 'android';
+export const CURRENT_PLATFORM = Platform.OS;
+export const IS_ANDROID = CURRENT_PLATFORM === 'android';
 
 export const KEYBOARD_AVOIDING_BEHAVIOUR = IS_ANDROID ? 'height' : 'padding';
 
@@ -89,3 +92,9 @@ export const STALLION_LOGO_URL =
 export const STALLION_EB_INFO =
   'A crash occurred in the app. We have switched Stallion off. Check crash report below. Continue crash to invoke other exception handlers.';
 export const STALLION_EB_BTN_TXT = 'Continue Crash';
+
+export const DOWNLOAD_ALERT_HEADER = 'Download Successful';
+export const DOWNLOAD_ALERT_SWITCH_MESSAGE = 'Stallion has been switched on. ';
+export const DOWNLOAD_ALERT_MESSAGE =
+  'Restart the app for changes to take effect.';
+export const DOWNLOAD_ALERT_BUTTON = 'Ok';

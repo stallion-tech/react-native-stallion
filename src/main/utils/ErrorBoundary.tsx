@@ -32,15 +32,15 @@ class ErrorBoundary extends Component<
     this.continueCrash = this.continueCrash.bind(this);
   }
   componentDidCatch(error: Error): void {
-    const errorString: string = [
-      error.name,
-      error.message,
-      error.cause?.toString(),
-      error.stack,
-    ].join(' ');
     getStallionMeta((stallionMeta) => {
       if (stallionMeta?.switchState) {
         toggleStallionSwitchNative(false);
+        const errorString: string = [
+          error.name,
+          error.message,
+          error.cause?.toString(),
+          error.stack,
+        ].join(' ');
         console.error(
           'Exception occured in js layer:',
           error,
@@ -50,7 +50,7 @@ class ErrorBoundary extends Component<
           errorText: errorString,
         });
       } else {
-        throw new Error(errorString);
+        throw error;
       }
     });
   }
