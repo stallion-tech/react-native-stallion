@@ -31,6 +31,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Prep release
         run: yarn prepare-release
 
