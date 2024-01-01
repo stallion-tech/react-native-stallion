@@ -70,5 +70,3 @@ android/keystores/debug.keystore
 lib/
 
 .npmrc
-
-sdk-package/
