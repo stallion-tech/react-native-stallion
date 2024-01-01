@@ -1,4 +1,4 @@
-[![stallionBanner](https://d2shjbuzwp1rpv.cloudfront.net/stallion_logo.png)](https://stalliontech.io/)
+[![stallionBanner](https://assets.stalliontech.io./stallion_logo.png)](https://stalliontech.io/)
 
 #### [Sign up With Stallion](https://console.stalliontech.io/) to start using
 
