@@ -1,3 +1,23 @@
+# [1.1.0](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.2...v1.1.0) (2023-09-18)
+
+
+### Bug Fixes
+
+* download modal blocking issue fix ([e91d7f4](https://github.com/stallion-tech/react-native-stallion/commit/e91d7f4f2e3b5ee5a205eab28d99c43ca93f9d4e))
+* js error boundary logical fixes, download logic optimisations ([e7aea83](https://github.com/stallion-tech/react-native-stallion/commit/e7aea83a8c27d9ab92214c1b4a14fee506e6304f))
+
+
+### Features
+
+* added JS error boundary UI ([412bd5c](https://github.com/stallion-tech/react-native-stallion/commit/412bd5c54ef5750e6b928eff69be90ed79e12dde))
+
+## [1.0.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.1...v1.0.2) (2023-09-13)
+
+
+### Bug Fixes
+
+* corrected ios noop version getBundleUrl function name ([9f862e7](https://github.com/stallion-tech/react-native-stallion/commit/9f862e7b8627d407a4f205051b2696c450727e95))
+
 ## [1.0.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.0...v1.0.1) (2023-09-13)
 
 
