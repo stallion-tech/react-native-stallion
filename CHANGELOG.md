@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.0...v1.1.1) (2024-01-01)
+
+
+### Bug Fixes
+
+* stallion readme and telemetry fix ([#22](https://github.com/stallion-tech/react-native-stallion/issues/22)) ([55f1039](https://github.com/stallion-tech/react-native-stallion/commit/55f103902cdadcdc4848923f7faf26a02451d58a))
+
 # [1.1.0](https://github.com/stallion-tech/react-native-stallion/compare/v1.0.2...v1.1.0) (2023-09-18)
 
 
