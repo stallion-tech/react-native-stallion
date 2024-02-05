@@ -1,20 +1,8 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { Alert } from 'react-native';
 
 import { GlobalContext } from '../../../../state';
-import {
-  getApiKeyNative,
-  setApiKeyNative,
-  toggleStallionSwitchNative,
-} from '../../../../utils/StallionNaitveUtils';
-import SharedDataManager from '../../../../utils/SharedDataManager';
+import { toggleStallionSwitchNative } from '../../../../utils/StallionNaitveUtils';
 import {
   DOWNLOAD_ALERT_BUTTON,
   DOWNLOAD_ALERT_HEADER,
@@ -25,17 +13,11 @@ import {
 const useStallionModal = () => {
   const {
     isModalVisible,
-    userState,
     metaState,
     bucketState,
     bundleState,
     downloadState,
-    actions: {
-      setIsModalVisible,
-      setUserRequiresLogin,
-      selectBucket,
-      refreshMeta,
-    },
+    actions: { setIsModalVisible, selectBucket, refreshMeta },
   } = useContext(GlobalContext);
   const onBackPress = useCallback(() => {
     requestAnimationFrame(() => selectBucket());
@@ -43,18 +25,6 @@ const useStallionModal = () => {
   const onClosePress = useCallback(() => {
     requestAnimationFrame(() => setIsModalVisible(false));
   }, [setIsModalVisible]);
-  const loginRequired = userState?.loginRequired;
-
-  useEffect(() => {
-    getApiKeyNative((apiKey) => {
-      if (apiKey) {
-        SharedDataManager.getInstance()?.setAccessToken(apiKey);
-      } else {
-        setUserRequiresLogin(true);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const isBackEnabled = useMemo<boolean>(
     () => (bundleState.selectedBucketId ? true : false),
@@ -89,11 +59,6 @@ const useStallionModal = () => {
     [downloadState.error]
   );
 
-  const [showProfileSection, setShowProfileSection] = useState(false);
-  const closeProfileSection = useCallback(() => {
-    setShowProfileSection(false);
-  }, []);
-
   const canShowDownloadAlert = useRef<boolean>(false);
 
   useEffect(() => {
@@ -123,22 +88,10 @@ const useStallionModal = () => {
     toggleStallionSwitch,
   ]);
 
-  const presentProfileSection = useCallback(() => {
-    setShowProfileSection(true);
-  }, []);
-
-  const performLogout = useCallback(() => {
-    closeProfileSection();
-    setApiKeyNative('');
-    SharedDataManager.getInstance()?.setAccessToken('');
-    setUserRequiresLogin(true);
-  }, [setUserRequiresLogin, closeProfileSection]);
-
   return {
     isModalVisible,
     onBackPress,
     onClosePress,
-    loginRequired,
     metaState,
     isBackEnabled,
     activeBucketMeta,
@@ -146,11 +99,6 @@ const useStallionModal = () => {
     isDownloading,
     downloadProgress,
     downloadError,
-    userState,
-    showProfileSection,
-    closeProfileSection,
-    presentProfileSection,
-    performLogout,
   };
 };
 

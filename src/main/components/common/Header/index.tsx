@@ -10,20 +10,12 @@ import {
 import styles from './styles';
 
 interface IHeader {
-  userName?: string | null;
   title?: string | null;
   onBackPress?: (() => void) | null;
   onClosePress?: () => void;
-  onProfilePress?: () => void;
 }
 
-const Header: React.FC<IHeader> = ({
-  userName,
-  title,
-  onBackPress,
-  onClosePress,
-  onProfilePress,
-}) => {
+const Header: React.FC<IHeader> = ({ title, onBackPress, onClosePress }) => {
   const [errorLogoLoading, setErrorLogoLoading] = useState(false);
   const errorInLogoLoading = useCallback(() => {
     setErrorLogoLoading(true);
@@ -38,16 +30,7 @@ const Header: React.FC<IHeader> = ({
           <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
         </TouchableOpacity>
       ) : (
-        <View style={[styles.headerSideSection, styles.alignStart]}>
-          {userName && onProfilePress ? (
-            <TouchableOpacity
-              style={styles.headerProfileButton}
-              onPress={onProfilePress}
-            >
-              <Text style={styles.profileInitial}>{userName?.[0] || ''}</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
+        <View style={styles.headerSideSection} />
       )}
       <View style={styles.headerCenterSection}>
         {errorLogoLoading ? (

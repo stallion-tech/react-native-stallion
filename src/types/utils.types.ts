@@ -16,6 +16,7 @@ export type IWithStallion = (
 export interface IStallionConfig {
   stallionEnabled: boolean;
   projectId: string;
+  accessToken: string;
 }
 
 export interface IUseStallionModal {

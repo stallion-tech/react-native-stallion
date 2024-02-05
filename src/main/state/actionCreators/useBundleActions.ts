@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
-import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
+import { getApiHeaders } from '../../utils/apiUtils';
 import SharedDataManager from '../../utils/SharedDataManager';
 
 import {
@@ -28,8 +28,7 @@ import {
 
 const useBundleActions = (
   dispatch: React.Dispatch<IBundleAction>,
-  bundleState: IBundleState,
-  setUserRequiresLogin: (requiresLogin: boolean) => void
+  bundleState: IBundleState
 ) => {
   const dataManager = SharedDataManager.getInstance();
   const fetchBundles = useCallback(
@@ -52,7 +51,7 @@ const useBundleActions = (
         }),
         headers: getApiHeaders(),
       })
-        .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
+        .then((res) => res.json())
         .then((bundleResponse) => {
           const bundlesData = bundleResponse?.data?.paginatedData;
           const nextPageOffset = bundleResponse?.data?.paginationOffset;
@@ -77,7 +76,7 @@ const useBundleActions = (
           dispatch(setBundleError(DEFAULT_ERROR_MESSAGE));
         });
     },
-    [dispatch, dataManager, bundleState.selectedBucketId, setUserRequiresLogin]
+    [dispatch, dataManager, bundleState.selectedBucketId]
   );
 
   const selectBucket = useCallback(

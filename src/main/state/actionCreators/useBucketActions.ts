@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import SharedDataManager from '../../utils/SharedDataManager';
 import { extractError } from '../../utils/errorUtil';
-import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
+import { getApiHeaders } from '../../utils/apiUtils';
 import {
   setBucketData,
   setBucketError,
@@ -16,10 +16,7 @@ import {
 import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
 import { IBucketAction, IBucketDataList } from '../../../types/bucket.types';
 
-const useBucketActions = (
-  dispatch: React.Dispatch<IBucketAction>,
-  setUserRequiresLogin: (requiresLogin: boolean) => void
-) => {
+const useBucketActions = (dispatch: React.Dispatch<IBucketAction>) => {
   const dataManager = SharedDataManager.getInstance();
   const fetchBuckets = useCallback(() => {
     dispatch(setBucketLoading());
@@ -30,7 +27,7 @@ const useBucketActions = (
       }),
       headers: getApiHeaders(),
     })
-      .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
+      .then((res) => res.json())
       .then((bucketResponse) => {
         if (bucketResponse?.data) {
           if (bucketResponse.data.length) {
@@ -45,7 +42,7 @@ const useBucketActions = (
       .catch((_) => {
         dispatch(setBucketError(DEFAULT_ERROR_MESSAGE));
       });
-  }, [dispatch, dataManager, setUserRequiresLogin]);
+  }, [dispatch, dataManager]);
 
   return {
     fetchBuckets,
