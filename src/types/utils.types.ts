@@ -34,3 +34,9 @@ export type TGetStallionMeta = (cb: TMetaCallback) => void;
 export type TToggleStallionSwitchNative = (switchState: boolean) => void;
 
 export type TDownloadBundleNative = (bundleInfo: IBundleInfo) => Promise<any>;
+
+export interface StallionInitParams {
+  projectId: string;
+}
+
+export type TInitialize = (stallionInitParams: StallionInitParams) => void;

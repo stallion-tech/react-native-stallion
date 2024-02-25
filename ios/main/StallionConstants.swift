@@ -15,7 +15,7 @@ class StallionConstants {
         static let ZipExtension = "zip"
     }
     public struct HeaderKeys {
-        static let AccessKey = "x-access-token"
+        static let AccessKey = "x-sdk-access-token"
         static let ContentType = "Content-Type"
     }
     public struct DownloadReqBodyKeys {

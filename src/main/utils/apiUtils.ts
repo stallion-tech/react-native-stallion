@@ -4,7 +4,8 @@ export const getApiHeaders = () => {
   return {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'x-access-token': SharedDataManager.getInstance()?.getAccessToken() || '',
+    'x-sdk-access-token':
+      SharedDataManager.getInstance()?.getAccessToken() || '',
   };
 };
 
