@@ -1,7 +1,8 @@
 export default class SharedDataManager {
   static _instance?: SharedDataManager | null = null;
 
-  _projectId?: string;
+  _configProjectId?: string;
+  _initProjectId?: string;
   _accessToken?: string;
 
   /**
@@ -16,11 +17,23 @@ export default class SharedDataManager {
   }
 
   getProjectId(): string {
-    return this._projectId || '';
+    return this._configProjectId || this._initProjectId || '';
   }
 
-  setProjectId(id: string): void {
-    this._projectId = id;
+  getConfigProjectId(): string {
+    return this._configProjectId || '';
+  }
+
+  setConfigProjectId(id: string): void {
+    this._configProjectId = id;
+  }
+
+  getInitProjectId(): string {
+    return this._initProjectId || '';
+  }
+
+  setInitProjectId(id: string): void {
+    this._initProjectId = id;
   }
 
   getAccessToken(): string {
