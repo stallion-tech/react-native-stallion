@@ -1,12 +1,4 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Alert } from 'react-native';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GlobalContext } from '../../../../state';
 import {
@@ -15,12 +7,6 @@ import {
   toggleStallionSwitchNative,
 } from '../../../../utils/StallionNaitveUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
-import {
-  DOWNLOAD_ALERT_BUTTON,
-  DOWNLOAD_ALERT_HEADER,
-  DOWNLOAD_ALERT_MESSAGE,
-  DOWNLOAD_ALERT_SWITCH_MESSAGE,
-} from '../../../../constants/appConstants';
 
 const useStallionModal = () => {
   const {
@@ -93,35 +79,6 @@ const useStallionModal = () => {
   const closeProfileSection = useCallback(() => {
     setShowProfileSection(false);
   }, []);
-
-  const canShowDownloadAlert = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (isDownloading) {
-      canShowDownloadAlert.current = true;
-    } else {
-      if (canShowDownloadAlert.current && downloadProgress === 1) {
-        canShowDownloadAlert.current = false;
-        let downloadAlertMessage = '';
-        if (!metaState.switchState) {
-          toggleStallionSwitch();
-          downloadAlertMessage += DOWNLOAD_ALERT_SWITCH_MESSAGE;
-        }
-        downloadAlertMessage += DOWNLOAD_ALERT_MESSAGE;
-        Alert.alert(DOWNLOAD_ALERT_HEADER, downloadAlertMessage, [
-          {
-            text: DOWNLOAD_ALERT_BUTTON,
-            style: 'cancel',
-          },
-        ]);
-      }
-    }
-  }, [
-    isDownloading,
-    downloadProgress,
-    metaState.switchState,
-    toggleStallionSwitch,
-  ]);
 
   const presentProfileSection = useCallback(() => {
     setShowProfileSection(true);
