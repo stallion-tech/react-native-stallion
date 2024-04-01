@@ -112,7 +112,7 @@ const useUserActions = (
   const getUserProfile = useCallback(() => {
     dispatch(setUserLoading());
     fetch(API_BASE_URL + API_PATHS.USER_PROFILE, {
-      method: 'GET',
+      method: 'POST',
       headers: getApiHeaders(),
     })
       .then((res) => res.json())

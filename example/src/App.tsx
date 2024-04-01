@@ -1,15 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button, Text } from 'react-native';
-import {
-  withStallion,
-  useStallionModal,
-  Initialize,
-} from 'react-native-stallion';
-
-Initialize({
-  projectId: '6500583aa4aeb5ccf9354b8d',
-});
+import { withStallion, useStallionModal } from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
@@ -21,7 +13,9 @@ const App: React.FC = () => {
   );
 };
 
-export default withStallion(App);
+export default withStallion(App, {
+  projectId: '6500583aa4aeb5ccf9354b8d',
+});
 
 const styles = StyleSheet.create({
   container: {

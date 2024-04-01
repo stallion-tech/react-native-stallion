@@ -46,8 +46,6 @@ const useDownloadActions = (
                 currentProgress: 1,
               })
             );
-            refreshStallionMeta();
-
             getStallionMeta((meta) => {
               let downloadAlertMessage = '';
               if (!meta.switchState) {
@@ -61,6 +59,7 @@ const useDownloadActions = (
                   style: 'cancel',
                 },
               ]);
+              refreshStallionMeta();
             });
           })
           .catch((err) => {
