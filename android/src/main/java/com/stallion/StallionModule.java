@@ -113,7 +113,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
         URL url = new URL(receivedDownloadUrl);
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod( "GET" );
-        connection.setRequestProperty("x-access-token", stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER));
+        connection.setRequestProperty("x-sdk-access-token", stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER));
         connection.setRequestProperty("Content-Type", "application/json");
 
         connection.setDoInput(true);

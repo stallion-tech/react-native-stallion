@@ -3,5 +3,5 @@ try {
   const stallionConfig = require('../../../../stallion.config.js'); // prod import
   console.log(stallionConfig?.stallionEnabled);
 } catch (_) {
-  console.log(false);
+  console.log(true);
 }

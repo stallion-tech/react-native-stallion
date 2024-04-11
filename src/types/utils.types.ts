@@ -9,8 +9,13 @@ interface IBundleInfo {
 type TCallback = (apiKey: string) => void;
 type TMetaCallback = (newMeta: IStallionMeta) => void;
 
+export interface IStallionInitParams {
+  projectId: string;
+}
+
 export type IWithStallion = (
-  BaseComponent: React.ComponentType
+  BaseComponent: React.ComponentType,
+  initPrams?: IStallionInitParams
 ) => React.ComponentType;
 
 export interface IStallionConfig {

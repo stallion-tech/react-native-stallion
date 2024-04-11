@@ -42,7 +42,10 @@ try {
   throw e;
 }
 
-def stallionEnabled = enabledOutput == "true"
+def stallionEnabled = true
+if(enabledOutput == "false") {
+  stallionEnabled = false
+}
 
 android {
   sourceSets {

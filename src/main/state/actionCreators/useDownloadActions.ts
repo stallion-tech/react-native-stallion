@@ -1,16 +1,27 @@
 import React, { useEffect, useCallback } from 'react';
-import { NativeEventEmitter } from 'react-native';
+import { Alert, NativeEventEmitter } from 'react-native';
 
 import SharedDataManager from '../../utils/SharedDataManager';
 import StallionNativeModule from '../../../StallionNativeModule';
-import { downloadBundleNative } from '../../utils/StallionNaitveUtils';
+import {
+  downloadBundleNative,
+  getStallionMeta,
+  toggleStallionSwitchNative,
+} from '../../utils/StallionNaitveUtils';
 import {
   setDownloadData,
   setDownloadError,
   setDownloadLoading,
 } from '../actions/downloadActions';
 
-import { DOWNLOAD_PROGRESS_EVENT } from '../../constants/appConstants';
+import {
+  DOWNLOAD_ALERT_BUTTON,
+  DOWNLOAD_ALERT_HEADER,
+  DOWNLOAD_ALERT_MESSAGE,
+  DOWNLOAD_ALERT_SWITCH_MESSAGE,
+  DOWNLOAD_PROGRESS_EVENT,
+} from '../../constants/appConstants';
+
 import { IDownloadAction } from '../../../types/download.types';
 
 const useDownloadActions = (
@@ -35,7 +46,21 @@ const useDownloadActions = (
                 currentProgress: 1,
               })
             );
-            refreshStallionMeta();
+            getStallionMeta((meta) => {
+              let downloadAlertMessage = '';
+              if (!meta.switchState) {
+                toggleStallionSwitchNative(true);
+                downloadAlertMessage += DOWNLOAD_ALERT_SWITCH_MESSAGE;
+              }
+              downloadAlertMessage += DOWNLOAD_ALERT_MESSAGE;
+              Alert.alert(DOWNLOAD_ALERT_HEADER, downloadAlertMessage, [
+                {
+                  text: DOWNLOAD_ALERT_BUTTON,
+                  style: 'cancel',
+                },
+              ]);
+              refreshStallionMeta();
+            });
           })
           .catch((err) => {
             dispatch(setDownloadError(err.toString()));

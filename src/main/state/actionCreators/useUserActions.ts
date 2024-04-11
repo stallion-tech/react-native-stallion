@@ -48,9 +48,17 @@ const useUserActions = (
       })
         .then((res) => res.json())
         .then((loginResponse) => {
-          const otpToken = loginResponse?.data?.otpToken as string;
-          if (otpToken) {
-            dispatch(setTempOtp(otpToken));
+          const accessToken = loginResponse?.data?.accessToken as string;
+          if (accessToken) {
+            dataManager?.setAccessToken(accessToken);
+            setApiKeyNative(accessToken);
+            dispatch(
+              setUserData({
+                fullName: loginResponse?.data?.user?.fullName,
+                email: loginResponse?.data?.user?.email,
+              })
+            );
+            dispatch(setRequiresLogin(false));
           } else {
             dispatch(setUserError(extractError(loginResponse)));
           }
@@ -104,7 +112,7 @@ const useUserActions = (
   const getUserProfile = useCallback(() => {
     dispatch(setUserLoading());
     fetch(API_BASE_URL + API_PATHS.USER_PROFILE, {
-      method: 'GET',
+      method: 'POST',
       headers: getApiHeaders(),
     })
       .then((res) => res.json())
