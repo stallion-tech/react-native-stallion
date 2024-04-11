@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
 isStallionEnabled = true
 begin
-  if JSON.parse(`node ./src/nativeScripts/getStallionEnabled.js`) == "false" then
+  if JSON.parse(`node ./src/nativeScripts/getStallionEnabled.js`) == false then
     isStallionEnabled = false
   end
 rescue

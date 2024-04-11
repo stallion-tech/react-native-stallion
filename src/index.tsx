@@ -31,11 +31,7 @@ try {
     isEnabled = false;
   }
   projectId = stallionConfigObj?.projectId || '';
-} catch (_) {
-  console.warn(`
-    Error in reading stallion.config.js file, falling back to noop version.
-  `);
-}
+} catch (_) {}
 if (isEnabled && StallionNativeModule?.getApiKey) {
   withStallion = withStallionMain;
   useStallionModal = useStallionModalMain;
