@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 
 public class StallionStorage {
   private static StallionStorage mInstance;
-  private Context mContext;
+  public Context mContext;
 
   private SharedPreferences sharedPreference;
 
@@ -18,6 +18,10 @@ public class StallionStorage {
   public void Initialize(Context context){
     mContext = context;
     sharedPreference = PreferenceManager.getDefaultSharedPreferences(mContext);
+  }
+
+  public String get(String key) {
+    return sharedPreference.getString(key, null);
   }
 
   public void set(String key, String value) {
@@ -34,10 +38,6 @@ public class StallionStorage {
 
   public Integer getInt(String key) {
     return sharedPreference.getInt(key, -1);
-  }
-
-  public String get(String key) {
-    return sharedPreference.getString(key, null);
   }
 
   public void delete(String key, Boolean deleteAll) {

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">StallionExample</string>
-    <string name="StallionSecretKey">mqk-T4Wmtyo5Tc0lDMZHdWTBvkT_Ml6fUEf5</string>
-    <string name="StallionApiKey">2Q43VXFXCOGY16O3OO9H</string>
+    <string name="StallionProjectId">64f5f341a4aeb5ccf93548e4</string>
+    <string name="StallionAppToken">spb_aAQpz7XtsZ3Cqy-3B5nWEpb0Xis8FnCePz3MqIAYMc</string>
 </resources>

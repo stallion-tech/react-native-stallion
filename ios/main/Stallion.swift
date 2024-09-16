@@ -28,12 +28,12 @@ class Stallion: RCTEventEmitter {
         guard let fromUrl = URL(string: receiveDownloadUrl as? String ?? "") else { return }
         
         do {
-                try StallionDownloader().load(
-                    url: fromUrl,
-                    reqBody: reqJson,
-                    resolve: resolve,
-                    reject: reject
-                )
+            try StallionDownloader().load(
+                url: fromUrl,
+                reqBody: reqJson,
+                resolve: resolve,
+                reject: reject
+            )
         } catch {
             let errorString = StallionConstants.DownloadPromiseResponses.GenericError
             reject("500", errorString, NSError(domain: errorString, code: 500))
