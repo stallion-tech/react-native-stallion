@@ -33,5 +33,19 @@ public class StallionConstants {
 
   public static final String DOWNLOAD_DELETE_ERROR = "Download operation cleanup error";
 
+
+  public static final String PROD_DIRECTORY = "/StallionProd";
+  public static final String STAGE_DIRECTORY = "/StallionStage";
+  public static final String TEMP_DOWNLOAD_FOLDER = "/temp";
+  public static final String NEW_FOLDER_SLOT = "/StallionNew";
+  public static final String STABLE_FOLDER_SLOT = "/StallionStable";
+  public static final String DEFAULT_FOLDER_SLOT = "/Default";
+
+  public static final String CURRENT_SLOT_KEY = "stallionCurrentSlot";
+  public static final String STALLION_API_BASE = "https://staging-api.redhorse.tech";
+  public static final String STALLION_INFO_API_PATH = "/api/v1/prod-bundles/get-update-meta";
+  public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
+  public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
+  public static final String STALLION_APP_TOKEN_KEY = "x-app-token";
 }
 

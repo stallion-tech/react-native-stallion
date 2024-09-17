@@ -43,6 +43,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
     String switchState = this.stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
     Boolean isStallionEnabled = switchState == null ? false : switchState.equals(StallionConstants.STALLION_SWITCH_ON);
     StallionErrorBoundary.toggleExceptionHandler(isStallionEnabled);
+    StallionDownloadManager.sync();
   }
 
   @Override
@@ -187,7 +188,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
         } else {
           targetSlot = 1;
         }
-        StallionZip.unzipFile(downloadedZip.getAbsolutePath(), baseDir + StallionConstants.BUNDLE_DEST_FOLDER_DIR + StallionConstants.SLOT_FOLDER_DIR + targetSlot);
+        StallionFileUtil.unzipFile(downloadedZip.getAbsolutePath(), baseDir + StallionConstants.BUNDLE_DEST_FOLDER_DIR + StallionConstants.SLOT_FOLDER_DIR + targetSlot);
         // setting active bucket ID, slot and version after downloading and all other jobs done
         stallionStorage.setInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER, targetSlot);
         stallionStorage.set(StallionConstants.ACTIVE_BUCKET_IDENTIFIER, receivedBucketId);
@@ -200,7 +201,7 @@ public class StallionModule extends ReactContextBaseJavaModule {
         promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE);
       } finally {
         try {
-          StallionZip.deleteFileOrFolderSilently(downloadedZip);
+          StallionFileUtil.deleteFileOrFolderSilently(downloadedZip);
         } catch (Exception e) {
           promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_DELETE_ERROR);
         }

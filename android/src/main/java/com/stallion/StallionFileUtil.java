@@ -1,9 +1,6 @@
 package com.stallion;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Build;
-import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -16,7 +13,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class StallionZip {
+public class StallionFileUtil {
     private static final int BUF_SIZE = 0x1000;
 
     public static void unzipFile(final String zipFilePath, final String destDirectory) {
@@ -46,7 +43,6 @@ public class StallionZip {
             }
 
             final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            Log.d(TAG, "Zip has " + zipFile.size() + " entries");
             while (entries.hasMoreElements()) {
                 final ZipEntry entry = entries.nextElement();
                 if (entry.isDirectory()) continue;
@@ -87,12 +83,10 @@ public class StallionZip {
             }
 
             zipFile.close();
-            Log.d("", destDirectory);
         } catch (Exception ex) {
             throw new Error(ex);
         }
     }
-
 
     private static long copy(InputStream from, OutputStream to) throws IOException {
         byte[] buf = new byte[BUF_SIZE];
@@ -123,5 +117,12 @@ public class StallionZip {
         if (!file.delete()) {
             throw new Error("Error deleting file " + file.getName());
         }
+    }
+    public static void moveFile(File fromFile, File toFile) {
+      if(toFile.exists()) {
+        deleteFileOrFolderSilently(toFile);
+      }
+      toFile.getParentFile().mkdirs();
+      fromFile.renameTo(toFile);
     }
 }
