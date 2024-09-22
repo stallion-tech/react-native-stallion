@@ -11,13 +11,14 @@ export const CLOSE_BUTTON_TEXT = 'close';
 export const BACK_BUTTON_TEXT = 'back';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
+export const APPLIED_TEXT = 'Applied';
 export const LOGOUT_BUTTON_TEXT = 'Logout';
 
 export const FOOTER_INFO_TITLE = 'Active Bucket: ';
 export const FOOTER_INFO_SUBTITLE = 'Version: ';
 export enum SWITCH_TEXTS {
-  ON = 'Enabled',
-  OFF = 'Disabled',
+  ON = 'STAGE',
+  OFF = 'PROD',
 }
 
 export const SWITCH_TITLE = 'Switch ';
@@ -98,3 +99,16 @@ export const DOWNLOAD_ALERT_SWITCH_MESSAGE = 'Stallion has been switched on. ';
 export const DOWNLOAD_ALERT_MESSAGE =
   'Restart the app for changes to take effect.';
 export const DOWNLOAD_ALERT_BUTTON = 'Ok';
+
+export enum NATIVE_CONSTANTS {
+  SDK_TOKEN = 'x-sdk-token',
+  SWITCH_STATE_INDENTIFIER = 'switchState',
+  PROD_DIRECTORY = '/StallionProd',
+  STAGE_DIRECTORY = '/StallionStage',
+  TEMP_FOLDER_SLOT = '/temp',
+  NEW_FOLDER_SLOT = '/StallionNew',
+  STABLE_FOLDER_SLOT = '/StallionStable',
+  DEFAULT_FOLDER_SLOT = '/Default',
+  CURRENT_PROD_SLOT_KEY = 'stallionProdCurrentSlot',
+  CURRENT_STAGE_SLOT_KEY = 'stallionStageCurrentSlot',
+}

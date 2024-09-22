@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { RefreshControl, FlatList } from 'react-native';
 
 import useListing from './hooks/useListing';
@@ -25,12 +25,17 @@ const Listing: React.FC = () => {
     fetchNextPage,
     nextPageLoading,
   } = useListing();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, [setIsMounted]);
   if (listingError) {
     return <ErrorView error={listingError} onRetry={fetchListing} />;
   }
   if (listingLoading && !listingData.length && !IS_ANDROID) {
     return <FooterLoader />;
   }
+  if (!isMounted) return null;
   return (
     <FlatList
       style={styles.mainContainer}

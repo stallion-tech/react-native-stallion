@@ -26,13 +26,14 @@ export let useStallionModal: () => IUseStallionModal;
 try {
   // const stallionConfigObj: IStallionConfig = require('../example/stallion.config.js'); // testing import
   const stallionConfigObj: IStallionConfig = require('../../../stallion.config.js'); // prod import
-  isEnabled = stallionConfigObj?.stallionEnabled || false;
+  console.log(stallionConfigObj, '4444444');
+  isEnabled = stallionConfigObj?.stallionEnabled || true;
   if (stallionConfigObj?.stallionEnabled === false) {
     isEnabled = false;
   }
   projectId = stallionConfigObj?.projectId || '';
 } catch (_) {}
-if (isEnabled && StallionNativeModule?.getApiKey) {
+if (isEnabled && StallionNativeModule?.getUniqueId) {
   withStallion = withStallionMain;
   useStallionModal = useStallionModalMain;
   SharedDataManager.getInstance()?.setConfigProjectId(projectId);

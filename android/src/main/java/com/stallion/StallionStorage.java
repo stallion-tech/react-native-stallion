@@ -21,19 +21,19 @@ public class StallionStorage {
   }
 
   public String get(String key) {
-    return sharedPreference.getString(key, null);
+    return sharedPreference.getString(key, "");
   }
 
   public void set(String key, String value) {
     SharedPreferences.Editor editor = sharedPreference.edit();
     editor.putString(key, value);
-    editor.commit();
+    editor.apply();
   }
 
   public void setInt(String key, Integer value) {
     SharedPreferences.Editor editor = sharedPreference.edit();
     editor.putInt(key, value);
-    editor.commit();
+    editor.apply();
   }
 
   public Integer getInt(String key) {
@@ -42,12 +42,13 @@ public class StallionStorage {
 
   public void delete(String key, Boolean deleteAll) {
     SharedPreferences.Editor editor = sharedPreference.edit();
-    if(deleteAll == true){
+    if(deleteAll){
       editor.clear();
       return;
     } else {
       editor.remove(key);
     }
+    editor.apply();
   }
 }
 

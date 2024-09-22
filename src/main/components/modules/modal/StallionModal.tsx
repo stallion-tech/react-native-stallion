@@ -11,6 +11,8 @@ import Listing from '../listing';
 import useStallionModal from './hooks/useStallionModal';
 import OverlayLoader from '../../../components/common/OverlayLoader';
 import ProfileOverlay from '../../common/ProfileOverlay';
+import { SWITCH_STATES } from '../../../../types/meta.types';
+import Prod from '../prod';
 
 const StallionModal: React.FC = () => {
   const {
@@ -19,17 +21,16 @@ const StallionModal: React.FC = () => {
     onBackPress,
     onClosePress,
     loginRequired,
-    metaState,
     isBackEnabled,
-    activeBucketMeta,
-    toggleStallionSwitch,
     isDownloading,
     downloadProgress,
-    downloadError,
     showProfileSection,
+    metaState,
     closeProfileSection,
     presentProfileSection,
     performLogout,
+    downloadError,
+    handleSwitch,
   } = useStallionModal();
   return (
     <Modal
@@ -48,7 +49,13 @@ const StallionModal: React.FC = () => {
             onProfilePress={presentProfileSection}
           />
           <View style={styles.listingSection}>
-            {loginRequired ? <Login /> : <Listing />}
+            {loginRequired ? (
+              <Login />
+            ) : metaState.switchState === SWITCH_STATES.STAGE ? (
+              <Listing />
+            ) : (
+              <Prod />
+            )}
             {isDownloading ? (
               <OverlayLoader currentDownloadFraction={downloadProgress} />
             ) : null}
@@ -63,9 +70,8 @@ const StallionModal: React.FC = () => {
           </View>
           {loginRequired ? null : (
             <Footer
-              switchIsOn={metaState.switchState}
-              activeBundle={activeBucketMeta}
-              onSwitchToggle={toggleStallionSwitch}
+              switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
+              onSwitchToggle={handleSwitch}
               errorMessage={downloadError}
             />
           )}

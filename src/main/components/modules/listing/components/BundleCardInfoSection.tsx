@@ -7,6 +7,7 @@ import CardDescriptionContent from './CardDescriptionContent';
 import { parseDateTime } from '../../../../utils/dateUtil';
 
 import {
+  APPLIED_TEXT,
   BUCKET_CARD_TEXTS,
   BUNDLE_APPLIED_TEXT,
   BUNDLE_CARD_AUTHOR,
@@ -21,21 +22,25 @@ import { COLORS } from '../../../../constants/colors';
 import styles from './styles';
 
 interface IBundleCardInfoSection {
+  id: string;
   name: string;
   updatedAt: string;
   description?: string;
   version?: number;
   author?: string;
+  isDownloaded?: boolean;
   isApplied?: boolean;
   downloadUrl: string;
 }
 
 const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
+  id,
   version,
   description,
   updatedAt,
   author,
   isApplied,
+  isDownloaded,
   downloadUrl,
 }) => {
   const {
@@ -45,10 +50,12 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
   } = useContext(GlobalContext);
 
   const stateColor = useMemo(() => {
-    if (isApplied && !metaState.switchState) return COLORS.orange;
-    if (isApplied && metaState.switchState) return COLORS.green;
+    if ((isApplied || isDownloaded) && !metaState.switchState)
+      return COLORS.orange;
+    if ((isApplied || isDownloaded) && metaState.switchState)
+      return COLORS.green;
     return COLORS.blue;
-  }, [isApplied, metaState.switchState]);
+  }, [isApplied, metaState.switchState, isDownloaded]);
 
   const updatedAtText = useMemo(() => {
     return parseDateTime(updatedAt);
@@ -56,9 +63,9 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
 
   const handleDownloadPress = useCallback(() => {
     if (!isApplied && selectedBucketId && version) {
-      downloadBundle(version, selectedBucketId, downloadUrl);
+      downloadBundle(downloadUrl, id);
     }
-  }, [isApplied, selectedBucketId, version, downloadBundle, downloadUrl]);
+  }, [isApplied, selectedBucketId, version, downloadBundle, downloadUrl, id]);
 
   return (
     <View style={styles.container}>
@@ -68,7 +75,11 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
           onPress={handleDownloadPress}
           style={[styles.appliedText, { color: stateColor }]}
         >
-          {isApplied ? DOWNLOADED_TEXT : DOWNLOAD_BUTTON_TEXT}
+          {isApplied
+            ? APPLIED_TEXT
+            : isDownloaded
+            ? DOWNLOADED_TEXT
+            : DOWNLOAD_BUTTON_TEXT}
         </Text>
       </View>
       {description ? (

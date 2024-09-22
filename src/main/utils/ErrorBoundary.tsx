@@ -5,7 +5,7 @@ import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
 import {
-  getStallionMeta,
+  getStallionMetaNative,
   toggleStallionSwitchNative,
 } from './StallionNaitveUtils';
 import {
@@ -14,6 +14,7 @@ import {
   STD_MARGIN,
 } from '../constants/appConstants';
 import { COLORS } from '../constants/colors';
+import { SWITCH_STATES } from '../../types/meta.types';
 
 interface IErrorBoundaryProps {}
 interface IErrorBoundaryState {
@@ -32,9 +33,9 @@ class ErrorBoundary extends Component<
     this.continueCrash = this.continueCrash.bind(this);
   }
   componentDidCatch(error: Error): void {
-    getStallionMeta((stallionMeta) => {
-      if (stallionMeta?.switchState) {
-        toggleStallionSwitchNative(false);
+    getStallionMetaNative().then((stallionMeta) => {
+      if (stallionMeta?.switchState === SWITCH_STATES.STAGE) {
+        toggleStallionSwitchNative(SWITCH_STATES.PROD);
         const errorString: string = [
           error.name,
           error.message,

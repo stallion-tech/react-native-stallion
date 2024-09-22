@@ -5,14 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableMap;
 
 public class StallionErrorBoundary {
   public static Thread.UncaughtExceptionHandler _androidUncaughtExceptionHandler;
   public static Thread _exceptionThread;
   public static Throwable _exceptionThrowable;
-
   public static ReactApplicationContext _currentContext;
+
   public static void initErrorBoundary(ReactApplicationContext currentContext) {
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     _currentContext = currentContext;
@@ -24,8 +26,20 @@ public class StallionErrorBoundary {
         _exceptionThrowable = throwable;
         String stackTraceString = Log.getStackTraceString(throwable);
         StallionStorage stallionStorage = StallionStorage.getInstance();
-        if(stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER).equals(StallionConstants.STALLION_SWITCH_ON)) {
-          stallionStorage.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, StallionConstants.STALLION_SWITCH_OFF);
+        String switchState = stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
+        if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
+          StallionRollbackManager.rollbackProd();
+
+          WritableMap exceptionErrorPayload = Arguments.createMap();
+          exceptionErrorPayload.putString("error", stackTraceString.substring(0,100));
+          StallionEventEmitter.sendEvent(
+            StallionEventEmitter.getEventPayload(
+              StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),
+              exceptionErrorPayload
+            )
+          );
+        } else if(switchState.equals(StallionConstants.SwitchState.STAGE.toString())) {
+          StallionRollbackManager.rollbackStage();
           Activity currentActivity = _currentContext.getCurrentActivity();
           if(currentActivity != null) {
             Intent myIntent = new Intent(currentActivity, StallionDefaultErrorActivity.class);
@@ -35,8 +49,6 @@ public class StallionErrorBoundary {
           } else {
             continueExceptionFlow();
           }
-        } else {
-          continueExceptionFlow();
         }
       });
     } else {

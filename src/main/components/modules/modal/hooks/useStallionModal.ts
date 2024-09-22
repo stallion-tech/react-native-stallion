@@ -7,13 +7,13 @@ import {
   toggleStallionSwitchNative,
 } from '../../../../utils/StallionNaitveUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
+import { SWITCH_STATES } from '../../../../../types/meta.types';
 
 const useStallionModal = () => {
   const {
     isModalVisible,
     userState,
     metaState,
-    bucketState,
     bundleState,
     downloadState,
     actions: {
@@ -30,9 +30,8 @@ const useStallionModal = () => {
     requestAnimationFrame(() => setIsModalVisible(false));
   }, [setIsModalVisible]);
   const loginRequired = userState?.loginRequired;
-
   useEffect(() => {
-    getApiKeyNative((apiKey) => {
+    getApiKeyNative().then((apiKey) => {
       if (apiKey) {
         SharedDataManager.getInstance()?.setAccessToken(apiKey);
       } else {
@@ -46,22 +45,6 @@ const useStallionModal = () => {
     () => (bundleState.selectedBucketId ? true : false),
     [bundleState.selectedBucketId]
   );
-
-  const activeBucketMeta = useMemo(() => {
-    const bucketName =
-      bucketState.data?.filter(
-        (bucketData) => bucketData.id === metaState.activeBucket
-      )?.[0]?.name || '';
-    return {
-      bucketName,
-      version: metaState.activeVersion || '',
-    };
-  }, [metaState.activeBucket, metaState.activeVersion, bucketState.data]);
-
-  const toggleStallionSwitch = useCallback(() => {
-    toggleStallionSwitchNative(!metaState.switchState);
-    refreshMeta();
-  }, [metaState.switchState, refreshMeta]);
 
   const isDownloading = useMemo<boolean>(() => {
     return downloadState.isLoading;
@@ -91,6 +74,16 @@ const useStallionModal = () => {
     setUserRequiresLogin(true);
   }, [setUserRequiresLogin, closeProfileSection]);
 
+  const handleSwitch = useCallback(
+    (newSwitchStatus) => {
+      toggleStallionSwitchNative(
+        newSwitchStatus ? SWITCH_STATES.STAGE : SWITCH_STATES.PROD
+      );
+      refreshMeta();
+    },
+    [refreshMeta]
+  );
+
   return {
     isModalVisible,
     onBackPress,
@@ -98,8 +91,6 @@ const useStallionModal = () => {
     loginRequired,
     metaState,
     isBackEnabled,
-    activeBucketMeta,
-    toggleStallionSwitch,
     isDownloading,
     downloadProgress,
     downloadError,
@@ -108,6 +99,7 @@ const useStallionModal = () => {
     closeProfileSection,
     presentProfileSection,
     performLogout,
+    handleSwitch,
   };
 };
 

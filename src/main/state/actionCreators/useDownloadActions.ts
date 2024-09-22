@@ -1,26 +1,17 @@
 import React, { useEffect, useCallback } from 'react';
-import { Alert, NativeEventEmitter } from 'react-native';
+import { NativeEventEmitter } from 'react-native';
 
 import SharedDataManager from '../../utils/SharedDataManager';
 import StallionNativeModule from '../../../StallionNativeModule';
 import {
   downloadBundleNative,
-  getStallionMeta,
-  toggleStallionSwitchNative,
+  onLaunchNative,
 } from '../../utils/StallionNaitveUtils';
 import {
   setDownloadData,
   setDownloadError,
   setDownloadLoading,
 } from '../actions/downloadActions';
-
-import {
-  DOWNLOAD_ALERT_BUTTON,
-  DOWNLOAD_ALERT_HEADER,
-  DOWNLOAD_ALERT_MESSAGE,
-  DOWNLOAD_ALERT_SWITCH_MESSAGE,
-  DOWNLOAD_PROGRESS_EVENT,
-} from '../../constants/appConstants';
 
 import { IDownloadAction } from '../../../types/download.types';
 
@@ -30,15 +21,14 @@ const useDownloadActions = (
 ) => {
   const dataManager = SharedDataManager.getInstance();
   const downloadBundle = useCallback(
-    (version: number, bucketId: string, apiDownloadUrl: string) => {
+    (apiDownloadUrl: string, hash: string) => {
       dispatch(setDownloadLoading());
       const projectId = dataManager?.getProjectId() || '';
       const url = `${apiDownloadUrl}?projectId=${projectId}`;
       requestAnimationFrame(() => {
         downloadBundleNative({
-          version,
-          bucketId,
           url,
+          hash,
         })
           .then((_) => {
             dispatch(
@@ -46,21 +36,7 @@ const useDownloadActions = (
                 currentProgress: 1,
               })
             );
-            getStallionMeta((meta) => {
-              let downloadAlertMessage = '';
-              if (!meta.switchState) {
-                toggleStallionSwitchNative(true);
-                downloadAlertMessage += DOWNLOAD_ALERT_SWITCH_MESSAGE;
-              }
-              downloadAlertMessage += DOWNLOAD_ALERT_MESSAGE;
-              Alert.alert(DOWNLOAD_ALERT_HEADER, downloadAlertMessage, [
-                {
-                  text: DOWNLOAD_ALERT_BUTTON,
-                  style: 'cancel',
-                },
-              ]);
-              refreshStallionMeta();
-            });
+            refreshStallionMeta();
           })
           .catch((err) => {
             dispatch(setDownloadError(err.toString()));
@@ -71,21 +47,13 @@ const useDownloadActions = (
   );
 
   useEffect(() => {
+    onLaunchNative('Success');
     const eventEmitter = new NativeEventEmitter(StallionNativeModule);
-    eventEmitter.addListener(
-      DOWNLOAD_PROGRESS_EVENT,
-      (downloadFraction: number) => {
-        if (downloadFraction) {
-          dispatch(
-            setDownloadData({
-              currentProgress: downloadFraction,
-            })
-          );
-        }
-      }
-    );
+    eventEmitter.addListener('STALLION_NATIVE_EVENT', (data: any) => {
+      console.log('stallion event', data);
+    });
     return () => {
-      eventEmitter.removeAllListeners(DOWNLOAD_PROGRESS_EVENT);
+      eventEmitter.removeAllListeners('STALLION_NATIVE_EVENT');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

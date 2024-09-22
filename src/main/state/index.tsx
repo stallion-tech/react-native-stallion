@@ -51,7 +51,6 @@ const GlobalProvider: React.FC = ({ children }) => {
     setUserRequiresLogin
   );
   const { downloadBundle } = useDownloadActions(downloadDispatch, refreshMeta);
-
   const value = {
     isModalVisible,
     metaState,

@@ -23,7 +23,7 @@ interface IGlobalContextActions {
   setUserRequiresLogin: (requiresLogin: boolean) => void;
   refreshMeta: () => void;
   selectBucket: (bucketId?: string | null) => void;
-  downloadBundle: (version: number, bucketId: string, url: string) => void;
+  downloadBundle: (url: string, hash: string) => void;
   getUserProfile: () => void;
 }
 

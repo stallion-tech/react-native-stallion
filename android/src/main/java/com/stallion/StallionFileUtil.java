@@ -105,7 +105,8 @@ public class StallionFileUtil {
     public static void deleteFileOrFolderSilently(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (File fileEntry : files) {
+          assert files != null;
+          for (File fileEntry : files) {
                 if (fileEntry.isDirectory()) {
                     deleteFileOrFolderSilently(fileEntry);
                 } else {

@@ -13,37 +13,43 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import android.util.Log;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import android.content.res.Resources;
+import android.provider.Settings;
+import java.util.UUID;
 
 @ReactModule(name = StallionConstants.MODULE_NAME)
 public class StallionModule extends ReactContextBaseJavaModule {
-  private ReactApplicationContext currentReactContext;
-  private String baseDir;
-  private StallionStorage stallionStorage;
+  private final ReactApplicationContext currentReactContext;
+  private final StallionStorage stallionStorage;
   private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
 
   public StallionModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.currentReactContext = reactContext;
-    this.baseDir = reactContext.getFilesDir().getAbsolutePath() + StallionConstants.STALLION_PACKAGE_PATH;
     StallionStorage.getInstance().Initialize(reactContext);
     this.stallionStorage = StallionStorage.getInstance();
     StallionErrorBoundary.initErrorBoundary(reactContext);
-    String switchState = this.stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
-    Boolean isStallionEnabled = switchState == null ? false : switchState.equals(StallionConstants.STALLION_SWITCH_ON);
-    StallionErrorBoundary.toggleExceptionHandler(isStallionEnabled);
-    StallionDownloadManager.sync();
+    StallionErrorBoundary.toggleExceptionHandler(true);
+    StallionSynManager.sync();
+  }
+
+  private void checkInstallEvent() {
+    String newReleaseInstalledId = this.stallionStorage.get(StallionConstants.NEW_RELEASE_INSTALL_IDENTIFIER);
+    if(!newReleaseInstalledId.isEmpty()) {
+      this.stallionStorage.set(StallionConstants.NEW_RELEASE_INSTALL_IDENTIFIER, "");
+      emitInstallEvent(newReleaseInstalledId);
+    }
+  }
+
+  private static void emitInstallEvent(String installedReleaseHash) {
+    WritableMap successEventPayload = Arguments.createMap();
+    successEventPayload.putString("releaseHash", installedReleaseHash);
+    StallionEventEmitter.sendEvent(
+      StallionEventEmitter.getEventPayload(
+        StallionConstants.NativeEventTypesProd.INSTALLED_PROD.toString(),
+        successEventPayload
+      )
+    );
   }
 
   @Override
@@ -53,160 +59,86 @@ public class StallionModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setApiKey(String apiKey) {
-    this.stallionStorage.set(StallionConstants.API_KEY_IDENTIFIER, apiKey);
+  public void setStorage(String key, String value) {
+    this.stallionStorage.set(key, value);
+  }
+
+
+  @ReactMethod
+  public void getStorage(String key, Callback callback) {
+    callback.invoke(this.stallionStorage.get(key));
   }
 
   @ReactMethod
-  public void getApiKey(Callback callback) {
-    callback.invoke(
-      this.stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER)
-    );
+  public void onLaunch(String launchData) {
+    StallionRollbackManager.stabilizeRelease();
+    StallionSynManager.checkAndDownload();
+    checkInstallEvent();
   }
 
   @ReactMethod
-  public void getStallionMeta(Callback callback) {
-    WritableMap bundleMeta = Arguments.createMap();
-    String activeBucket = this.stallionStorage.get(StallionConstants.ACTIVE_BUCKET_IDENTIFIER);
-    String switchState = this.stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
-    int activeVersion = this.stallionStorage.getInt(StallionConstants.ACTIVE_VERSION_IDENTIFIER);
-
-    bundleMeta.putString(StallionConstants.ACTIVE_BUCKET_IDENTIFIER, activeBucket);
-    bundleMeta.putBoolean(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER,
-      switchState == null ? false : switchState.equals(StallionConstants.STALLION_SWITCH_ON)
-    );
-    bundleMeta.putString(StallionConstants.ACTIVE_VERSION_IDENTIFIER, String.valueOf(activeVersion));
-    callback.invoke(bundleMeta);
-  }
-
-  @ReactMethod
-  public void toggleStallionSwitch(Boolean stallionBundleIsOn) {
-    this.stallionStorage.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, stallionBundleIsOn ? StallionConstants.STALLION_SWITCH_ON : StallionConstants.STALLION_SWITCH_OFF);
-  }
-
-  private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
-    if(this.eventEmitter == null) {
-      this.eventEmitter = this.currentReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+  public  void  getUniqueId(Callback callback) {
+    String uniqueId = "";
+    try {
+      uniqueId = Settings.Secure.getString(this.currentReactContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+    } catch (Exception e) {
+      uniqueId = UUID.randomUUID().toString();
     }
-    return this.eventEmitter;
+    callback.invoke(uniqueId);
   }
 
   @ReactMethod
   public void downloadPackage(ReadableMap bundleInfo, Promise promise) {
-    String receivedBucketId = bundleInfo.getString("bucketId");
     String receivedDownloadUrl = bundleInfo.getString("url");
-    Integer receivedVersion = bundleInfo.getInt("version");
-
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    executor.execute(() -> {
-      DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter =  getEventEmitter();
-
-      FileOutputStream fout = null;
-      BufferedOutputStream bout = null;
-      BufferedInputStream inputStream = null;
-      HttpURLConnection connection = null;
-      File downloadedZip = null;
-      boolean isZip = false;
-
-      try {
-        int DOWNLOAD_BUFFER_SIZE = StallionConstants.DOWNLOAD_BUFFER_SIZE;
-        URL url = new URL(receivedDownloadUrl);
-        connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod( "GET" );
-        connection.setRequestProperty("x-sdk-access-token", stallionStorage.get(StallionConstants.API_KEY_IDENTIFIER));
-        connection.setRequestProperty("Content-Type", "application/json");
-
-        connection.setDoInput(true);
-
-        connection.connect();
-        inputStream = new BufferedInputStream(connection.getInputStream());
-        File downloadFolder = new File(baseDir + StallionConstants.DOWNLOAD_FOLDER_DIR);
-        downloadFolder.getParentFile().mkdirs();
-
-        downloadedZip = new File(downloadFolder, StallionConstants.ZIP_FILE_NAME);
-        downloadedZip.getParentFile().mkdirs();
-
-        fout = new FileOutputStream(downloadedZip, false);
-        bout = new BufferedOutputStream(fout, DOWNLOAD_BUFFER_SIZE);
-        byte[] data = new byte[DOWNLOAD_BUFFER_SIZE];
-        byte[] header = new byte[4];
-
-        long totalBytes = connection.getContentLength();
-        long receivedBytes = 0;
-        int numBytesRead;
-        double prevDownloadFraction = 0;
-        double progressEventThreshold = 0.1;
-        while ((numBytesRead = inputStream.read(data, 0, DOWNLOAD_BUFFER_SIZE)) >= 0) {
-          if (receivedBytes < 4) {
-            for (int i = 0; i < numBytesRead; i++) {
-              int headerOffset = (int) (receivedBytes) + i;
-              if (headerOffset >= 4) {
-                break;
-              }
-              header[headerOffset] = data[i];
-            }
-          }
-
-          receivedBytes += numBytesRead;
-          bout.write(data, 0, numBytesRead);
-          double currentDownloadFraction = (double) receivedBytes / (double) totalBytes;
-          if(currentDownloadFraction - prevDownloadFraction > progressEventThreshold) {
-            prevDownloadFraction = currentDownloadFraction;
-            getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, currentDownloadFraction));
-          }
+    String receivedHash = bundleInfo.getString("hash");
+    String sdkToken = stallionStorage.get(StallionConstants.STALLION_SDK_TOKEN_KEY);
+    StallionDownloadManager.downloadBundle(
+      receivedDownloadUrl,
+      this.currentReactContext.getFilesDir().getAbsolutePath() + StallionConstants.STAGE_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT,
+      sdkToken,
+      "",
+      new StallionDownloadCallback() {
+        @Override
+        public void onReject(String prefix, String error) {
+          WritableMap errorEventPayload = Arguments.createMap();
+          errorEventPayload.putString("releaseHash", receivedHash);
+          StallionEventEmitter.sendEvent(
+            StallionEventEmitter.getEventPayload(
+              StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE.toString(),
+              errorEventPayload
+            )
+          );
+          promise.reject(prefix, error);
         }
 
-        isZip = ByteBuffer.wrap(header).getInt() == 0x504b0304;
-        Log.d("", String.valueOf(isZip));
+        @Override
+        public void onSuccess(String successPayload) {
+          stallionStorage.set(StallionConstants.CURRENT_STAGE_SLOT_KEY, StallionConstants.TEMP_FOLDER_SLOT);
+          stallionStorage.set(StallionConstants.STAGE_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, receivedHash);
+          WritableMap successEventPayload = Arguments.createMap();
+          successEventPayload.putString("releaseHash", receivedHash);
+          StallionEventEmitter.sendEvent(
+            StallionEventEmitter.getEventPayload(
+              StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE.toString(),
+              successEventPayload
+            )
+          );
+          promise.resolve(StallionConstants.DOWNLOAD_SUCCESS_MESSAGE);
+        }
 
-      } catch (Exception e) {
-        promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_API_ERROR_MESSAGE);
-      } finally {
-        try {
-          if (bout != null) bout.close();
-          if (fout != null) fout.close();
-          if (inputStream != null) inputStream.close();
-          if (connection != null) connection.disconnect();
-        } catch (IOException e) {
-          promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_API_ERROR_MESSAGE);
+        @Override
+        public void onProgress(double downloadFraction) {
+          WritableMap progressEventPayload = Arguments.createMap();
+          progressEventPayload.putString("releaseHash", receivedHash);
+          progressEventPayload.putDouble("progress", downloadFraction);
+          StallionEventEmitter.sendEvent(
+            StallionEventEmitter.getEventPayload(
+              StallionConstants.NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE.toString(),
+              progressEventPayload
+            )
+          );
         }
       }
-
-      if (!isZip) {
-        promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, "Not a zip file");
-        return;
-      }
-
-      try {
-        int currentActiveSlot = stallionStorage.getInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER);
-        int targetSlot;
-        if(currentActiveSlot == 1) {
-          targetSlot = 2;
-        } else if(currentActiveSlot == 2) {
-          targetSlot = 1;
-        } else {
-          targetSlot = 1;
-        }
-        StallionFileUtil.unzipFile(downloadedZip.getAbsolutePath(), baseDir + StallionConstants.BUNDLE_DEST_FOLDER_DIR + StallionConstants.SLOT_FOLDER_DIR + targetSlot);
-        // setting active bucket ID, slot and version after downloading and all other jobs done
-        stallionStorage.setInt(StallionConstants.ACTIVE_SLOT_IDENTIFIER, targetSlot);
-        stallionStorage.set(StallionConstants.ACTIVE_BUCKET_IDENTIFIER, receivedBucketId);
-        if (receivedVersion != null) {
-          stallionStorage.setInt(StallionConstants.ACTIVE_VERSION_IDENTIFIER, receivedVersion);
-        }
-        promise.resolve(StallionConstants.DOWNLOAD_SUCCESS_MESSAGE);
-        getReactApplicationContext().runOnUiQueueThread(() -> getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(StallionConstants.DOWNLOAD_PROGRESS_EVENT, 1));
-      } catch (Exception e) {
-        promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE);
-      } finally {
-        try {
-          StallionFileUtil.deleteFileOrFolderSilently(downloadedZip);
-        } catch (Exception e) {
-          promise.reject(StallionConstants.DOWNLOAD_ERROR_PREFIX, StallionConstants.DOWNLOAD_DELETE_ERROR);
-        }
-        return;
-      }
-    });
+    );
   }
 }

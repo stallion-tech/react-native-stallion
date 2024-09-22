@@ -33,45 +33,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: STD_MARGIN,
     paddingVertical: STD_MARGIN / 2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.white,
   },
-  infoTitle: {
-    fontSize: STD_MARGIN * 1.2,
-    color: COLORS.text_major,
-  },
-  infoSubTitle: {
-    fontSize: STD_MARGIN * 1.2,
-    marginTop: STD_MARGIN / 2,
-    color: COLORS.text_major,
-  },
-  alignCenter: {
-    alignItems: 'center',
-  },
-  dividerSection: {
+  tabContainer: {
     flex: 1,
-    justifyContent: 'flex-start',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: STD_MARGIN,
+    borderRadius: STD_MARGIN,
   },
-  dividerSection2: {
-    flex: 0.7,
-    justifyContent: 'flex-start',
+  tabSelected: {
+    backgroundColor: COLORS.blue,
   },
-  bold: {
+  titleSelected: {
+    fontSize: STD_MARGIN * 1.2,
+    color: COLORS.white,
     fontWeight: 'bold',
   },
-  noDownloadText: {
-    alignSelf: 'center',
-    color: COLORS.black5,
-  },
-  greenColor: {
-    color: COLORS.green,
-  },
-  redColor: {
-    color: COLORS.red,
-  },
-  switchButton: {
-    marginTop: STD_MARGIN / 2,
+  titleBasic: {
+    textAlign: 'center',
+    fontSize: STD_MARGIN * 1.1,
+    color: COLORS.text_major,
   },
 });
 
