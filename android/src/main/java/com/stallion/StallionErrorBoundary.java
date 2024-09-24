@@ -1,7 +1,6 @@
 package com.stallion;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -28,16 +27,18 @@ public class StallionErrorBoundary {
         StallionStorage stallionStorage = StallionStorage.getInstance();
         String switchState = stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
         if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
-          StallionRollbackManager.rollbackProd();
-
-          WritableMap exceptionErrorPayload = Arguments.createMap();
-          exceptionErrorPayload.putString("error", stackTraceString.substring(0,100));
-          StallionEventEmitter.sendEvent(
-            StallionEventEmitter.getEventPayload(
-              StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),
-              exceptionErrorPayload
-            )
-          );
+          if(!StallionStorage.getInstance().getIsMounted()) {
+            StallionRollbackManager.rollbackProd();
+            WritableMap exceptionErrorPayload = Arguments.createMap();
+            exceptionErrorPayload.putString("error", stackTraceString.substring(0, 100));
+            StallionEventEmitter.sendEvent(
+              StallionEventEmitter.getEventPayload(
+                StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),
+                exceptionErrorPayload
+              )
+            );
+          }
+          continueExceptionFlow();
         } else if(switchState.equals(StallionConstants.SwitchState.STAGE.toString())) {
           StallionRollbackManager.rollbackStage();
           Activity currentActivity = _currentContext.getCurrentActivity();
@@ -49,6 +50,8 @@ public class StallionErrorBoundary {
           } else {
             continueExceptionFlow();
           }
+        } else {
+          continueExceptionFlow();
         }
       });
     } else {

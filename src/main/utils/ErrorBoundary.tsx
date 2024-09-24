@@ -4,10 +4,7 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
 import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
-import {
-  getStallionMetaNative,
-  toggleStallionSwitchNative,
-} from './StallionNaitveUtils';
+import { getStallionMetaNative } from './StallionNaitveUtils';
 import {
   STALLION_EB_BTN_TXT,
   STALLION_EB_INFO,
@@ -35,7 +32,6 @@ class ErrorBoundary extends Component<
   componentDidCatch(error: Error): void {
     getStallionMetaNative().then((stallionMeta) => {
       if (stallionMeta?.switchState === SWITCH_STATES.STAGE) {
-        toggleStallionSwitchNative(SWITCH_STATES.PROD);
         const errorString: string = [
           error.name,
           error.message,

@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 public class StallionStorage {
   private static StallionStorage mInstance;
+  private Boolean isMounted = false;
   public Context mContext;
 
   private SharedPreferences sharedPreference;
@@ -13,6 +14,14 @@ public class StallionStorage {
   public static StallionStorage getInstance(){
     if (mInstance == null) mInstance = new StallionStorage();
     return mInstance;
+  }
+
+  public Boolean getIsMounted() {
+    return mInstance.isMounted;
+  }
+
+  public void setIsMounted() {
+    mInstance.isMounted = true;
   }
 
   public void Initialize(Context context){

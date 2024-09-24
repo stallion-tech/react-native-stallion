@@ -16,14 +16,13 @@ public class StallionSynManager {
       Context appContext = stallionStorage.mContext;
       String parentPackageName= appContext.getPackageName();
       PackageInfo pInfo = appContext.getPackageManager().getPackageInfo(parentPackageName, 0);
-//      String appVersion = pInfo.versionName; // TODO: Uncomment
-      String appVersion = "10.0.1";
+      String appVersion = pInfo.versionName;
       Resources res = appContext.getResources();
       int stallionProjectIdRes = res.getIdentifier(StallionConstants.STALLION_PROJECT_ID_IDENTIFIER, "string", parentPackageName);
       int stallionTokenRes = res.getIdentifier(StallionConstants.STALLION_APP_TOKEN_IDENTIFIER, "string", parentPackageName);
       String projectId = appContext.getString(stallionProjectIdRes);
       String appToken = appContext.getString(stallionTokenRes);
-      String platform = "ios"; // TODO: make android
+      String platform = "android";
 
       StallionStorage stallionStorageInstance = StallionStorage.getInstance();
       String currentProdSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);

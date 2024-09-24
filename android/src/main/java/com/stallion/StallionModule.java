@@ -33,25 +33,6 @@ public class StallionModule extends ReactContextBaseJavaModule {
     StallionSynManager.sync();
   }
 
-  private void checkInstallEvent() {
-    String newReleaseInstalledId = this.stallionStorage.get(StallionConstants.NEW_RELEASE_INSTALL_IDENTIFIER);
-    if(!newReleaseInstalledId.isEmpty()) {
-      this.stallionStorage.set(StallionConstants.NEW_RELEASE_INSTALL_IDENTIFIER, "");
-      emitInstallEvent(newReleaseInstalledId);
-    }
-  }
-
-  private static void emitInstallEvent(String installedReleaseHash) {
-    WritableMap successEventPayload = Arguments.createMap();
-    successEventPayload.putString("releaseHash", installedReleaseHash);
-    StallionEventEmitter.sendEvent(
-      StallionEventEmitter.getEventPayload(
-        StallionConstants.NativeEventTypesProd.INSTALLED_PROD.toString(),
-        successEventPayload
-      )
-    );
-  }
-
   @Override
   @NonNull
   public String getName() {
@@ -73,7 +54,8 @@ public class StallionModule extends ReactContextBaseJavaModule {
   public void onLaunch(String launchData) {
     StallionRollbackManager.stabilizeRelease();
     StallionSynManager.checkAndDownload();
-    checkInstallEvent();
+    StallionStorage.getInstance().setIsMounted();
+    StallionEventEmitter.triggerPendingEvents();
   }
 
   @ReactMethod

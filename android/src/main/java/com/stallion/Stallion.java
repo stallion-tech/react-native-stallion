@@ -30,6 +30,17 @@ public class Stallion {
     return pInfo.versionName;
   }
 
+  private static void sendInstallEvent(String installedReleaseHash) {
+    WritableMap successEventPayload = Arguments.createMap();
+    successEventPayload.putString("releaseHash", installedReleaseHash);
+    StallionEventEmitter.sendEvent(
+      StallionEventEmitter.getEventPayload(
+        StallionConstants.NativeEventTypesProd.INSTALLED_PROD.toString(),
+        successEventPayload
+      )
+    );
+  }
+
   public static String getJSBundleFile(Context applicationContext, String defaultBundlePath) {
     StallionStorage.getInstance().Initialize(applicationContext);
     StallionStorage stallionStorageInstance = StallionStorage.getInstance();
@@ -61,8 +72,8 @@ public class Stallion {
           String tempReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT);
           stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, tempReleaseHash);
           stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.NEW_FOLDER_SLOT);
-          stallionStorageInstance.set(StallionConstants.NEW_RELEASE_INSTALL_IDENTIFIER, tempReleaseHash);
           stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, "");
+          sendInstallEvent(tempReleaseHash);
           return baseFolderPath + StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
         case StallionConstants.NEW_FOLDER_SLOT:
           return baseFolderPath + StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;

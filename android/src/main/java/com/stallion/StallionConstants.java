@@ -9,7 +9,7 @@ public class StallionConstants {
   public static final String ZIP_FILE_NAME = "build.zip";
   public static final String UNZIP_FOLDER_NAME = "/build";
   public static final String ANDROID_BUNDLE_FILE_NAME = "/index.android.bundle";
-  public static final String DEFAULT_JS_BUNDLE_LOCATION_BASE = "assets://";
+  public static final String DEFAULT_JS_BUNDLE_LOCATION_BASE = "assets:/";
 
   public static final String STALLION_SWITCH_STATE_IDENTIFIER = "switchState";
   public static final String STALLION_APP_VERSION_IDENTIFIER = "stallionAppVersion";
