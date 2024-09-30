@@ -1,5 +1,6 @@
 package com.stallion;
 
+import android.content.Context;
 import android.provider.Settings;
 
 import java.util.UUID;
@@ -13,7 +14,8 @@ public class StallionCommonUtil {
     }
     String uniqueId;
     try {
-      uniqueId = Settings.Secure.getString(this.currentReactContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+      Context currContext = StallionStorage.getInstance().mContext;
+      uniqueId = Settings.Secure.getString(currContext.getContentResolver(), Settings.Secure.ANDROID_ID);
     } catch (Exception e) {
       uniqueId = UUID.randomUUID().toString();
     }

@@ -82,10 +82,4 @@ class Stallion: RCTEventEmitter {
           }
       }
     }
-    
-    @objc
-    func getUniqueId(_ callback: RCTResponseSenderBlock) {
-      let undiqueId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
-      callback([undiqueId])
-    }
 }
