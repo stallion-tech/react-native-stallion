@@ -13,7 +13,11 @@ import {
 import SharedDataManager from '../../../../utils/SharedDataManager';
 import { SWITCH_STATES } from '../../../../../types/meta.types';
 import StallionNativeModule from '../../../../../StallionNativeModule';
-import { STALLION_NATIVE_EVENT } from '../../../../constants/appConstants';
+import {
+  NativeEventTypesProd,
+  NativeEventTypesStage,
+  STALLION_NATIVE_EVENT,
+} from '../../../../constants/appConstants';
 import { fireEvent } from '../../../../utils/EventUtil';
 
 const useStallionModal = () => {
@@ -28,6 +32,7 @@ const useStallionModal = () => {
       setUserRequiresLogin,
       selectBucket,
       refreshMeta,
+      setProgress,
     },
   } = useContext(GlobalContext);
   const onBackPress = useCallback(() => {
@@ -54,7 +59,25 @@ const useStallionModal = () => {
 
     const eventEmitter = new NativeEventEmitter(StallionNativeModule);
     eventEmitter.addListener(STALLION_NATIVE_EVENT, (data: any) => {
-      fireEvent(data);
+      // fireEvent(data);
+      const eventType = data?.type as string;
+      switch (eventType) {
+        case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
+        case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
+        case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
+        case NativeEventTypesProd.INSTALLED_PROD:
+        case NativeEventTypesProd.SYNC_ERROR_PROD:
+        case NativeEventTypesProd.ROLLED_BACK_PROD:
+        case NativeEventTypesProd.STABILIZED_PROD:
+        case NativeEventTypesProd.EXCEPTION_PROD:
+          fireEvent(data);
+          break;
+        case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:
+          const progress = data?.payload?.progress as number;
+          if (progress) {
+            setProgress(progress);
+          }
+      }
     });
     onLaunchNative('Success');
     return () => {

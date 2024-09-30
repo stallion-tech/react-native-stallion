@@ -41,8 +41,20 @@ const useDownloadActions = (
     [dispatch, dataManager, refreshStallionMeta]
   );
 
+  const setProgress = useCallback(
+    (newProgress: number) => {
+      dispatch(
+        setDownloadData({
+          currentProgress: newProgress,
+        })
+      );
+    },
+    [dispatch]
+  );
+
   return {
     downloadBundle,
+    setProgress,
   };
 };
 

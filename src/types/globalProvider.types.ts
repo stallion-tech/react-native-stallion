@@ -25,6 +25,7 @@ interface IGlobalContextActions {
   selectBucket: (bucketId?: string | null) => void;
   downloadBundle: (url: string, hash: string) => void;
   getUserProfile: () => void;
+  setProgress: (newProgress: number) => void;
 }
 
 export interface IGlobalContext {
