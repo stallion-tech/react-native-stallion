@@ -26,7 +26,6 @@ export let useStallionModal: () => IUseStallionModal;
 try {
   // const stallionConfigObj: IStallionConfig = require('../example/stallion.config.js'); // testing import
   const stallionConfigObj: IStallionConfig = require('../../../stallion.config.js'); // prod import
-  console.log(stallionConfigObj, '4444444');
   isEnabled = stallionConfigObj?.stallionEnabled || true;
   if (stallionConfigObj?.stallionEnabled === false) {
     isEnabled = false;

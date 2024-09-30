@@ -9,6 +9,14 @@ export const getApiHeaders = () => {
   };
 };
 
+export const getAppHeaders = () => {
+  return {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'x-app-token': SharedDataManager.getInstance()?.getAppToken() || '',
+  };
+};
+
 export const apiAuthMiddleware = (
   res: Response,
   setUserRequiresLogin: (requiresLogin: boolean) => void

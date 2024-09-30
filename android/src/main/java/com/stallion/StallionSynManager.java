@@ -44,11 +44,13 @@ public class StallionSynManager {
             StallionRollbackManager.rollbackProd();
           }
         }
-        if(newReleaseData == null) return;
-        String newReleaseUrl = newReleaseData.optString("downloadUrl");
-        String newReleaseHash = newReleaseData.optString("checksum");
-        stallionStorage.set(StallionConstants.NEW_RELEASE_HASH_ID, newReleaseHash);
-        stallionStorage.set(StallionConstants.NEW_RELEASE_URL_ID, newReleaseUrl);
+        if(newReleaseData != null) {
+          String newReleaseUrl = newReleaseData.optString("downloadUrl");
+          String newReleaseHash = newReleaseData.optString("checksum");
+          stallionStorage.set(StallionConstants.NEW_RELEASE_HASH_ID, newReleaseHash);
+          stallionStorage.set(StallionConstants.NEW_RELEASE_URL_ID, newReleaseUrl);
+          checkAndDownload();
+        }
       }
     } catch (Exception e) {
       WritableMap syncErrorPayload = Arguments.createMap();

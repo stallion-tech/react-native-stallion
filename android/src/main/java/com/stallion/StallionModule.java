@@ -53,20 +53,13 @@ public class StallionModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onLaunch(String launchData) {
     StallionRollbackManager.stabilizeRelease();
-    StallionSynManager.checkAndDownload();
     StallionStorage.getInstance().setIsMounted();
     StallionEventEmitter.triggerPendingEvents();
   }
 
   @ReactMethod
   public  void  getUniqueId(Callback callback) {
-    String uniqueId = "";
-    try {
-      uniqueId = Settings.Secure.getString(this.currentReactContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-    } catch (Exception e) {
-      uniqueId = UUID.randomUUID().toString();
-    }
-    callback.invoke(uniqueId);
+    callback.invoke(StallionCommonUtil.getUniqueId());
   }
 
   @ReactMethod

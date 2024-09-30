@@ -5,10 +5,11 @@ import { IUseStallionModal } from '../../types/utils.types';
 
 const useStallionModal = (): IUseStallionModal => {
   const {
-    actions: { setIsModalVisible },
+    actions: { setIsModalVisible, refreshMeta },
   } = useContext(GlobalContext);
   const showModal = useCallback(() => {
     setIsModalVisible(true);
+    refreshMeta();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return {

@@ -11,19 +11,17 @@ export enum SLOT_STATES {
   DEFAULT = NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT,
 }
 
+export interface IStallionSlotData {
+  currentSlot: SLOT_STATES;
+  stable?: string;
+  new?: string;
+  temp?: string;
+}
+
 export interface IStallionMeta {
   switchState: SWITCH_STATES;
-  prodSlot: {
-    currentSlot: SLOT_STATES;
-    stable?: string;
-    new?: string;
-    temp?: string;
-  };
-  stageSlot: {
-    currentSlot: SLOT_STATES;
-    new?: string;
-    temp?: string;
-  };
+  prodSlot: IStallionSlotData;
+  stageSlot: IStallionSlotData;
 }
 
 export enum MetaActionKind {

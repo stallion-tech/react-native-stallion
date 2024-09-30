@@ -13,6 +13,7 @@ const useListing = () => {
   const {
     bucketState,
     bundleState,
+    metaState,
     actions: { fetchBuckets, fetchBundles, selectBucket, getUserProfile },
   } = useContext(GlobalContext);
   const bundlesListingEnabled = useMemo(
@@ -105,6 +106,7 @@ const useListing = () => {
     listingData,
     listingError,
     listingLoading,
+    metaState,
     fetchListing,
     setBucketSelection,
     fetchNextPage,

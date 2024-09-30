@@ -54,7 +54,6 @@ public class Stallion {
           stallionStorageInstance.set(StallionConstants.STALLION_APP_VERSION_IDENTIFIER, currentAppVersion);
           StallionRollbackManager.fallbackProd();
         }
-
     } catch (PackageManager.NameNotFoundException e) {}
 
     if(switchState.isEmpty()) {
@@ -65,6 +64,10 @@ public class Stallion {
       String currentProdSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
       switch (currentProdSlot) {
         case StallionConstants.TEMP_FOLDER_SLOT:
+          String newReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT);
+          if(!newReleaseHash.isEmpty()) {
+            StallionRollbackManager.stabilizeRelease();
+          }
           StallionFileUtil.moveFile(
             new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT),
             new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT)

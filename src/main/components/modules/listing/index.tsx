@@ -14,6 +14,7 @@ import BundleCard, { IBundleCard } from './components/BundleCard';
 import FooterLoader from '../../common/FooterLoader';
 
 import styles from './styles';
+import SlotView from './components/SlotView';
 
 const Listing: React.FC = () => {
   const {
@@ -24,6 +25,7 @@ const Listing: React.FC = () => {
     setBucketSelection,
     fetchNextPage,
     nextPageLoading,
+    metaState,
   } = useListing();
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -37,25 +39,31 @@ const Listing: React.FC = () => {
   }
   if (!isMounted) return null;
   return (
-    <FlatList
-      style={styles.mainContainer}
-      contentContainerStyle={styles.mainListContainer}
-      refreshControl={
-        <RefreshControl refreshing={listingLoading} onRefresh={fetchListing} />
-      }
-      data={listingData}
-      renderItem={({ item }) => (
-        <BucketOrBundle
-          key={item.id}
-          data={item}
-          setBucketSelection={setBucketSelection}
-        />
-      )}
-      keyExtractor={(item) => item.id}
-      ListFooterComponent={nextPageLoading ? <FooterLoader /> : null}
-      onEndReached={fetchNextPage}
-      onEndReachedThreshold={END_REACH_THRESHOLD}
-    />
+    <>
+      <SlotView {...metaState.stageSlot} />
+      <FlatList
+        style={styles.mainContainer}
+        contentContainerStyle={styles.mainListContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={listingLoading}
+            onRefresh={fetchListing}
+          />
+        }
+        data={listingData}
+        renderItem={({ item }) => (
+          <BucketOrBundle
+            key={item.id}
+            data={item}
+            setBucketSelection={setBucketSelection}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        ListFooterComponent={nextPageLoading ? <FooterLoader /> : null}
+        onEndReached={fetchNextPage}
+        onEndReachedThreshold={END_REACH_THRESHOLD}
+      />
+    </>
   );
 };
 

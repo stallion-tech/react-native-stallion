@@ -38,12 +38,13 @@ public class StallionConstants {
   public static final String STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta";
   public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
-  public static final String NEW_RELEASE_INSTALL_IDENTIFIER = "StallionNewRelease";
   public static final String STALLION_APP_TOKEN_KEY = "x-app-token";
   public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-token";
+  public static final String STALLION_DEVICE_ID_KEY = "uid";
 
   public static final String NEW_RELEASE_HASH_ID = "stallionNewReleaseHash";
   public static final String NEW_RELEASE_URL_ID = "stallionNewReleaseUrl";
+  public static final String UNIQUE_ID_IDENTIFIER = "stallionDeviceId";
 
   public static enum SwitchState {
     PROD,

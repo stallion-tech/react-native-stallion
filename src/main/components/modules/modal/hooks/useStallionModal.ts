@@ -1,13 +1,20 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { NativeEventEmitter } from 'react-native';
 
 import { GlobalContext } from '../../../../state';
 import {
   getApiKeyNative,
+  getAppTokenNative,
+  getUidNative,
+  onLaunchNative,
   setApiKeyNative,
   toggleStallionSwitchNative,
 } from '../../../../utils/StallionNaitveUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
 import { SWITCH_STATES } from '../../../../../types/meta.types';
+import StallionNativeModule from '../../../../../StallionNativeModule';
+import { STALLION_NATIVE_EVENT } from '../../../../constants/appConstants';
+import { fireEvent } from '../../../../utils/EventUtil';
 
 const useStallionModal = () => {
   const {
@@ -38,6 +45,21 @@ const useStallionModal = () => {
         setUserRequiresLogin(true);
       }
     });
+    getAppTokenNative().then((appToken) => {
+      SharedDataManager.getInstance()?.setAppToken(appToken);
+    });
+    getUidNative().then((uid) => {
+      SharedDataManager.getInstance()?.setUid(uid);
+    });
+
+    const eventEmitter = new NativeEventEmitter(StallionNativeModule);
+    eventEmitter.addListener(STALLION_NATIVE_EVENT, (data: any) => {
+      fireEvent(data);
+    });
+    onLaunchNative('Success');
+    return () => {
+      eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

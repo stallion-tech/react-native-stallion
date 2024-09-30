@@ -4,6 +4,8 @@ export default class SharedDataManager {
   _configProjectId?: string;
   _initProjectId?: string;
   _accessToken?: string;
+  _uniqueId?: string;
+  _appToken?: string;
 
   /**
    * @returns {SharedDataManager}
@@ -42,5 +44,21 @@ export default class SharedDataManager {
 
   setAccessToken(accessToken: string): void {
     this._accessToken = accessToken;
+  }
+
+  getUid(): string {
+    return this._uniqueId || '';
+  }
+
+  setUid(uid: string): void {
+    this._uniqueId = uid;
+  }
+
+  getAppToken(): string {
+    return this._appToken || '';
+  }
+
+  setAppToken(appToken: string): void {
+    this._appToken = appToken;
   }
 }

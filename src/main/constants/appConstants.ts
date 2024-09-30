@@ -102,6 +102,7 @@ export const DOWNLOAD_ALERT_BUTTON = 'Ok';
 
 export enum NATIVE_CONSTANTS {
   SDK_TOKEN = 'x-sdk-token',
+  APP_TOKEN = 'x-app-token',
   SWITCH_STATE_INDENTIFIER = 'switchState',
   PROD_DIRECTORY = '/StallionProd',
   STAGE_DIRECTORY = '/StallionStage',
@@ -112,3 +113,5 @@ export enum NATIVE_CONSTANTS {
   CURRENT_PROD_SLOT_KEY = 'stallionProdCurrentSlot',
   CURRENT_STAGE_SLOT_KEY = 'stallionStageCurrentSlot',
 }
+
+export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';

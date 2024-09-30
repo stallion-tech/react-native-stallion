@@ -1,12 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
-import { NativeEventEmitter } from 'react-native';
+import React, { useCallback } from 'react';
 
 import SharedDataManager from '../../utils/SharedDataManager';
-import StallionNativeModule from '../../../StallionNativeModule';
-import {
-  downloadBundleNative,
-  onLaunchNative,
-} from '../../utils/StallionNaitveUtils';
+import { downloadBundleNative } from '../../utils/StallionNaitveUtils';
 import {
   setDownloadData,
   setDownloadError,
@@ -45,18 +40,6 @@ const useDownloadActions = (
     },
     [dispatch, dataManager, refreshStallionMeta]
   );
-
-  useEffect(() => {
-    onLaunchNative('Success');
-    const eventEmitter = new NativeEventEmitter(StallionNativeModule);
-    eventEmitter.addListener('STALLION_NATIVE_EVENT', (data: any) => {
-      console.log('stallion event', data);
-    });
-    return () => {
-      eventEmitter.removeAllListeners('STALLION_NATIVE_EVENT');
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return {
     downloadBundle,

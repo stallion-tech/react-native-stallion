@@ -20,6 +20,7 @@ public class StallionApiUtil {
       urlConnection.setRequestMethod("POST");
       urlConnection.setRequestProperty("Content-Type", "application/json");
       urlConnection.setRequestProperty(StallionConstants.STALLION_APP_TOKEN_KEY, token);
+      urlConnection.setRequestProperty(StallionConstants.STALLION_DEVICE_ID_KEY, StallionCommonUtil.getUniqueId());
 
       urlConnection.setDoOutput(true);
 

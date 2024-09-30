@@ -34,6 +34,7 @@ public class StallionRollbackManager {
     stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.DEFAULT_FOLDER_SLOT);
     stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, "");
     stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT, "");
+    stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, "");
   }
 
   private static void emitRollbackEvent(String rolledBackReleaseHash) {
@@ -55,26 +56,22 @@ public class StallionRollbackManager {
 
   public static void stabilizeRelease() {
     StallionStorage stallionStorageInstance = StallionStorage.getInstance();
-    String switchState = stallionStorageInstance.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
-    String prodSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
-    if(prodSlot.equals(StallionConstants.NEW_FOLDER_SLOT) && switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
-      String baseFolderPath = stallionStorageInstance.mContext.getFilesDir().getAbsolutePath();
-      StallionFileUtil.moveFile(
-        new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT),
-        new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT)
-      );
-      String newReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT);
-      stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT, newReleaseHash);
-      stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, "");
-      stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.STABLE_FOLDER_SLOT);
-      WritableMap stabilizeEventPayload = Arguments.createMap();
-      stabilizeEventPayload.putString("releaseHash", newReleaseHash);
-      StallionEventEmitter.sendEvent(
-        StallionEventEmitter.getEventPayload(
-          StallionConstants.NativeEventTypesProd.STABILIZED_PROD.toString(),
-          stabilizeEventPayload
-        )
-      );
-    }
+
+    String baseFolderPath = stallionStorageInstance.mContext.getFilesDir().getAbsolutePath();
+    StallionFileUtil.moveFile(
+      new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT),
+      new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT)
+    );
+    String newReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT);
+    stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT, newReleaseHash);
+    stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, "");
+    WritableMap stabilizeEventPayload = Arguments.createMap();
+    stabilizeEventPayload.putString("releaseHash", newReleaseHash);
+    StallionEventEmitter.sendEvent(
+      StallionEventEmitter.getEventPayload(
+        StallionConstants.NativeEventTypesProd.STABILIZED_PROD.toString(),
+        stabilizeEventPayload
+      )
+    );
   }
 }

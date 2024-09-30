@@ -7,62 +7,85 @@ class Stallion: RCTEventEmitter {
     override init() {
         super.init()
         Stallion.shared = self
+        StallionSyncManager.sync()
     }
-    
+  
     override func supportedEvents() -> [String]! {
-        return [StallionConstants.DOWNLOAD_PROGRESS_EVENT]
+      return [StallionConstants.STALLION_NATIVE_EVENT_NAME]
     }
     
-    @objc(downloadPackage:withResolver:withRejecter:)
+  @objc(downloadPackage:withResolver:withRejecter:)
     func downloadPackage(bundleInfo: NSDictionary, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
-        guard let receivedBucketId = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.BucketId) else {return}
-        guard var receiveDownloadUrl = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.DownloadUrl) else {return}
-        let receivedVersion = bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.Version) as? Int ?? nil
-        var reqJson: [String: Any] = [
-            StallionConstants.DownloadReqBodyKeys.BucketId: receivedBucketId,
-            StallionConstants.DownloadReqBodyKeys.Platform: StallionConstants.PlatformValue,
-        ]
-        if (receivedVersion != nil) {
-            reqJson[StallionConstants.DownloadReqBodyKeys.Version] = receivedVersion
-        }
-        guard let fromUrl = URL(string: receiveDownloadUrl as? String ?? "") else { return }
+        let receivedDownloadUrl = (bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.DownloadUrl) as? String) ?? ""
+        let receivedReleaseHash = (bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.Hash) as? String) ?? ""
+        let stageDownloadEventBody = ["releaseHash": receivedReleaseHash]
+      
+        guard let fromUrl = URL(string: receivedDownloadUrl) else { return }
         
         do {
             try StallionDownloader().load(
                 url: fromUrl,
-                reqBody: reqJson,
-                resolve: resolve,
-                reject: reject
+                downloadPaths: [StallionConstants.STAGE_DIRECTORY, StallionConstants.TEMP_FOLDER_SLOT],
+                onProgress: {progress in
+                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE, data: ["releaseHash": receivedReleaseHash, "progress": progress]
+                  )
+                },
+                resolve: {resOp in
+                  StallionUtil.setLs(key: StallionConstants.CURRENT_STAGE_SLOT_KEY, value: "/" + StallionConstants.TEMP_FOLDER_SLOT)
+                  StallionUtil.setLs(key: "/" + StallionConstants.STAGE_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT, value: receivedReleaseHash)
+                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE, data: stageDownloadEventBody
+                  )
+                  resolve(resOp)
+                },
+                reject: {code, message, error in
+                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE, data: stageDownloadEventBody
+                  )
+                  reject(code, message, error)
+                }
             )
         } catch {
             let errorString = StallionConstants.DownloadPromiseResponses.GenericError
+            StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE, data: stageDownloadEventBody
+            )
             reject("500", errorString, NSError(domain: errorString, code: 500))
         }
     }
-    
-    @objc(setApiKey:)
-    func setApiKey(apiKey: String) {
-        StallionUtil.setLs(key: StallionUtil.LSKeys.apiKey, value: apiKey)
+  
+    @objc
+    func getStorage(_ storageKey: String, callback: RCTResponseSenderBlock) {
+        let value = StallionUtil.getLs(key: storageKey)
+        callback([value])
     }
     
-    @objc(getApiKey:)
-    func getApiKey(_ callback: RCTResponseSenderBlock) {
-        let apiKey = StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey)
-        callback([apiKey ?? ""])
+    @objc
+    func setStorage(_ storageKey: String, value: String) {
+      StallionUtil.setLs(key: storageKey, value: value)
     }
     
-    @objc(toggleStallionSwitch:)
-    func toggleStallionSwitch(isOn: Bool) {
-        StallionUtil.setLs(key: StallionUtil.LSKeys.switchStateKey, value: isOn ? StallionUtil.SwitchStates.ON : StallionUtil.SwitchStates.OFF)
+    @objc
+    func onLaunch(_ launchData: String) {
+      //TODO: Do launch stuff here
+      StallionObjUtil.isMounted = true
+      emitPendingEvents()
+    }
+  
+    @objc
+    func getUniqueId(_ callback: RCTResponseSenderBlock) {
+      callback([StallionSyncManager.getUniqueId()])
+    }
+  
+    func emitPendingEvents() {
+      let flushedEvents = StallionEventManager.sharedInstance().flushAllEvents() as NSArray
+      for event in flushedEvents {
+          if let eventDict = event as? [String: Any] {
+            Stallion.shared?.sendEvent(withName: StallionConstants.STALLION_NATIVE_EVENT_NAME, body: eventDict)
+          }
+      }
     }
     
-    @objc(getStallionMeta:)
-    func getStallionMeta(_ callback: RCTResponseSenderBlock) {
-        var metaDictionary = [String:Any]()
-        metaDictionary[StallionUtil.LSKeys.bucketKey] = StallionUtil.getLs(key: StallionUtil.LSKeys.bucketKey)
-        metaDictionary[StallionUtil.LSKeys.versionKey] = StallionUtil.getLs(key: StallionUtil.LSKeys.versionKey)
-        metaDictionary[StallionUtil.LSKeys.switchStateKey] = StallionUtil.getLs(key: StallionUtil.LSKeys.switchStateKey) == StallionUtil.SwitchStates.ON
-        let stallionMeta = NSDictionary(dictionary: metaDictionary)
-        callback([stallionMeta])
+    @objc
+    func getUniqueId(_ callback: RCTResponseSenderBlock) {
+      let undiqueId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+      callback([undiqueId])
     }
 }

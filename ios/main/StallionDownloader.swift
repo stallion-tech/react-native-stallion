@@ -7,40 +7,38 @@
 import Foundation
 import ZIPFoundation
 
-enum StallionError: Error {
-    case runtimeError(String)
-}
-
 class StallionDownloader: NSObject {
     
-    private lazy var urlSession = URLSession(configuration: .default,
+  private lazy var urlSession = URLSession(configuration: .default,
                                                  delegate: self,
                                                  delegateQueue: nil)
+  var downloadTask : URLSessionDownloadTask?;
+  var _downloadPaths: [String] = [];
     
-    var downloadTask : URLSessionDownloadTask?;
-    var reqJson: [String: Any]?;
+  var _resolve: RCTPromiseResolveBlock?;
+  var _reject: RCTPromiseRejectBlock?;
+  var _onProgress: ((Float) -> Void)?
+  var lastSentProgress: Float = 0;
     
-    var _resolve: RCTPromiseResolveBlock?;
-    var _reject: RCTPromiseRejectBlock?;
-    var lastSentProgress: Float = 0;
-    
-    override init() {
-        super.init()
-    }
+  override init() {
+      super.init()
+  }
 
-    func load(url: URL, reqBody: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) throws {
-            self.reqJson = reqBody
-            self._resolve = resolve
-            self._reject = reject
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "GET"
+  func load(url: URL, downloadPaths: [String], onProgress: @escaping ((Float) -> Void), resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) throws {
+        self._resolve = resolve
+        self._reject = reject
+        self._downloadPaths = downloadPaths
+        self._onProgress = onProgress
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
 
-            request.setValue(StallionUtil.getLs(key: StallionUtil.LSKeys.apiKey) ?? "", forHTTPHeaderField: StallionConstants.HeaderKeys.AccessKey)
-            let task = urlSession.downloadTask(with: request)
-            task.resume()
-            self.downloadTask = task
-    }
+        request.setValue(StallionSyncManager.getAppToken(), forHTTPHeaderField: StallionConstants.STALLION_APP_TOKEN_KEY)
+        request.setValue(StallionSyncManager.getSdkToken(), forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+        let task = urlSession.downloadTask(with: request)
+        task.resume()
+        self.downloadTask = task
+      }
 }
 
 extension StallionDownloader: URLSessionDownloadDelegate {
@@ -54,9 +52,7 @@ extension StallionDownloader: URLSessionDownloadDelegate {
             let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
             if((calculatedProgress - self.lastSentProgress) > StallionConstants.PROGRESS_EVENT_THRESHOLD) {
                 self.lastSentProgress = calculatedProgress
-                DispatchQueue.main.async {
-                    Stallion.shared?.sendEvent(withName: StallionConstants.DOWNLOAD_PROGRESS_EVENT, body: calculatedProgress)
-                }
+                self._onProgress?(calculatedProgress)
             }
         }
     }
@@ -71,19 +67,18 @@ extension StallionDownloader: URLSessionDownloadDelegate {
         let response = downloadTask.response as? HTTPURLResponse
         if (response?.statusCode == 200) {
             do  {
-                let tempDownloadDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-                    .appendingPathComponent(StallionConstants.FilePaths.DownloadDirectory, isDirectory: true)
-                
-                if !FileManager.default.fileExists(atPath: tempDownloadDirectory.path) {
-                    try FileManager.default.createDirectory(atPath: tempDownloadDirectory.path, withIntermediateDirectories: true, attributes: nil)
+              let documentFolderPath = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+              let finalDestinationDirectory = self._downloadPaths.reduce(documentFolderPath, { url, pathComponent in
+                url.appendingPathComponent(String(pathComponent), isDirectory: true)
+              })
+              
+                if !FileManager.default.fileExists(atPath: finalDestinationDirectory.path) {
+                    try FileManager.default.createDirectory(atPath: finalDestinationDirectory.path, withIntermediateDirectories: true, attributes: nil)
                 }
                 
-                let finalDestinationDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-                    .appendingPathComponent(StallionConstants.FilePaths.TargetDirectory, isDirectory: true)
+              let downloadedBuildDirectory = finalDestinationDirectory.appendingPathComponent(StallionConstants.FilePaths.ZipFolderName, isDirectory: true)
                 
-                let downloadedBuildDirectory = tempDownloadDirectory.appendingPathComponent(StallionConstants.FilePaths.ZipFolderName, isDirectory: true)
-                
-                let downloadedZipFilePath = tempDownloadDirectory.appendingPathComponent(StallionConstants.FilePaths.ZipFolderName, isDirectory: false).appendingPathExtension(StallionConstants.FilePaths.ZipExtension)
+                let downloadedZipFilePath = finalDestinationDirectory.appendingPathComponent(StallionConstants.FilePaths.ZipFolderName, isDirectory: false).appendingPathExtension(StallionConstants.FilePaths.ZipExtension)
             
                 let fileManager = FileManager()
                 
@@ -97,20 +92,8 @@ extension StallionDownloader: URLSessionDownloadDelegate {
                 if FileManager.default.fileExists(atPath: downloadedBuildDirectory.path) {
                     try fileManager.removeItem(at: downloadedBuildDirectory)
                 }
-                try fileManager.unzipItem(at: downloadedZipFilePath, to: tempDownloadDirectory, skipCRC32: false, progress: nil, preferredEncoding: nil)
+              try fileManager.unzipItem(at: downloadedZipFilePath, to: finalDestinationDirectory, skipCRC32: false, progress: nil, pathEncoding: nil)
                 try fileManager.removeItem(at: downloadedZipFilePath)
-                
-                // if build exists in final destination, ovverride it
-                if FileManager.default.fileExists(atPath: finalDestinationDirectory.path) {
-                    try fileManager.removeItem(at: finalDestinationDirectory)
-                }
-                try fileManager.moveItem(at: tempDownloadDirectory, to: finalDestinationDirectory)
-                let bucketId =  self.reqJson?[StallionConstants.DownloadReqBodyKeys.BucketId] as? String ?? ""
-                let receivedVersion =  self.reqJson?[StallionConstants.DownloadReqBodyKeys.Version] as? Int ?? -1
-                StallionUtil.setLs(key: StallionUtil.LSKeys.bucketKey, value: bucketId)
-                if receivedVersion > -1 {
-                    StallionUtil.setLs(key: StallionUtil.LSKeys.versionKey, value: String(receivedVersion))
-                }
                 self._resolve?(StallionConstants.DownloadPromiseResponses.Success)
             } catch {
                 // throw exception here
