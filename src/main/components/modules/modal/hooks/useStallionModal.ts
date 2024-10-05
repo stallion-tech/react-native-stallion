@@ -21,6 +21,15 @@ import {
 } from '../../../../constants/appConstants';
 import { fireEvent } from '../../../../utils/EventUtil';
 
+const REFRESH_META_EVENTS: {
+  [key: string]: boolean;
+} = {
+  [NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD]: true,
+  [NativeEventTypesProd.ROLLED_BACK_PROD]: true,
+  [NativeEventTypesProd.AUTO_ROLLED_BACK_PROD]: true,
+  [NativeEventTypesProd.STABILIZED_PROD]: true,
+};
+
 const useStallionModal = () => {
   const {
     isModalVisible,
@@ -65,6 +74,9 @@ const useStallionModal = () => {
     const eventEmitter = new NativeEventEmitter(StallionNativeModule);
     eventEmitter.addListener(STALLION_NATIVE_EVENT, (data: any) => {
       const eventType = data?.type as string;
+      if (REFRESH_META_EVENTS[eventType]) {
+        refreshMeta();
+      }
       switch (eventType) {
         case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
         case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
@@ -88,8 +100,7 @@ const useStallionModal = () => {
     return () => {
       eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshMeta, setProgress, setUserRequiresLogin]);
 
   const isBackEnabled = useMemo<boolean>(
     () => (bundleState.selectedBucketId ? true : false),

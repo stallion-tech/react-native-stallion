@@ -44,7 +44,9 @@ class ErrorBoundary extends Component<
         errorText: errorString,
       });
     } else {
-      throw error;
+      requestAnimationFrame(() => {
+        throw error;
+      });
     }
   }
 
