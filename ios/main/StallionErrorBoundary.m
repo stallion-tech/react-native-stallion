@@ -37,9 +37,12 @@ void handleException(NSException *exception)
   
     NSString * readeableError = [exception reason];
     if([switchState isEqual:[StallionObjConstants switch_state_prod]]) {
-      if(![StallionObjUtil isMounted]) {
-        [StallionRollbackHandler rollbackProd];
+      NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key];
+      if(![currentProdSlot isEqual:StallionObjConstants.default_folder_slot]) {
         [[StallionEventManager sharedInstance] queueRNEvent:[StallionObjConstants exception_prod_event] withData:@{@"error" : readeableError}];
+      }
+      if(![StallionObjUtil isMounted]) {
+        [StallionRollbackHandler rollbackProd:true];
       }
     }  else if([switchState isEqual:[StallionObjConstants switch_state_stage]]) {
       [StallionRollbackHandler rollbackStage];

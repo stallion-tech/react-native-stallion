@@ -19,7 +19,7 @@ import {
   ILoginActionPayload,
   IVerifyOtpPayload,
 } from '../../../types/globalProvider.types';
-import { setApiKeyNative } from '../../utils/StallionNaitveUtils';
+import { setApiKeyNative } from '../../utils/StallionNativeUtils';
 
 const useUserActions = (
   dispatch: React.Dispatch<IUserAction>,

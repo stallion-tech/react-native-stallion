@@ -10,7 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface StallionRollbackHandler : NSObject
-+ (void)rollbackProd;
++ (void)rollbackProd:(BOOL)isAutoRollback;
++ (void)sendRollbackEvent:(BOOL)isAutoRollback releaseHash:(NSString *)releaseHash;
 + (void)rollbackStage;
 + (void)fallbackProd;
 + (void)promoteTempProd;

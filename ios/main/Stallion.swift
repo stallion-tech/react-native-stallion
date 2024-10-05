@@ -8,10 +8,15 @@ class Stallion: RCTEventEmitter {
         super.init()
         Stallion.shared = self
         StallionSyncManager.sync()
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
   
     override func supportedEvents() -> [String]! {
       return [StallionConstants.STALLION_NATIVE_EVENT_NAME]
+    }
+  
+    @objc func appDidBecomeActive() {
+      StallionSyncManager.sync()
     }
     
   @objc(downloadPackage:withResolver:withRejecter:)
@@ -70,9 +75,20 @@ class Stallion: RCTEventEmitter {
     }
   
     @objc
+    func sync() {
+      StallionSyncManager.sync()
+    }
+  
+    @objc
     func getUniqueId(_ callback: RCTResponseSenderBlock) {
       callback([StallionSyncManager.getUniqueId()])
     }
+  
+  @objc
+  func getProjectId(_ callback: RCTResponseSenderBlock) {
+    let projectId = Bundle.main.infoDictionary?[StallionConstants.STALLION_PROJECT_ID_IDENTIFIER] as? String ?? ""
+    callback([projectId])
+  }
   
     func emitPendingEvents() {
       let flushedEvents = StallionEventManager.sharedInstance().flushAllEvents() as NSArray

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import SharedDataManager from '../../utils/SharedDataManager';
-import { downloadBundleNative } from '../../utils/StallionNaitveUtils';
+import { downloadBundleNative } from '../../utils/StallionNativeUtils';
 import {
   setDownloadData,
   setDownloadError,

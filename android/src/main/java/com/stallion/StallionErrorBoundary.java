@@ -18,6 +18,7 @@ public class StallionErrorBoundary {
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     _currentContext = currentContext;
   }
+
   public static void toggleExceptionHandler(Boolean shouldEnableErrorHandler) {
     if(shouldEnableErrorHandler) {
       Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
@@ -26,11 +27,15 @@ public class StallionErrorBoundary {
         String stackTraceString = Log.getStackTraceString(throwable);
         StallionStorage stallionStorage = StallionStorage.getInstance();
         String switchState = stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
+
         if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
           if(!StallionStorage.getInstance().getIsMounted()) {
-            StallionRollbackManager.rollbackProd();
+            StallionRollbackManager.rollbackProd(true);
+          }
+          String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
+          if(!currentProdSlot.equals(StallionConstants.DEFAULT_FOLDER_SLOT)) {
             WritableMap exceptionErrorPayload = Arguments.createMap();
-            exceptionErrorPayload.putString("error", stackTraceString.substring(0, 100));
+            exceptionErrorPayload.putString("error", stackTraceString);
             StallionEventEmitter.sendEvent(
               StallionEventEmitter.getEventPayload(
                 StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),

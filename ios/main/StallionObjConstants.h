@@ -39,5 +39,7 @@
 @property (class, nonatomic, readonly) NSString *build_folder_name;
 @property (class, nonatomic, readonly) NSString *bundle_file_name;
 @property (class, nonatomic, readonly) NSString *stallion_native_event;
+@property (class, nonatomic, readonly) NSString *last_rolled_back_release_hash_key;
+@property (class, nonatomic, readonly) NSString *auto_rolled_back_prod_event;
 
 @end

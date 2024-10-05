@@ -81,10 +81,20 @@ export const downloadBundleNative: TDownloadBundleNative =
 export const onLaunchNative: TOnLaunchBundleNative =
   StallionNativeModule?.onLaunch;
 
+export const sync: () => void = StallionNativeModule?.sync;
+
 export const getUidNative = async (): Promise<string> => {
   return new Promise((resolve) => {
     StallionNativeModule?.getUniqueId((uid: string) => {
       resolve(uid);
+    });
+  });
+};
+
+export const getProjectIdNative = async (): Promise<string> => {
+  return new Promise((resolve) => {
+    StallionNativeModule?.getProjectId((projectId: string) => {
+      resolve(projectId);
     });
   });
 };

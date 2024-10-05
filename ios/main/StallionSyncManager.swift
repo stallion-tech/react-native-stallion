@@ -81,15 +81,18 @@ class StallionSyncManager: NSObject {
                           let isRolledBack = (appliedReleaseData?["isRolledBack"] as? Bool) ?? false
                           let targetAppVersion = (appliedReleaseData?["targetAppVersion"] as? String) ?? ""
                           if(isRolledBack && targetAppVersion == appVersion) {
-                            StallionRollbackHandler.rollbackProd()
+                            StallionRollbackHandler.rollbackProd(false)
                           }
                         }
                         if(newReleaseData != nil) {
                           let newReleaseUrl = (newReleaseData?["downloadUrl"] as? String) ?? ""
                           let newReleaseHash = (newReleaseData?["checksum"] as? String) ?? ""
-                          StallionUtil.setLs(key: StallionConstants.NEW_RELEASE_HASH_ID, value: newReleaseHash)
-                          StallionUtil.setLs(key: StallionConstants.NEW_RELEASE_URL_ID, value: newReleaseUrl)
-                          checkAndDownload()
+                          let lastRolledBackHash = StallionUtil.getLs(key: StallionConstants.LAST_ROLLED_BACK_RELEASE_HASH_KEY)
+                          if(newReleaseHash != lastRolledBackHash) {
+                            StallionUtil.setLs(key: StallionConstants.NEW_RELEASE_HASH_ID, value: newReleaseHash)
+                            StallionUtil.setLs(key: StallionConstants.NEW_RELEASE_URL_ID, value: newReleaseUrl)
+                            checkAndDownload()
+                          }
                         }
                       }
                   }

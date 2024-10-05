@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
 import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
-import { getStallionMetaNative } from './StallionNaitveUtils';
+import { getStallionMetaNative } from './StallionNativeUtils';
 import {
   STALLION_EB_BTN_TXT,
   STALLION_EB_INFO,
@@ -29,28 +29,25 @@ class ErrorBoundary extends Component<
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
-  componentDidCatch(error: Error): void {
-    getStallionMetaNative().then((stallionMeta) => {
-      if (stallionMeta?.switchState === SWITCH_STATES.STAGE) {
-        const errorString: string = [
-          error.name,
-          error.message,
-          error.cause?.toString(),
-          error.stack,
-        ].join(' ');
-        console.error(
-          'Exception occured in js layer:',
-          error,
-          ', turning off the stallion switch'
-        );
-        this.setState({
-          errorText: errorString,
-        });
-      } else {
-        throw error;
-      }
-    });
+
+  async componentDidCatch(error: Error): Promise<void> {
+    const errorString: string = [
+      error.name,
+      error.message,
+      error.cause?.toString(),
+      error.stack,
+    ].join(' ');
+    console.error('Exception occured in js layer:', error);
+    const meta = await getStallionMetaNative();
+    if (meta.switchState === SWITCH_STATES.STAGE) {
+      this.setState({
+        errorText: errorString,
+      });
+    } else {
+      throw error;
+    }
   }
+
   continueCrash() {
     throw new Error(this.state.errorText || '');
   }

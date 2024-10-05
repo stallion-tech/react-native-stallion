@@ -6,9 +6,7 @@ interface IBundleInfo {
 }
 type TCallback = (apiKey: string) => void;
 
-export interface IStallionInitParams {
-  projectId?: string;
-}
+export interface IStallionInitParams {}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,

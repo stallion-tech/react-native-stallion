@@ -114,10 +114,6 @@ public class StallionFileUtil {
                 }
             }
         }
-
-        if (!file.delete()) {
-            throw new Error("Error deleting file " + file.getName());
-        }
     }
     public static void moveFile(File fromFile, File toFile) {
       if(toFile.exists()) {

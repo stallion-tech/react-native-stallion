@@ -10,8 +10,7 @@ const useStallionModal = (): IUseStallionModal => {
   const showModal = useCallback(() => {
     setIsModalVisible(true);
     refreshMeta();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setIsModalVisible, refreshMeta]);
   return {
     showModal,
   };

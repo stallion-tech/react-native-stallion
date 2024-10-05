@@ -13,9 +13,7 @@ const App: React.FC = () => {
   );
 };
 
-export default withStallion(App, {
-  projectId: '66eed6374886bd3ba22add70',
-});
+export default withStallion(App);
 
 const styles = StyleSheet.create({
   container: {

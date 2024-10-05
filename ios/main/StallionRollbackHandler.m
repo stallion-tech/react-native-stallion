@@ -11,7 +11,14 @@
 
 @implementation StallionRollbackHandler
 
-+ (void)rollbackProd {
++ (void)sendRollbackEvent:(BOOL)isAutoRollback releaseHash:(NSString *)releaseHash {
+  [[StallionEventManager sharedInstance] queueRNEvent: isAutoRollback ? StallionObjConstants.auto_rolled_back_prod_event : StallionObjConstants.rolled_back_prod_event withData:@{StallionObjConstants.release_hash_key : releaseHash}];
+  if(isAutoRollback) {
+    [[NSUserDefaults standardUserDefaults] setObject: releaseHash forKey:StallionObjConstants.last_rolled_back_release_hash_key];
+  }
+}
+
++ (void)rollbackProd:(BOOL)isAutoRollback {
     NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key];
     
     // possible hashes
@@ -26,7 +33,7 @@
     NSString *stableFolderSlot = [NSString stringWithFormat:@"/%@", [StallionObjConstants stable_folder_slot]];
     NSString *defaultFolderSlot = [NSString stringWithFormat:@"/%@", [StallionObjConstants default_folder_slot]];
     
-    if([currentProdSlot isEqual:newFolderSlot] || [currentProdSlot isEqual:tempFolderSlot]) {
+    if([currentProdSlot isEqual:newFolderSlot]) {
       // empty new hash
       [[NSUserDefaults standardUserDefaults] setObject: @"" forKey:newHashPath];
       if([stableReleaseHash isEqual:@""]) {
@@ -34,11 +41,11 @@
       } else {
         [[NSUserDefaults standardUserDefaults] setObject: stableFolderSlot forKey:StallionObjConstants.current_prod_slot_key];
       }
-      [[StallionEventManager sharedInstance] queueRNEvent: StallionObjConstants.rolled_back_prod_event withData:@{StallionObjConstants.release_hash_key : newReleaseHash}];
+      [self sendRollbackEvent:isAutoRollback releaseHash:newReleaseHash];
     } else if([currentProdSlot isEqual:stableFolderSlot]) {
       [[NSUserDefaults standardUserDefaults] setObject: defaultFolderSlot forKey:StallionObjConstants.current_prod_slot_key];
       [[NSUserDefaults standardUserDefaults] setObject: @"" forKey:stableHashPath];
-      [[StallionEventManager sharedInstance] queueRNEvent: StallionObjConstants.rolled_back_prod_event withData:@{StallionObjConstants.release_hash_key : stableReleaseHash}];
+      [self sendRollbackEvent:isAutoRollback releaseHash:stableReleaseHash];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
   }

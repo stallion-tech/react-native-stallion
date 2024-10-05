@@ -11,57 +11,60 @@ import org.json.JSONObject;
 
 public class StallionSynManager {
   public static void sync() {
-    try {
-      StallionStorage stallionStorage = StallionStorage.getInstance();
-      Context appContext = stallionStorage.mContext;
-      String parentPackageName= appContext.getPackageName();
-      PackageInfo pInfo = appContext.getPackageManager().getPackageInfo(parentPackageName, 0);
-      String appVersion = pInfo.versionName;
-      Resources res = appContext.getResources();
-      int stallionProjectIdRes = res.getIdentifier(StallionConstants.STALLION_PROJECT_ID_IDENTIFIER, "string", parentPackageName);
-      int stallionTokenRes = res.getIdentifier(StallionConstants.STALLION_APP_TOKEN_IDENTIFIER, "string", parentPackageName);
-      String projectId = appContext.getString(stallionProjectIdRes);
-      String appToken = appContext.getString(stallionTokenRes);
-      String platform = "android";
-
-      StallionStorage stallionStorageInstance = StallionStorage.getInstance();
-      String currentProdSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
-      String appliedBundleHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
-      JSONObject releaseMeta = StallionApiUtil.post(
-        StallionConstants.STALLION_API_BASE + StallionConstants.STALLION_INFO_API_PATH,
-        String.format(String.format("{\"appVersion\": \"%s\", \"platform\": \"%s\", \"projectId\": \"%s\", \"appliedBundleHash\": \"%s\" }", appVersion, platform, projectId, appliedBundleHash)),
-        appToken
-      );
-      if(releaseMeta.optBoolean("success")) {
-        JSONObject data = releaseMeta.optJSONObject("data");
-        if(data == null) return;
-        JSONObject newReleaseData = data.optJSONObject("newBundleData");
-        JSONObject appliedReleaseData = data.optJSONObject("appliedBundleData");
-        if(appliedReleaseData != null) {
-          boolean isRolledBack = appliedReleaseData.optBoolean("isRolledBack");
-          String targetAppVersion = appliedReleaseData.optString("targetAppVersion");
-          if(isRolledBack && targetAppVersion.equals(appVersion)) {
-            StallionRollbackManager.rollbackProd();
+    new Thread(() -> {
+      try {
+        StallionStorage stallionStorage = StallionStorage.getInstance();
+        Context appContext = stallionStorage.mContext;
+        String parentPackageName= appContext.getPackageName();
+        PackageInfo pInfo = appContext.getPackageManager().getPackageInfo(parentPackageName, 0);
+        String appVersion = pInfo.versionName;
+        Resources res = appContext.getResources();
+        int stallionProjectIdRes = res.getIdentifier(StallionConstants.STALLION_PROJECT_ID_IDENTIFIER, "string", parentPackageName);
+        int stallionTokenRes = res.getIdentifier(StallionConstants.STALLION_APP_TOKEN_IDENTIFIER, "string", parentPackageName);
+        String projectId = appContext.getString(stallionProjectIdRes);
+        String appToken = appContext.getString(stallionTokenRes);
+        String platform = "android";
+        String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
+        String appliedBundleHash = stallionStorage.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
+        JSONObject releaseMeta = StallionApiUtil.post(
+          StallionConstants.STALLION_API_BASE + StallionConstants.STALLION_INFO_API_PATH,
+          String.format(String.format("{\"appVersion\": \"%s\", \"platform\": \"%s\", \"projectId\": \"%s\", \"appliedBundleHash\": \"%s\" }", appVersion, platform, projectId, appliedBundleHash)),
+          appToken
+        );
+        if(releaseMeta.optBoolean("success")) {
+          JSONObject data = releaseMeta.optJSONObject("data");
+          if(data == null) return;
+          JSONObject newReleaseData = data.optJSONObject("newBundleData");
+          JSONObject appliedReleaseData = data.optJSONObject("appliedBundleData");
+          if(appliedReleaseData != null) {
+            boolean isRolledBack = appliedReleaseData.optBoolean("isRolledBack");
+            String targetAppVersion = appliedReleaseData.optString("targetAppVersion");
+            if(isRolledBack && targetAppVersion.equals(appVersion)) {
+              StallionRollbackManager.rollbackProd(false);
+            }
+          }
+          if(newReleaseData != null) {
+            String newReleaseUrl = newReleaseData.optString("downloadUrl");
+            String newReleaseHash = newReleaseData.optString("checksum");
+            String lastRolledBackHash = stallionStorage.get(StallionConstants.LAST_ROLLED_BACK_RELEASE_HASH_KEY);
+            if(!newReleaseHash.equals(lastRolledBackHash)) {
+              stallionStorage.set(StallionConstants.NEW_RELEASE_HASH_ID, newReleaseHash);
+              stallionStorage.set(StallionConstants.NEW_RELEASE_URL_ID, newReleaseUrl);
+              checkAndDownload();
+            }
           }
         }
-        if(newReleaseData != null) {
-          String newReleaseUrl = newReleaseData.optString("downloadUrl");
-          String newReleaseHash = newReleaseData.optString("checksum");
-          stallionStorage.set(StallionConstants.NEW_RELEASE_HASH_ID, newReleaseHash);
-          stallionStorage.set(StallionConstants.NEW_RELEASE_URL_ID, newReleaseUrl);
-          checkAndDownload();
-        }
+      } catch (Exception e) {
+        WritableMap syncErrorPayload = Arguments.createMap();
+        syncErrorPayload.putString("error", e.toString().substring(0,100));
+        StallionEventEmitter.sendEvent(
+          StallionEventEmitter.getEventPayload(
+            StallionConstants.NativeEventTypesProd.SYNC_ERROR_PROD.toString(),
+            syncErrorPayload
+          )
+        );
       }
-    } catch (Exception e) {
-      WritableMap syncErrorPayload = Arguments.createMap();
-      syncErrorPayload.putString("error", e.toString().substring(0,100));
-      StallionEventEmitter.sendEvent(
-        StallionEventEmitter.getEventPayload(
-          StallionConstants.NativeEventTypesProd.SYNC_ERROR_PROD.toString(),
-          syncErrorPayload
-        )
-      );
-    }
+    }).start();
   }
 
   public static void checkAndDownload () {

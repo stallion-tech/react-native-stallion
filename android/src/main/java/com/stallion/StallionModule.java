@@ -1,9 +1,12 @@
 package com.stallion;
 
+import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -13,12 +16,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import android.content.res.Resources;
-import android.provider.Settings;
-import java.util.UUID;
-
 @ReactModule(name = StallionConstants.MODULE_NAME)
-public class StallionModule extends ReactContextBaseJavaModule {
+public class StallionModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private final ReactApplicationContext currentReactContext;
   private final StallionStorage stallionStorage;
   private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
@@ -30,7 +29,24 @@ public class StallionModule extends ReactContextBaseJavaModule {
     this.stallionStorage = StallionStorage.getInstance();
     StallionErrorBoundary.initErrorBoundary(reactContext);
     StallionErrorBoundary.toggleExceptionHandler(true);
+    reactContext.addLifecycleEventListener(this);
+  }
+
+  @Override
+  public void onHostResume() {
     StallionSynManager.sync();
+  }
+
+  @Override
+  public void onHostPause() {}
+
+  @Override
+  public void onHostDestroy() {}
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+    this.currentReactContext.removeLifecycleEventListener(this);
   }
 
   @Override
@@ -52,7 +68,6 @@ public class StallionModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void onLaunch(String launchData) {
-    StallionRollbackManager.stabilizeRelease();
     StallionStorage.getInstance().setIsMounted();
     StallionEventEmitter.triggerPendingEvents();
   }
@@ -60,6 +75,20 @@ public class StallionModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public  void  getUniqueId(Callback callback) {
     callback.invoke(StallionCommonUtil.getUniqueId());
+  }
+
+  @ReactMethod
+  public void getProjectId(Callback callback) {
+    Resources res = currentReactContext.getResources();
+    String parentPackageName= currentReactContext.getPackageName();
+    int stallionProjectIdRes = res.getIdentifier(StallionConstants.STALLION_PROJECT_ID_IDENTIFIER, "string", parentPackageName);
+    String projectId = currentReactContext.getString(stallionProjectIdRes);
+    callback.invoke(projectId);
+  }
+
+  @ReactMethod
+  public  void  sync() {
+    StallionSynManager.sync();
   }
 
   @ReactMethod

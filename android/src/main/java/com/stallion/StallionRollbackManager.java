@@ -6,7 +6,7 @@ import com.facebook.react.bridge.WritableMap;
 import java.io.File;
 
 public class StallionRollbackManager {
-  public static void rollbackProd() {
+  public static void rollbackProd(Boolean isAutoRollback) {
     StallionStorage stallionStorageInstance = StallionStorage.getInstance();
     String currentProdSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
     String stableReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT);
@@ -19,12 +19,12 @@ public class StallionRollbackManager {
         } else {
           stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.STABLE_FOLDER_SLOT);
         }
-        emitRollbackEvent(newReleaseHash);
+        emitRollbackEvent(isAutoRollback, newReleaseHash);
         break;
       case  StallionConstants.STABLE_FOLDER_SLOT:
         stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT, "");
         stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.DEFAULT_FOLDER_SLOT);
-        emitRollbackEvent(stableReleaseHash);
+        emitRollbackEvent(isAutoRollback, stableReleaseHash);
         break;
     }
   }
@@ -37,15 +37,19 @@ public class StallionRollbackManager {
     stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, "");
   }
 
-  private static void emitRollbackEvent(String rolledBackReleaseHash) {
+  private static void emitRollbackEvent(Boolean isAutoRollback, String rolledBackReleaseHash) {
     WritableMap rollbackEventPayload = Arguments.createMap();
     rollbackEventPayload.putString("releaseHash", rolledBackReleaseHash);
     StallionEventEmitter.sendEvent(
       StallionEventEmitter.getEventPayload(
-        StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD.toString(),
+        isAutoRollback ? StallionConstants.NativeEventTypesProd.AUTO_ROLLED_BACK_PROD.toString() : StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD.toString(),
         rollbackEventPayload
       )
     );
+    if(isAutoRollback) {
+      StallionStorage stallionStorageInstance = StallionStorage.getInstance();
+      stallionStorageInstance.set(StallionConstants.LAST_ROLLED_BACK_RELEASE_HASH_KEY, rolledBackReleaseHash);
+    }
   }
 
   public static void rollbackStage() {

@@ -5,11 +5,12 @@ import { GlobalContext } from '../../../../state';
 import {
   getApiKeyNative,
   getAppTokenNative,
+  getProjectIdNative,
   getUidNative,
   onLaunchNative,
   setApiKeyNative,
   toggleStallionSwitchNative,
-} from '../../../../utils/StallionNaitveUtils';
+} from '../../../../utils/StallionNativeUtils';
 import SharedDataManager from '../../../../utils/SharedDataManager';
 import { SWITCH_STATES } from '../../../../../types/meta.types';
 import StallionNativeModule from '../../../../../StallionNativeModule';
@@ -57,9 +58,12 @@ const useStallionModal = () => {
       SharedDataManager.getInstance()?.setUid(uid);
     });
 
+    getProjectIdNative().then((projectId) => {
+      SharedDataManager.getInstance()?.setProjectId(projectId);
+    });
+
     const eventEmitter = new NativeEventEmitter(StallionNativeModule);
     eventEmitter.addListener(STALLION_NATIVE_EVENT, (data: any) => {
-      // fireEvent(data);
       const eventType = data?.type as string;
       switch (eventType) {
         case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
@@ -70,6 +74,7 @@ const useStallionModal = () => {
         case NativeEventTypesProd.ROLLED_BACK_PROD:
         case NativeEventTypesProd.STABILIZED_PROD:
         case NativeEventTypesProd.EXCEPTION_PROD:
+        case NativeEventTypesProd.AUTO_ROLLED_BACK_PROD:
           fireEvent(data);
           break;
         case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:
@@ -125,8 +130,11 @@ const useStallionModal = () => {
         newSwitchStatus ? SWITCH_STATES.STAGE : SWITCH_STATES.PROD
       );
       refreshMeta();
+      if (!newSwitchStatus) {
+        selectBucket();
+      }
     },
-    [refreshMeta]
+    [refreshMeta, selectBucket]
   );
 
   return {

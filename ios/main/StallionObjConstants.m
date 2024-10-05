@@ -77,6 +77,10 @@
     return @"ROLLED_BACK_PROD";
 }
 
++ (NSString *)auto_rolled_back_prod_event {
+    return @"AUTO_ROLLED_BACK_PROD";
+}
+
 + (NSString *)installed_prod_event {
     return @"INSTALLED_PROD";
 }
@@ -107,6 +111,10 @@
 
 + (NSString *)stallion_native_event {
     return @"STALLION_NATIVE_EVENT";
+}
+
++ (NSString *)last_rolled_back_release_hash_key {
+    return @"LAST_ROLLED_BACK_RELEASE_HASH";
 }
 
 @end
