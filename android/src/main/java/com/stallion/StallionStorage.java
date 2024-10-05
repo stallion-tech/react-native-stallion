@@ -36,13 +36,13 @@ public class StallionStorage {
   public void set(String key, String value) {
     SharedPreferences.Editor editor = sharedPreference.edit();
     editor.putString(key, value);
-    editor.apply();
+    editor.commit();
   }
 
   public void setInt(String key, Integer value) {
     SharedPreferences.Editor editor = sharedPreference.edit();
     editor.putInt(key, value);
-    editor.apply();
+    editor.commit();
   }
 
   public Integer getInt(String key) {
@@ -57,7 +57,7 @@ public class StallionStorage {
     } else {
       editor.remove(key);
     }
-    editor.apply();
+    editor.commit();
   }
 }
 
