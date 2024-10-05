@@ -87,6 +87,15 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   @ReactMethod
+  public void getAppToken(Callback callback) {
+    Resources res = currentReactContext.getResources();
+    String parentPackageName= currentReactContext.getPackageName();
+    int stallionAppTokenRes = res.getIdentifier(StallionConstants.STALLION_APP_TOKEN_IDENTIFIER, "string", parentPackageName);
+    String appToken = currentReactContext.getString(stallionAppTokenRes);
+    callback.invoke(appToken);
+  }
+
+  @ReactMethod
   public  void  sync() {
     StallionSynManager.sync();
   }

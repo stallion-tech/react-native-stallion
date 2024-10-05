@@ -84,11 +84,17 @@ class Stallion: RCTEventEmitter {
       callback([StallionSyncManager.getUniqueId()])
     }
   
-  @objc
-  func getProjectId(_ callback: RCTResponseSenderBlock) {
-    let projectId = Bundle.main.infoDictionary?[StallionConstants.STALLION_PROJECT_ID_IDENTIFIER] as? String ?? ""
-    callback([projectId])
-  }
+    @objc
+    func getProjectId(_ callback: RCTResponseSenderBlock) {
+      let projectId = Bundle.main.infoDictionary?[StallionConstants.STALLION_PROJECT_ID_IDENTIFIER] as? String ?? ""
+      callback([projectId])
+    }
+    
+    @objc
+    func getAppToken(_ callback: RCTResponseSenderBlock) {
+      let appToken = Bundle.main.infoDictionary?[StallionConstants.STALLION_APP_TOKEN_IDENTIFIER] as? String ?? ""
+      callback([appToken])
+    }
   
     func emitPendingEvents() {
       let flushedEvents = StallionEventManager.sharedInstance().flushAllEvents() as NSArray

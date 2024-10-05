@@ -16,9 +16,12 @@ const Footer: React.FC<IFooter> = ({
   onSwitchToggle,
   errorMessage,
 }) => {
-  const handleToggle = useCallback(() => {
-    onSwitchToggle?.(!switchIsOn);
-  }, [switchIsOn, onSwitchToggle]);
+  const handleToggle = useCallback(
+    (newSwitchStatus: boolean) => {
+      onSwitchToggle?.(newSwitchStatus);
+    },
+    [onSwitchToggle]
+  );
   return (
     <>
       {errorMessage ? (
@@ -30,7 +33,7 @@ const Footer: React.FC<IFooter> = ({
       ) : null}
       <View style={[styles.footerContainer, styles.shadowContainer]}>
         <TouchableOpacity
-          onPress={handleToggle}
+          onPress={() => handleToggle(true)}
           style={[styles.tabContainer, switchIsOn ? styles.tabSelected : {}]}
         >
           <Text
@@ -40,7 +43,7 @@ const Footer: React.FC<IFooter> = ({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={handleToggle}
+          onPress={() => handleToggle(false)}
           style={[styles.tabContainer, !switchIsOn ? styles.tabSelected : {}]}
         >
           <Text

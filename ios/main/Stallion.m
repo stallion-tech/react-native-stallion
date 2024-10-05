@@ -12,6 +12,7 @@ RCT_EXTERN_METHOD(downloadPackage:(NSDictionary *)bundleInfo
 RCT_EXTERN_METHOD(getStorage: (NSString *)storageKey callback:(RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(getUniqueId: (RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(getProjectId: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(getAppToken: (RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(setStorage: (NSString *)storageKey value:(NSString *)value)
 
 + (BOOL)requiresMainQueueSetup

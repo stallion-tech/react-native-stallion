@@ -21,10 +21,6 @@ export const getApiKeyNative = async (): Promise<string> => {
   return await getStorageNative(NATIVE_CONSTANTS.SDK_TOKEN);
 };
 
-export const getAppTokenNative = async (): Promise<string> => {
-  return await getStorageNative(NATIVE_CONSTANTS.APP_TOKEN);
-};
-
 export const getStorageNative = (key: string): Promise<string> => {
   return new Promise((res) => {
     StallionNativeModule?.getStorage(key, (value: string) => {
@@ -95,6 +91,14 @@ export const getProjectIdNative = async (): Promise<string> => {
   return new Promise((resolve) => {
     StallionNativeModule?.getProjectId((projectId: string) => {
       resolve(projectId);
+    });
+  });
+};
+
+export const getAppTokenNative = async (): Promise<string> => {
+  return new Promise((resolve) => {
+    StallionNativeModule?.getAppToken((appToken: string) => {
+      resolve(appToken);
     });
   });
 };

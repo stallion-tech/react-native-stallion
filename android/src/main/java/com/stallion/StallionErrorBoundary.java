@@ -34,8 +34,10 @@ public class StallionErrorBoundary {
           }
           String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
           if(!currentProdSlot.equals(StallionConstants.DEFAULT_FOLDER_SLOT)) {
+            String currentHash = stallionStorage.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
             WritableMap exceptionErrorPayload = Arguments.createMap();
             exceptionErrorPayload.putString("error", stackTraceString);
+            exceptionErrorPayload.putString("releaseHash", currentHash);
             StallionEventEmitter.sendEvent(
               StallionEventEmitter.getEventPayload(
                 StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),

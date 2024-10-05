@@ -19,12 +19,12 @@
 }
 
 + (void)rollbackProd:(BOOL)isAutoRollback {
-    NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key];
+  NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key] ?: @"";
     
     // possible hashes
     NSString *stableHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants stable_folder_slot]];
-    NSString *stableReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:stableHashPath];
-    NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]];
+    NSString *stableReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:stableHashPath] ?: @"";
+    NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]] ?: @"";
     NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath];
     
     // possible slots
@@ -87,7 +87,7 @@
 
 + (void)promoteTempStage {
   NSString *tempHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants stage_directory], [StallionObjConstants temp_folder_slot]];
-  NSString *tempReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:tempHashPath];
+  NSString *tempReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:tempHashPath] ?: @"";
   
   NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]];
   
@@ -101,7 +101,7 @@
 
 + (void)stabilizeRelease {
   NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]];
-  NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath];
+  NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath] ?: @"";
   
   if(![newReleaseHash isEqual:@""]) {
     NSString *stableHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants stable_folder_slot]];

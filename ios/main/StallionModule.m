@@ -35,8 +35,8 @@
 }
 
   + (NSURL *)getBundleURL:(NSURL *)defaultBundleURL {
-    NSString *switchState = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.switch_state_identifier];
-    NSString *cachedAppVersion = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.app_version_cache_key];
+    NSString *switchState = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.switch_state_identifier] ?: @"";
+    NSString *cachedAppVersion = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.app_version_cache_key] ?: @"";
     NSString *currentAppVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:StallionObjConstants.app_version_identifier];
       if (currentAppVersion != cachedAppVersion) {
         [[NSUserDefaults standardUserDefaults] setObject:currentAppVersion forKey:StallionObjConstants.app_version_cache_key];
@@ -71,18 +71,18 @@
         switchState = StallionObjConstants.switch_state_prod;
       }
       if([switchState isEqual:StallionObjConstants.switch_state_prod]) {
-        NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key];
+        NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key] ?: @"";
         
         if([currentProdSlot isEqual:tempFolderSlot]) {
           NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]];
-          NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath];
+          NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath] ?: @"";
           
           if(![newReleaseHash isEqual:@""]) {
             [StallionRollbackHandler stabilizeRelease];
           }
           
           NSString *tempHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants temp_folder_slot]];
-          NSString *tempReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:tempHashPath];
+          NSString *tempReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:tempHashPath] ?: @"";
           [fileManager removeItemAtPath:newDirectoryProd error:&error];
           [fileManager moveItemAtPath:tempDirectoryProd toPath:newDirectoryProd error:&error];
           [fileManager removeItemAtPath:tempDirectoryProd error:&error];
@@ -103,7 +103,7 @@
       }
     
     if([switchState isEqual:StallionObjConstants.switch_state_stage]) {
-      NSString *currentStageSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_stage_slot_key];
+      NSString *currentStageSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_stage_slot_key] ?: @"";
       if([currentStageSlot isEqual:tempFolderSlot]) {
         [fileManager removeItemAtPath:newDirectoryStage error:&error];
         [fileManager moveItemAtPath:tempDirectoryStage toPath:newDirectoryStage error:&error];
