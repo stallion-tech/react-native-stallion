@@ -10,27 +10,13 @@ import useStallionModalNoop from './noop/useStallionModal';
 import withStallionMain from './main/utils/withStallion';
 import useStallionModalMain from './main/utils/useStallionModal';
 
-import {
-  IStallionConfig,
-  IUseStallionModal,
-  IWithStallion,
-} from './types/utils.types';
+import { IUseStallionModal, IWithStallion } from './types/utils.types';
 import { stallionEventEmitter } from './main/utils/StallionEventEmitter';
-
-let isEnabled: boolean = true;
 
 export let withStallion: IWithStallion;
 export let useStallionModal: () => IUseStallionModal;
 
-try {
-  // const stallionConfigObj: IStallionConfig = require('../example/stallion.config.js'); // testing import
-  const stallionConfigObj: IStallionConfig = require('../../../stallion.config.js'); // prod import
-  isEnabled = stallionConfigObj?.stallionEnabled || true;
-  if (stallionConfigObj?.stallionEnabled === false) {
-    isEnabled = false;
-  }
-} catch (_) {}
-if (isEnabled && StallionNativeModule?.getUniqueId) {
+if (StallionNativeModule?.getUniqueId) {
   withStallion = withStallionMain;
   useStallionModal = useStallionModalMain;
 } else {
