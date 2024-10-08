@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useEffect } from 'react';
+import { useContext, useMemo, useState, useEffect } from 'react';
 
 import { GlobalContext } from '../state';
 import { IUseStallionUpdate } from '../../types/utils.types';
@@ -6,22 +6,23 @@ import { SLOT_STATES } from '../../types/meta.types';
 
 export const useStallionUpdate = (): IUseStallionUpdate => {
   const { metaState } = useContext(GlobalContext);
-  const initialProdSlot = useRef<SLOT_STATES>();
+  const [initialProdSlot, setInitialProdSlot] = useState<SLOT_STATES>();
   useEffect(() => {
-    if (metaState?.prodSlot?.currentSlot && !initialProdSlot.current) {
-      initialProdSlot.current = metaState?.prodSlot?.currentSlot;
+    if (metaState?.prodSlot?.currentSlot && !initialProdSlot) {
+      setInitialProdSlot(metaState?.prodSlot?.currentSlot);
     }
-  }, [metaState?.prodSlot?.currentSlot]);
+  }, [metaState?.prodSlot?.currentSlot, initialProdSlot]);
 
   const isRestartRequired = useMemo<boolean>(() => {
     const newReleaseInTemp = metaState?.prodSlot?.temp ? true : false;
     const slotHasChanged =
-      metaState?.prodSlot?.currentSlot !== initialProdSlot.current;
+      Boolean(initialProdSlot) &&
+      metaState?.prodSlot?.currentSlot !== initialProdSlot;
     return newReleaseInTemp || slotHasChanged;
-  }, [metaState.prodSlot]);
+  }, [metaState.prodSlot, initialProdSlot]);
 
   const currentlyRunning = useMemo<string>(() => {
-    switch (initialProdSlot.current) {
+    switch (initialProdSlot) {
       case SLOT_STATES.DEFAULT:
         return 'default';
       case SLOT_STATES.NEW:
@@ -33,7 +34,7 @@ export const useStallionUpdate = (): IUseStallionUpdate => {
       default:
         return '';
     }
-  }, [metaState.prodSlot]);
+  }, [metaState.prodSlot, initialProdSlot]);
 
   return {
     isRestartRequired,

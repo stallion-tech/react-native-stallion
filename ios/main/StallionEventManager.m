@@ -41,7 +41,7 @@
 - (void)queueRNEvent:(NSString *)eventType withData:(NSDictionary *)value {
     if (eventType && value) {
         NSMutableArray *eventList = [self getStoredEvents];
-        NSDictionary *event = @{@"eventType": eventType, @"data": value};
+        NSDictionary *event = @{@"type": eventType, @"payload": value};
         [eventList addObject:event];
         [self saveEvents:eventList];
     }

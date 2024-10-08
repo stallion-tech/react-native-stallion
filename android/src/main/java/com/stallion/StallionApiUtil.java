@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class StallionApiUtil {
-  public static JSONObject post(String urlString, String requestBodyString, String token) {
+  public static JSONObject post(String urlString, String requestBodyString, String token, String sdkToken) {
     StringBuilder result = new StringBuilder();
     HttpURLConnection urlConnection = null;
     try {
@@ -20,6 +20,7 @@ public class StallionApiUtil {
       urlConnection.setRequestMethod("POST");
       urlConnection.setRequestProperty("Content-Type", "application/json");
       urlConnection.setRequestProperty(StallionConstants.STALLION_APP_TOKEN_KEY, token);
+      urlConnection.setRequestProperty(StallionConstants.STALLION_SDK_TOKEN_KEY, sdkToken);
       urlConnection.setRequestProperty(StallionConstants.STALLION_DEVICE_ID_KEY, StallionCommonUtil.getUniqueId());
 
       urlConnection.setDoOutput(true);

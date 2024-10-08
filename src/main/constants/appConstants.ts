@@ -101,7 +101,7 @@ export const DOWNLOAD_ALERT_MESSAGE =
 export const DOWNLOAD_ALERT_BUTTON = 'Ok';
 
 export enum NATIVE_CONSTANTS {
-  SDK_TOKEN = 'x-sdk-token',
+  SDK_TOKEN = 'x-sdk-access-token',
   APP_TOKEN = 'x-app-token',
   SWITCH_STATE_INDENTIFIER = 'switchState',
   PROD_DIRECTORY = '/StallionProd',

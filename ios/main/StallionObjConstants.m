@@ -58,7 +58,7 @@
 }
 
 + (NSString *)stallion_sdk_token_key {
-    return @"x-sdk-token";
+    return @"x-sdk-access-token";
 }
 
 + (NSString *)switch_state_prod {

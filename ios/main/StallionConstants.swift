@@ -49,7 +49,7 @@ class StallionConstants {
     static let STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken"
     static let APP_VERION_IDENTIFIER = "CFBundleShortVersionString"
     static let STALLION_APP_TOKEN_KEY = "x-app-token"
-    static let STALLION_SDK_TOKEN_KEY = "x-sdk-token"
+    static let STALLION_SDK_TOKEN_KEY = "x-sdk-access-token"
     static let STALLION_UID_KEY = "uid"
     static let UNIQUE_ID_IDENTIFIER = "stallionDeviceId"
 

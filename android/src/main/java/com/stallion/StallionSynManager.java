@@ -26,10 +26,12 @@ public class StallionSynManager {
         String platform = "android";
         String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
         String appliedBundleHash = stallionStorage.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
+        String sdkToken = stallionStorage.get(StallionConstants.STALLION_SDK_TOKEN_KEY);
         JSONObject releaseMeta = StallionApiUtil.post(
           StallionConstants.STALLION_API_BASE + StallionConstants.STALLION_INFO_API_PATH,
           String.format(String.format("{\"appVersion\": \"%s\", \"platform\": \"%s\", \"projectId\": \"%s\", \"appliedBundleHash\": \"%s\" }", appVersion, platform, projectId, appliedBundleHash)),
-          appToken
+          appToken,
+          sdkToken
         );
         if(releaseMeta.optBoolean("success")) {
           JSONObject data = releaseMeta.optJSONObject("data");

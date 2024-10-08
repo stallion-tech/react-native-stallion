@@ -1,10 +1,24 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button, Text } from 'react-native';
-import { withStallion, useStallionModal } from 'react-native-stallion';
+import {
+  withStallion,
+  useStallionModal,
+  useStallionUpdate,
+  addEventListener,
+} from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
+  const { isRestartRequired, currentlyRunning } = useStallionUpdate();
+
+  console.log('StallionInfo', isRestartRequired, currentlyRunning);
+
+  React.useEffect(() => {
+    addEventListener((data) => {
+      console.log('StallionEvent', data);
+    });
+  }, []);
   return (
     <View style={styles.container}>
       <Text>Hello world</Text>

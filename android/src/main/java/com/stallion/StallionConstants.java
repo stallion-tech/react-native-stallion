@@ -39,7 +39,7 @@ public class StallionConstants {
   public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
   public static final String STALLION_APP_TOKEN_KEY = "x-app-token";
-  public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-token";
+  public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-access-token";
   public static final String STALLION_DEVICE_ID_KEY = "uid";
   public static final String LAST_ROLLED_BACK_RELEASE_HASH_KEY = "LAST_ROLLED_BACK_RELEASE_HASH";
 

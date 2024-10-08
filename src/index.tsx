@@ -27,4 +27,5 @@ if (StallionNativeModule?.getUniqueId) {
 
 export { sync } from './main/utils/StallionNativeUtils';
 export { useStallionUpdate } from './main/utils/useStallionUpdate';
-export const addEventListener = stallionEventEmitter.addEventListener;
+export const addEventListener =
+  stallionEventEmitter.addEventListener.bind(stallionEventEmitter);
