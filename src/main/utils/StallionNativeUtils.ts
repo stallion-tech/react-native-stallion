@@ -102,3 +102,5 @@ export const getAppTokenNative = async (): Promise<string> => {
     });
   });
 };
+
+export const syncNative = StallionNativeModule?.sync;

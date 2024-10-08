@@ -15,6 +15,7 @@ import {
   IUseStallionModal,
   IWithStallion,
 } from './types/utils.types';
+import { stallionEventEmitter } from './main/utils/StallionEventEmitter';
 
 let isEnabled: boolean = true;
 
@@ -37,3 +38,7 @@ if (isEnabled && StallionNativeModule?.getUniqueId) {
   withStallion = withStallionNoop;
   useStallionModal = useStallionModalNoop;
 }
+
+export { sync } from './main/utils/StallionNativeUtils';
+export { useStallionUpdate } from './main/utils/useStallionUpdate';
+export const addEventListener = stallionEventEmitter.addEventListener;

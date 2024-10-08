@@ -20,6 +20,7 @@ import {
   STALLION_NATIVE_EVENT,
 } from '../../../../constants/appConstants';
 import { fireEvent } from '../../../../utils/EventUtil';
+import { stallionEventEmitter } from '../../../../utils/StallionEventEmitter';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -87,6 +88,7 @@ const useStallionModal = () => {
         case NativeEventTypesProd.STABILIZED_PROD:
         case NativeEventTypesProd.EXCEPTION_PROD:
         case NativeEventTypesProd.AUTO_ROLLED_BACK_PROD:
+          stallionEventEmitter.emit(data);
           fireEvent(data);
           break;
         case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:

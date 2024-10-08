@@ -34,3 +34,8 @@ export type TToggleStallionSwitchNative = (switchState: string) => void;
 export type TDownloadBundleNative = (bundleInfo: IBundleInfo) => Promise<any>;
 
 export type TOnLaunchBundleNative = (launchMessage: string) => void;
+
+export interface IUseStallionUpdate {
+  isRestartRequired: boolean;
+  currentlyRunning: string;
+}
