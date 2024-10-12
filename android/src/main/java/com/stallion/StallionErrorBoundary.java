@@ -29,21 +29,21 @@ public class StallionErrorBoundary {
         String switchState = stallionStorage.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
 
         if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
-          if(!StallionStorage.getInstance().getIsMounted()) {
-            StallionRollbackManager.rollbackProd(true);
-          }
           String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
           if(!currentProdSlot.equals(StallionConstants.DEFAULT_FOLDER_SLOT)) {
             String currentHash = stallionStorage.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
             WritableMap exceptionErrorPayload = Arguments.createMap();
             exceptionErrorPayload.putString("error", stackTraceString);
             exceptionErrorPayload.putString("releaseHash", currentHash);
-            StallionEventEmitter.sendEvent(
+            StallionEventEmitter.cacheEvent(
               StallionEventEmitter.getEventPayload(
                 StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),
                 exceptionErrorPayload
               )
             );
+          }
+          if(!stallionStorage.getIsMounted()) {
+            StallionRollbackManager.rollbackProd(true);
           }
           continueExceptionFlow();
         } else if(switchState.equals(StallionConstants.SwitchState.STAGE.toString())) {

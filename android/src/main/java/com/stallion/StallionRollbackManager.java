@@ -40,15 +40,16 @@ public class StallionRollbackManager {
   private static void emitRollbackEvent(Boolean isAutoRollback, String rolledBackReleaseHash) {
     WritableMap rollbackEventPayload = Arguments.createMap();
     rollbackEventPayload.putString("releaseHash", rolledBackReleaseHash);
-    StallionEventEmitter.sendEvent(
-      StallionEventEmitter.getEventPayload(
-        isAutoRollback ? StallionConstants.NativeEventTypesProd.AUTO_ROLLED_BACK_PROD.toString() : StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD.toString(),
-        rollbackEventPayload
-      )
+    WritableMap rollbackEventObject = StallionEventEmitter.getEventPayload(
+      isAutoRollback ? StallionConstants.NativeEventTypesProd.AUTO_ROLLED_BACK_PROD.toString() : StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD.toString(),
+      rollbackEventPayload
     );
     if(isAutoRollback) {
+      StallionEventEmitter.cacheEvent(rollbackEventObject);
       StallionStorage stallionStorageInstance = StallionStorage.getInstance();
       stallionStorageInstance.set(StallionConstants.LAST_ROLLED_BACK_RELEASE_HASH_KEY, rolledBackReleaseHash);
+    } else {
+      StallionEventEmitter.sendEvent(rollbackEventObject);
     }
   }
 
