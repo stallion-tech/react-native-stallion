@@ -69,7 +69,6 @@ class Stallion: RCTEventEmitter {
     
     @objc
     func onLaunch(_ launchData: String) {
-      //TODO: Do launch stuff here
       StallionObjUtil.isMounted = true
       emitPendingEvents()
     }
@@ -99,7 +98,10 @@ class Stallion: RCTEventEmitter {
     func emitPendingEvents() {
       let flushedEvents = StallionEventManager.sharedInstance().flushAllEvents() as NSArray
       for event in flushedEvents {
-          if let eventDict = event as? [String: Any] {
+          if var eventDict = event as? [String: Any] {
+            var payload = eventDict["payload"] as? Dictionary<String, Any> ?? [:]
+            payload[StallionConstants.APP_VERION_EVENT_KEY] = StallionSyncManager.getAppVersion()
+            eventDict["payload"] = payload
             Stallion.shared?.sendEvent(withName: StallionConstants.STALLION_NATIVE_EVENT_NAME, body: eventDict)
           }
       }

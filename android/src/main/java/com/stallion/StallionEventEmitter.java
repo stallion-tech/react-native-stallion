@@ -43,7 +43,10 @@ public class StallionEventEmitter {
   }
 
   public static WritableMap getEventPayload(String eventName, WritableMap eventValue) {
+    StallionStorage stallionStorageInstance = StallionStorage.getInstance();
+    String stallionAppVersionCache = stallionStorageInstance.get(StallionConstants.STALLION_APP_VERSION_IDENTIFIER);
     WritableMap params = Arguments.createMap();
+    eventValue.putString("AppVersion", stallionAppVersionCache);
     params.putString("type", eventName);
     params.putMap("payload", eventValue);
     return  params;

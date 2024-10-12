@@ -58,6 +58,8 @@ class StallionConstants {
   
     static let STALLION_SWITCH_STATE_IDENTIFIER = "switchState";
     static let LAST_ROLLED_BACK_RELEASE_HASH_KEY = "LAST_ROLLED_BACK_RELEASE_HASH";
+  
+    static let APP_VERION_EVENT_KEY = "AppVersion"
 
     public struct SwitchState {
       static let PROD = "PROD"
