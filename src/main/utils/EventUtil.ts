@@ -13,13 +13,15 @@ interface IEventData {
 export const fireEvent = (data: IEventData) => {
   if (data?.type && data?.payload) {
     const dataManager = SharedDataManager.getInstance();
+    const projectId = dataManager?.getProjectId();
     const body = {
-      projectId: dataManager?.getProjectId(),
+      projectId,
       eventData: {
         ...data.payload,
         type: data.type,
         uid: dataManager?.getUid(),
         platform: Platform.OS,
+        projectId,
       },
     };
     fetch(API_BASE_URL + API_PATHS.LOG_EVENT, {

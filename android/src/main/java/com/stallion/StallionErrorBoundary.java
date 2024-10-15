@@ -30,11 +30,13 @@ public class StallionErrorBoundary {
 
         if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
           String currentProdSlot = stallionStorage.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
+          boolean isAutoRollback = !stallionStorage.getIsMounted();
           if(!currentProdSlot.equals(StallionConstants.DEFAULT_FOLDER_SLOT)) {
             String currentHash = stallionStorage.get(StallionConstants.PROD_DIRECTORY + currentProdSlot);
             WritableMap exceptionErrorPayload = Arguments.createMap();
             exceptionErrorPayload.putString("error", stackTraceString);
             exceptionErrorPayload.putString("releaseHash", currentHash);
+            exceptionErrorPayload.putString("isAutoRollback", Boolean.toString(isAutoRollback));
             StallionEventEmitter.cacheEvent(
               StallionEventEmitter.getEventPayload(
                 StallionConstants.NativeEventTypesProd.EXCEPTION_PROD.toString(),
@@ -42,7 +44,7 @@ public class StallionErrorBoundary {
               )
             );
           }
-          if(!stallionStorage.getIsMounted()) {
+          if(isAutoRollback) {
             StallionRollbackManager.rollbackProd(true);
           }
           continueExceptionFlow();

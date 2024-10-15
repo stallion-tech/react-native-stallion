@@ -2,7 +2,7 @@
 //  StallionObjUtil.m
 //  react-native-stallion
 //
-//  Created by Jasbir Singh Shergill on 27/09/24.
+//  Created by Thor963  on 27/09/24.
 //
 
 #import "StallionObjUtil.h"

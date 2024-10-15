@@ -2,7 +2,7 @@
 //  StallionEventManager.m
 //  react-native-stallion
 //
-//  Created by Jasbir Singh Shergill on 26/09/24.
+//  Created by Thor963  on 26/09/24.
 //
 
 #import "StallionEventManager.h"

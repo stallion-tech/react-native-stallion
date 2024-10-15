@@ -2,7 +2,7 @@
 //  StallionCommonConstants.h
 //  react-native-stallion
 //
-//  Created by Jasbir Singh Shergill on 27/09/24.
+//  Created by Thor963  on 27/09/24.
 //
 
 #import <Foundation/Foundation.h>
@@ -41,5 +41,6 @@
 @property (class, nonatomic, readonly) NSString *stallion_native_event;
 @property (class, nonatomic, readonly) NSString *last_rolled_back_release_hash_key;
 @property (class, nonatomic, readonly) NSString *auto_rolled_back_prod_event;
+@property (class, nonatomic, readonly) NSString *is_auto_rollback_key;
 
 @end

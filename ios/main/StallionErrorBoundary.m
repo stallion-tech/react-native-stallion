@@ -2,7 +2,7 @@
 //  StallionErrorBoundary.m
 //  react-native-stallion
 //
-//  Created by Jasbir Singh on 24/12/23.
+//  Created by Thor963 on 24/12/23.
 //
 
 #import "StallionErrorBoundary.h"
@@ -40,10 +40,11 @@ void handleException(NSException *exception)
       NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key] ?: @"";
       NSString *currentHashPath = [NSString stringWithFormat:@"/%@%@", [StallionObjConstants prod_directory], currentProdSlot];
       NSString *currentHash = [[NSUserDefaults standardUserDefaults] stringForKey:currentHashPath] ?: @"";
+      BOOL isAutoRollback = ![StallionObjUtil isMounted];
       if(![currentProdSlot isEqual:StallionObjConstants.default_folder_slot]) {
-        [[StallionEventManager sharedInstance] queueRNEvent:[StallionObjConstants exception_prod_event] withData:@{@"error" : readeableError, StallionObjConstants.release_hash_key: currentHash}];
+        [[StallionEventManager sharedInstance] queueRNEvent:[StallionObjConstants exception_prod_event] withData:@{@"error" : readeableError, StallionObjConstants.release_hash_key: currentHash, StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false" }];
       }
-      if(![StallionObjUtil isMounted]) {
+      if(isAutoRollback) {
         [StallionRollbackHandler rollbackProd:true];
       }
     }  else if([switchState isEqual:[StallionObjConstants switch_state_stage]]) {
