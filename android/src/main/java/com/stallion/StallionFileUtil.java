@@ -115,6 +115,9 @@ public class StallionFileUtil {
                 }
             }
         }
+        if(!file.delete()) {
+            throw new RuntimeException("StallionException: Error deleting file");
+        }
     }
     public static void moveFile(File fromFile, File toFile) {
       if(toFile.exists()) {
