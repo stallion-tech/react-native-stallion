@@ -34,7 +34,6 @@ void handleException(NSException *exception)
 {
     NSString *switchState = [[NSUserDefaults standardUserDefaults]
                              stringForKey:[StallionObjConstants switch_state_identifier]];
-  
     NSString * readeableError = [exception reason];
     if([switchState isEqual:[StallionObjConstants switch_state_prod]]) {
       NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key] ?: @"";
@@ -72,6 +71,9 @@ void handleException(NSException *exception)
           [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       }
     }
+  if(_defaultExceptionHandler) {
+    _defaultExceptionHandler(exception);
+  }
 }
 
 @end
