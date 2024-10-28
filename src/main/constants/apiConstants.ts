@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://staging-api.redhorse.tech';
+export const API_BASE_URL = 'https://api.stalliontech.io';
 
 export enum API_PATHS {
   LOGIN = '/api/v1/sdk/client-login',

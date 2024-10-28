@@ -24,10 +24,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  errTxt: {
+  restartInfoSection: {
+    height: STD_MARGIN * 2.5,
+    backgroundColor: COLORS.indigo,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ribbonMessage: {
     fontSize: STD_MARGIN * 1.2,
     color: COLORS.white,
     marginHorizontal: STD_MARGIN / 2,
+    fontWeight: 'bold',
   },
   footerContainer: {
     paddingHorizontal: STD_MARGIN,
@@ -37,26 +44,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.white,
   },
+  switchContainer: {
+    borderWidth: 0.5,
+    borderColor: COLORS.black5,
+    padding: STD_MARGIN / 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: STD_MARGIN,
+  },
   tabContainer: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
-    padding: STD_MARGIN,
+    padding: STD_MARGIN * 1.3,
     borderRadius: STD_MARGIN,
   },
   tabSelected: {
-    backgroundColor: COLORS.blue,
+    backgroundColor: COLORS.black,
   },
   titleSelected: {
     fontSize: STD_MARGIN * 1.2,
     color: COLORS.white,
-    fontWeight: 'bold',
   },
   titleBasic: {
     textAlign: 'center',
-    fontSize: STD_MARGIN * 1.1,
-    color: COLORS.text_major,
+    fontSize: STD_MARGIN * 1.5,
+    color: COLORS.black,
+    fontWeight: 'bold',
   },
 });
 

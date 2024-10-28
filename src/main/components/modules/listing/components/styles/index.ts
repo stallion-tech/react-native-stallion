@@ -16,6 +16,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     elevation: 2,
     shadowRadius: 8,
+    borderWidth: 0.5,
+    borderColor: COLORS.black2,
   },
   infoSection: {
     width: '100%',
@@ -28,15 +30,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: STD_MARGIN,
+  },
+  downloadButton: {
+    backgroundColor: COLORS.black,
+    padding: STD_MARGIN,
+    borderRadius: STD_MARGIN,
   },
   appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
-  container: {
-    margin: 15,
-  },
+  container: {},
   divider: {
     borderBottomWidth: 0.5,
     opacity: 0.2,
-    marginVertical: 10,
+    marginBottom: STD_MARGIN,
   },
   subText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_SLAB_HEIGHT / 2.5,
-    color: COLORS.text_major,
+    color: COLORS.black,
   },
   bold: {
     fontWeight: 'bold',
@@ -53,13 +59,17 @@ const styles = StyleSheet.create({
   releaseNoteText: {
     fontSize: 12,
     fontWeight: '500',
-    marginTop: 10,
     color: COLORS.text_major,
   },
   releaseNoteDescriptionText: {
     fontSize: 14,
-    marginTop: 5,
     color: COLORS.black,
+  },
+  descContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: STD_MARGIN,
+    backgroundColor: COLORS.black1,
   },
 });
 

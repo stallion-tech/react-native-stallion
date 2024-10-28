@@ -26,6 +26,7 @@ interface IGlobalContextActions {
   downloadBundle: (url: string, hash: string) => void;
   getUserProfile: () => void;
   setProgress: (newProgress: number) => void;
+  setDownloadErrorMessage: (msg: string) => void;
 }
 
 export interface IGlobalContext {

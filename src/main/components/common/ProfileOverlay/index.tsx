@@ -5,7 +5,6 @@ import styles from './styles';
 import {
   BACK_BUTTON_TEXT,
   LOGOUT_BUTTON_TEXT,
-  PROFILE_TITLE,
 } from '../../../constants/appConstants';
 import ButtonFullWidth from '../ButtonFullWidth';
 
@@ -24,25 +23,27 @@ const ProfileOverlay: React.FC<IProfileOverlay> = ({
 }) => {
   return (
     <View style={styles.profileContainer}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.profileTitle}>{PROFILE_TITLE}</Text>
-      </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.profileInfoText}>{fullName}</Text>
-        <Text style={styles.profileInfoText}>{email}</Text>
-        <View style={styles.buttonContainer}>
-          <ButtonFullWidth
-            onPress={onLogoutPress}
-            buttonText={LOGOUT_BUTTON_TEXT}
-          />
+        <View style={styles.titleContainer}>
+          <Text style={styles.profileTitle}>{fullName?.slice(0, 1)}</Text>
         </View>
-        <View style={styles.buttonContainer}>
-          <ButtonFullWidth
-            primary={false}
-            onPress={onBackPress}
-            buttonText={BACK_BUTTON_TEXT}
-          />
+        <View style={styles.detailContainer}>
+          <Text style={styles.profileInfoText}>{fullName}</Text>
+          <Text style={styles.profileSubInfoText}>{email}</Text>
         </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <ButtonFullWidth
+          onPress={onLogoutPress}
+          buttonText={LOGOUT_BUTTON_TEXT}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <ButtonFullWidth
+          primary={false}
+          onPress={onBackPress}
+          buttonText={BACK_BUTTON_TEXT}
+        />
       </View>
     </View>
   );

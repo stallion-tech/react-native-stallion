@@ -13,7 +13,8 @@ const Prod: React.FC = () => {
   return (
     <View style={styles.pageContainer}>
       <SlotView {...metaState.prodSlot} />
-      <Text>Unique Id: {uid}</Text>
+      <Text style={styles.uidText}>Unique Id:</Text>
+      <Text style={styles.uidValue}>{uid}</Text>
     </View>
   );
 };

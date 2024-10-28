@@ -31,6 +31,7 @@ const StallionModal: React.FC = () => {
     performLogout,
     downloadError,
     handleSwitch,
+    isRestartRequired,
   } = useStallionModal();
   return (
     <Modal
@@ -73,6 +74,7 @@ const StallionModal: React.FC = () => {
               switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
               onSwitchToggle={handleSwitch}
               errorMessage={downloadError}
+              isRestartRequired={isRestartRequired}
             />
           )}
         </SafeAreaView>

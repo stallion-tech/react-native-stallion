@@ -13,16 +13,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    flex: 1,
+    width: '90%',
+    alignSelf: 'center',
+    paddingVertical: HEADER_SLAB_HEIGHT / 2,
   },
   logoText: {
-    fontSize: HEADER_SLAB_HEIGHT,
-    color: COLORS.text_major,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black,
+    fontWeight: '500',
   },
   inputSection: {
-    flex: 2,
     justifyContent: 'flex-start',
-    paddingTop: HEADER_SLAB_HEIGHT,
   },
   errorText: {
     fontSize: HEADER_SLAB_HEIGHT / 4,

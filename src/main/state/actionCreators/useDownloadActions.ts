@@ -52,9 +52,14 @@ const useDownloadActions = (
     [dispatch]
   );
 
+  const setDownloadErrorMessage = (message: string) => {
+    dispatch(setDownloadError(message));
+  };
+
   return {
     downloadBundle,
     setProgress,
+    setDownloadErrorMessage,
   };
 };
 

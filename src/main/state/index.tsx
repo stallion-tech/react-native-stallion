@@ -50,10 +50,8 @@ const GlobalProvider: React.FC = ({ children }) => {
     bundleState,
     setUserRequiresLogin
   );
-  const { downloadBundle, setProgress } = useDownloadActions(
-    downloadDispatch,
-    refreshMeta
-  );
+  const { downloadBundle, setProgress, setDownloadErrorMessage } =
+    useDownloadActions(downloadDispatch, refreshMeta);
   const value = {
     isModalVisible,
     metaState,
@@ -74,6 +72,7 @@ const GlobalProvider: React.FC = ({ children }) => {
       downloadBundle,
       getUserProfile,
       setProgress,
+      setDownloadErrorMessage,
     },
   };
 

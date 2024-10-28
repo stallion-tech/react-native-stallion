@@ -21,6 +21,7 @@ import {
 } from '../../../../constants/appConstants';
 import { fireEvent } from '../../../../utils/EventUtil';
 import { stallionEventEmitter } from '../../../../utils/StallionEventEmitter';
+import { SLOT_STATES } from '../../../../../types/meta.types';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -44,6 +45,7 @@ const useStallionModal = () => {
       selectBucket,
       refreshMeta,
       setProgress,
+      setDownloadErrorMessage,
     },
   } = useContext(GlobalContext);
   const onBackPress = useCallback(() => {
@@ -139,6 +141,7 @@ const useStallionModal = () => {
 
   const handleSwitch = useCallback(
     (newSwitchStatus) => {
+      setDownloadErrorMessage('');
       toggleStallionSwitchNative(
         newSwitchStatus ? SWITCH_STATES.STAGE : SWITCH_STATES.PROD
       );
@@ -147,8 +150,45 @@ const useStallionModal = () => {
         selectBucket();
       }
     },
-    [refreshMeta, selectBucket]
+    [refreshMeta, selectBucket, setDownloadErrorMessage]
   );
+
+  const [initialProdSlot, setInitialProdSlot] = useState<SLOT_STATES>();
+  const [initialSwitch, setInitialSwitch] = useState<SWITCH_STATES>();
+  useEffect(() => {
+    if (metaState?.prodSlot?.currentSlot && !initialProdSlot) {
+      setInitialProdSlot(metaState?.prodSlot?.currentSlot);
+    }
+    if (metaState.switchState && !initialSwitch) {
+      setInitialSwitch(metaState.switchState);
+    }
+  }, [
+    metaState?.prodSlot?.currentSlot,
+    initialProdSlot,
+    metaState.switchState,
+    initialSwitch,
+  ]);
+
+  const isRestartRequired = useMemo<boolean>(() => {
+    if (initialSwitch !== metaState.switchState) {
+      return true;
+    }
+    if (metaState.switchState === SWITCH_STATES.PROD) {
+      const newReleaseInTemp = metaState?.prodSlot?.temp ? true : false;
+      const slotHasChanged =
+        Boolean(initialProdSlot) &&
+        metaState?.prodSlot?.currentSlot !== initialProdSlot;
+      return newReleaseInTemp || slotHasChanged;
+    } else {
+      return metaState?.stageSlot?.temp ? true : false;
+    }
+  }, [
+    metaState.prodSlot,
+    initialProdSlot,
+    metaState.switchState,
+    metaState.stageSlot,
+    initialSwitch,
+  ]);
 
   return {
     isModalVisible,
@@ -166,6 +206,7 @@ const useStallionModal = () => {
     presentProfileSection,
     performLogout,
     handleSwitch,
+    isRestartRequired,
   };
 };
 

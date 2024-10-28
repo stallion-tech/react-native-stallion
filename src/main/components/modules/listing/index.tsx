@@ -26,6 +26,7 @@ const Listing: React.FC = () => {
     fetchNextPage,
     nextPageLoading,
     metaState,
+    isBackEnabled,
   } = useListing();
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -40,7 +41,7 @@ const Listing: React.FC = () => {
   if (!isMounted) return null;
   return (
     <>
-      <SlotView {...metaState.stageSlot} />
+      {isBackEnabled ? null : <SlotView {...metaState.stageSlot} />}
       <FlatList
         style={styles.mainContainer}
         contentContainerStyle={styles.mainListContainer}

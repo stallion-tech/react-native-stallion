@@ -1,17 +1,24 @@
 import { StyleSheet } from 'react-native';
+import { HEADER_SLAB_HEIGHT } from '../../../../constants/appConstants';
 import { COLORS } from '../../../../constants/colors';
+import { STD_MARGIN } from '../../../../constants/appConstants';
 
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
     flexDirection: 'column',
     alignItems: 'center',
   },
-  text: {
-    color: 'black',
-    borderWidth: 1,
-    borderColor: 'red',
+  uidText: {
+    marginTop: HEADER_SLAB_HEIGHT / 2,
+    color: COLORS.black,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    fontWeight: 'bold',
+  },
+  uidValue: {
+    fontSize: HEADER_SLAB_HEIGHT / 2,
+    textAlign: 'center',
+    marginTop: STD_MARGIN,
   },
 });
 

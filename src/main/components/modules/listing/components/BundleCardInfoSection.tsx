@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo, memo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import { GlobalContext } from '../../../../state';
 
@@ -44,18 +44,15 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
   downloadUrl,
 }) => {
   const {
-    metaState,
     bundleState: { selectedBucketId },
     actions: { downloadBundle },
   } = useContext(GlobalContext);
 
   const stateColor = useMemo(() => {
-    if ((isApplied || isDownloaded) && !metaState.switchState)
-      return COLORS.orange;
-    if ((isApplied || isDownloaded) && metaState.switchState)
-      return COLORS.green;
-    return COLORS.blue;
-  }, [isApplied, metaState.switchState, isDownloaded]);
+    if (isApplied) return COLORS.indigo;
+    if (isDownloaded) return COLORS.green;
+    return COLORS.white;
+  }, [isApplied, isDownloaded]);
 
   const updatedAtText = useMemo(() => {
     return parseDateTime(updatedAt);
@@ -63,7 +60,7 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
 
   const handleDownloadPress = useCallback(() => {
     if (!isApplied && selectedBucketId && version) {
-      downloadBundle(downloadUrl, id);
+      downloadBundle(downloadUrl + 'gs', id);
     }
   }, [isApplied, selectedBucketId, version, downloadBundle, downloadUrl, id]);
 
@@ -71,22 +68,31 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
     <View style={styles.container}>
       <View style={styles.rowContainer}>
         <Text style={[styles.titleText, styles.bold]}>v{version}</Text>
-        <Text
+        <TouchableOpacity
           onPress={handleDownloadPress}
-          style={[styles.appliedText, { color: stateColor }]}
+          disabled={isApplied || isDownloaded}
+          style={[
+            styles.downloadButton,
+            {
+              backgroundColor:
+                isApplied || isDownloaded ? 'transparent' : COLORS.black,
+            },
+          ]}
         >
-          {isApplied
-            ? APPLIED_TEXT
-            : isDownloaded
-            ? DOWNLOADED_TEXT
-            : DOWNLOAD_BUTTON_TEXT}
-        </Text>
+          <Text style={[styles.appliedText, { color: stateColor }]}>
+            {isApplied
+              ? APPLIED_TEXT
+              : isDownloaded
+              ? DOWNLOADED_TEXT
+              : DOWNLOAD_BUTTON_TEXT}
+          </Text>
+        </TouchableOpacity>
       </View>
       {description ? (
-        <>
+        <View style={styles.descContainer}>
           <Text style={styles.releaseNoteText}>{BUNDLE_CARD_RELEASE_NOTE}</Text>
           <Text style={styles.releaseNoteDescriptionText}>{description}</Text>
-        </>
+        </View>
       ) : (
         <Text style={styles.releaseNoteText}>{NO_RELEASE_NOTE_TEXT}</Text>
       )}
@@ -99,9 +105,7 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
         <CardDescriptionContent
           title={BUNDLE_APPLIED_TEXT}
           subtitle={
-            isApplied && metaState?.switchState
-              ? SWITCH_STATE_KEYS.Enabled
-              : SWITCH_STATE_KEYS.Disabled
+            isApplied ? SWITCH_STATE_KEYS.Enabled : SWITCH_STATE_KEYS.Disabled
           }
         />
         <CardDescriptionContent

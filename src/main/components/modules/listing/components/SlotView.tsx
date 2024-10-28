@@ -20,12 +20,33 @@ const StallionSlot: React.FC<IStallionSlot> = ({ title, hash, isActive }) => {
         styles.centerContainer,
         styles.slotItem,
         {
-          backgroundColor: isActive ? COLORS.green : COLORS.black7,
+          backgroundColor: isActive ? COLORS.green : '',
         },
       ]}
     >
-      <Text style={styles.title}>{title}</Text>
-      {hash ? <Text style={styles.subtitle}>{hash}</Text> : null}
+      <Text
+        style={[
+          styles.title,
+          {
+            color: isActive ? COLORS.white : COLORS.text_major,
+          },
+        ]}
+      >
+        {title}
+      </Text>
+      {hash ? (
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.subtitle,
+            {
+              color: isActive ? COLORS.white : COLORS.text_major,
+            },
+          ]}
+        >
+          {hash}
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -34,7 +55,7 @@ const SlotView: React.FC<IStallionSlotData> = (props) => {
   const { currentSlot, temp, stable } = props;
   const activeSlot = currentSlot as unknown as string;
   return (
-    <View style={styles.centerContainer}>
+    <View style={[styles.centerContainer, styles.colContainer]}>
       {temp ? (
         <StallionSlot
           title={NATIVE_CONSTANTS.TEMP_FOLDER_SLOT}
@@ -67,22 +88,26 @@ const SlotView: React.FC<IStallionSlotData> = (props) => {
 
 const styles = StyleSheet.create({
   centerContainer: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    flexDirection: 'column',
-    padding: STD_MARGIN,
+    flexDirection: 'row',
     width: '100%',
   },
+  colContainer: {
+    flexDirection: 'column',
+  },
   slotItem: {
-    width: '80%',
-    borderWidth: 1,
-    borderColor: COLORS.black5,
+    width: '100%',
+    padding: STD_MARGIN,
+    borderBottomColor: COLORS.black2,
+    borderBottomWidth: 0.5,
   },
   title: { fontSize: 14, fontWeight: '500', color: COLORS.white },
   subtitle: {
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.white,
+    width: '70%',
   },
 });
 

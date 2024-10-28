@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
-export const Login_TITLE = 'Login';
+export const Login_TITLE = 'Login to continue';
 export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
@@ -66,7 +66,7 @@ export const EMPTY_STATE = {
 
 export const OTP_LENGTH = 6;
 
-export const SUBMIT_BUTTON_TEXT = 'SUBMIT';
+export const SUBMIT_BUTTON_TEXT = 'Continue';
 export const OTP_BACK_BUTTON_TEXT = 'BACK';
 export const OTP_INPUT_KEY = 'Enter OTP';
 
@@ -133,3 +133,5 @@ export enum NativeEventTypesStage {
 }
 
 export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
+
+export const RESTART_REQUIRED_MESSAGE = 'restart the app to see changes';
