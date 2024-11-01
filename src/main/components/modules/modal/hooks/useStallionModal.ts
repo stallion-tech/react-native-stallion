@@ -154,25 +154,17 @@ const useStallionModal = () => {
   );
 
   const [initialProdSlot, setInitialProdSlot] = useState<SLOT_STATES>();
-  const [initialSwitch, setInitialSwitch] = useState<SWITCH_STATES>();
   useEffect(() => {
     if (metaState?.prodSlot?.currentSlot && !initialProdSlot) {
       setInitialProdSlot(metaState?.prodSlot?.currentSlot);
-    }
-    if (metaState.switchState && !initialSwitch) {
-      setInitialSwitch(metaState.switchState);
     }
   }, [
     metaState?.prodSlot?.currentSlot,
     initialProdSlot,
     metaState.switchState,
-    initialSwitch,
   ]);
 
   const isRestartRequired = useMemo<boolean>(() => {
-    if (initialSwitch !== metaState.switchState) {
-      return true;
-    }
     if (metaState.switchState === SWITCH_STATES.PROD) {
       const newReleaseInTemp = metaState?.prodSlot?.temp ? true : false;
       const slotHasChanged =
@@ -187,7 +179,6 @@ const useStallionModal = () => {
     initialProdSlot,
     metaState.switchState,
     metaState.stageSlot,
-    initialSwitch,
   ]);
 
   return {

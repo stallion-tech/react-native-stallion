@@ -62,7 +62,9 @@ class StallionSyncManager: NSObject {
     request.httpBody = try? JSONSerialization.data(withJSONObject: params, options: [])
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue(appToken, forHTTPHeaderField: StallionConstants.STALLION_APP_TOKEN_KEY)
-    request.addValue(sdkToken, forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+    if(!sdkToken.isEmpty) {
+        request.addValue(sdkToken, forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+    }
     request.addValue(getUniqueId(), forHTTPHeaderField: StallionConstants.STALLION_UID_KEY)
     
     let session = URLSession.shared

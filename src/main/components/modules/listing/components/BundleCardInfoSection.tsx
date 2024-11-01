@@ -60,7 +60,7 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
 
   const handleDownloadPress = useCallback(() => {
     if (!isApplied && selectedBucketId && version) {
-      downloadBundle(downloadUrl + 'gs', id);
+      downloadBundle(downloadUrl, id);
     }
   }, [isApplied, selectedBucketId, version, downloadBundle, downloadUrl, id]);
 

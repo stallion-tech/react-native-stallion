@@ -34,7 +34,7 @@ public class StallionConstants {
 
   public static final String CURRENT_PROD_SLOT_KEY = "stallionProdCurrentSlot";
   public static final String CURRENT_STAGE_SLOT_KEY = "stallionStageCurrentSlot";
-  public static final String STALLION_API_BASE = "https://staging-api.redhorse.tech";
+  public static final String STALLION_API_BASE = "https://api.stalliontech.io";
   public static final String STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta";
   public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
