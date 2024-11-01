@@ -1,4 +1,5 @@
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
+import { IUpdateMeta } from './updateMeta.types';
 
 interface IBundleInfo {
   url: string;
@@ -37,5 +38,6 @@ export type TOnLaunchBundleNative = (launchMessage: string) => void;
 
 export interface IUseStallionUpdate {
   isRestartRequired: boolean;
-  currentlyRunning: string;
+  currentlyRunningBundle: IUpdateMeta | null;
+  newReleaseBundle: IUpdateMeta | null;
 }

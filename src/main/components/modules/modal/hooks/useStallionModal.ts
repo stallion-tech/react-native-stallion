@@ -39,6 +39,7 @@ const useStallionModal = () => {
     metaState,
     bundleState,
     downloadState,
+    updateMetaState,
     actions: {
       setIsModalVisible,
       setUserRequiresLogin,
@@ -165,21 +166,8 @@ const useStallionModal = () => {
   ]);
 
   const isRestartRequired = useMemo<boolean>(() => {
-    if (metaState.switchState === SWITCH_STATES.PROD) {
-      const newReleaseInTemp = metaState?.prodSlot?.temp ? true : false;
-      const slotHasChanged =
-        Boolean(initialProdSlot) &&
-        metaState?.prodSlot?.currentSlot !== initialProdSlot;
-      return newReleaseInTemp || slotHasChanged;
-    } else {
-      return metaState?.stageSlot?.temp ? true : false;
-    }
-  }, [
-    metaState.prodSlot,
-    initialProdSlot,
-    metaState.switchState,
-    metaState.stageSlot,
-  ]);
+    return updateMetaState.slotHasChanged ? true : false;
+  }, [updateMetaState.slotHasChanged]);
 
   return {
     isModalVisible,

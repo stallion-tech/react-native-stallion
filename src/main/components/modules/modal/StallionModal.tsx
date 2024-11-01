@@ -69,7 +69,7 @@ const StallionModal: React.FC = () => {
               />
             ) : null}
           </View>
-          {loginRequired ? null : (
+          {loginRequired || showProfileSection ? null : (
             <Footer
               switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
               onSwitchToggle={handleSwitch}

@@ -33,8 +33,12 @@ class StallionDownloader: NSObject {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
 
+        let sdkToken = StallionSyncManager.getSdkToken()
+
         request.setValue(StallionSyncManager.getAppToken(), forHTTPHeaderField: StallionConstants.STALLION_APP_TOKEN_KEY)
-        request.setValue(StallionSyncManager.getSdkToken(), forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+        if(!sdkToken.isEmpty) {
+            request.setValue(sdkToken, forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+        }
         let task = urlSession.downloadTask(with: request)
         task.resume()
         self.downloadTask = task

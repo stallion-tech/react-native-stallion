@@ -134,4 +134,4 @@ export enum NativeEventTypesStage {
 
 export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
 
-export const RESTART_REQUIRED_MESSAGE = 'restart the app to see changes';
+export const RESTART_REQUIRED_MESSAGE = 'Restart required. Bundle has changed';

@@ -10,12 +10,14 @@ import useBucketActions from './actionCreators/useBucketActions';
 import useMetaActions from './actionCreators/useMetaActions';
 import useBundleActions from './actionCreators/useBundleActions';
 import useUserActions from './actionCreators/useUserActions';
+import useUpdateMetaActions from './actionCreators/useUpdateMetaActions';
 
 import { EMPTY_STATE } from '../constants/appConstants';
 import { IStallionMeta } from '../../types/meta.types';
 import { IGlobalContext } from '../../types/globalProvider.types';
 import { IDownloadState } from '../../types/download.types';
 import useDownloadActions from './actionCreators/useDownloadActions';
+import updateMetaReducer from './reducers/updateMetaReducer';
 
 export const GlobalContext = createContext({} as IGlobalContext);
 
@@ -32,6 +34,13 @@ const GlobalProvider: React.FC = ({ children }) => {
     downloadReducer,
     {} as IDownloadState
   );
+  const [updateMetaState, updateMetaDispatch] = useReducer(updateMetaReducer, {
+    currentlyRunningBundle: null,
+    newBundle: null,
+    slotHasChanged: false,
+  });
+
+  useUpdateMetaActions(updateMetaState, metaState, updateMetaDispatch);
 
   const { refreshMeta } = useMetaActions(metaDispatch);
   const {
@@ -59,6 +68,7 @@ const GlobalProvider: React.FC = ({ children }) => {
     bucketState,
     bundleState,
     downloadState,
+    updateMetaState,
     actions: {
       loginUser,
       setIsModalVisible,

@@ -29,6 +29,20 @@ const styles = StyleSheet.create({
     color: COLORS.black7,
     marginTop: STD_MARGIN / 2,
   },
+  bold: {
+    fontWeight: 'bold',
+  },
+  uidTitle: {
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black,
+    marginTop: STD_MARGIN * 1.5,
+    textAlign: 'center',
+  },
+  uidText: {
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black,
+    textAlign: 'center',
+  },
   buttonContainer: {
     width: '80%',
     marginBottom: STD_MARGIN,

@@ -3,6 +3,7 @@ import { IBucketState } from './bucket.types';
 import { IStallionMeta } from './meta.types';
 import { IBundleState } from './bundle.types';
 import { IDownloadState } from './download.types';
+import { IUpdateMetaState } from '../main/state/reducers/updateMetaReducer';
 
 export interface ILoginActionPayload {
   email: string;
@@ -36,5 +37,6 @@ export interface IGlobalContext {
   bucketState: IBucketState;
   bundleState: IBundleState;
   downloadState: IDownloadState;
+  updateMetaState: IUpdateMetaState;
   actions: IGlobalContextActions;
 }

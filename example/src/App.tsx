@@ -10,9 +10,15 @@ import {
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
-  const { isRestartRequired, currentlyRunning } = useStallionUpdate();
+  const { isRestartRequired, currentlyRunningBundle, newReleaseBundle } =
+    useStallionUpdate();
 
-  console.log('StallionInfo', isRestartRequired, currentlyRunning);
+  console.log(
+    'StallionInfo',
+    isRestartRequired,
+    currentlyRunningBundle,
+    newReleaseBundle
+  );
 
   React.useEffect(() => {
     addEventListener((data) => {

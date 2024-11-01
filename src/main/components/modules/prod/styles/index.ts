@@ -7,18 +7,14 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center',
+    backgroundColor: COLORS.background_grey,
   },
-  uidText: {
-    marginTop: HEADER_SLAB_HEIGHT / 2,
+  cardTitle: {
+    marginTop: 3 * STD_MARGIN,
+    margin: STD_MARGIN,
     color: COLORS.black,
     fontSize: HEADER_SLAB_HEIGHT / 2.5,
     fontWeight: 'bold',
-  },
-  uidValue: {
-    fontSize: HEADER_SLAB_HEIGHT / 2,
-    textAlign: 'center',
-    marginTop: STD_MARGIN,
   },
 });
 

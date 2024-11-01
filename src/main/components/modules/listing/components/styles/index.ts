@@ -32,6 +32,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: STD_MARGIN,
   },
+  colContainer: {
+    flexDirection: 'column',
+  },
   downloadButton: {
     backgroundColor: COLORS.black,
     padding: STD_MARGIN,
@@ -39,6 +42,12 @@ const styles = StyleSheet.create({
   },
   appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
   container: {},
+  metaConainer: {
+    backgroundColor: COLORS.white,
+    margin: STD_MARGIN,
+    borderRadius: STD_MARGIN,
+    padding: STD_MARGIN,
+  },
   divider: {
     borderBottomWidth: 0.5,
     opacity: 0.2,
@@ -46,7 +55,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
-    marginBottom: STD_MARGIN / 2,
+    marginVertical: STD_MARGIN / 2,
     color: COLORS.text_major,
   },
   titleText: {

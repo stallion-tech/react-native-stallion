@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import styles from './styles';
@@ -7,6 +7,7 @@ import {
   LOGOUT_BUTTON_TEXT,
 } from '../../../constants/appConstants';
 import ButtonFullWidth from '../ButtonFullWidth';
+import SharedDataManager from '../../../utils/SharedDataManager';
 
 interface IProfileOverlay {
   fullName?: string;
@@ -21,6 +22,9 @@ const ProfileOverlay: React.FC<IProfileOverlay> = ({
   onBackPress,
   onLogoutPress,
 }) => {
+  const uid = useMemo(() => {
+    return SharedDataManager.getInstance()?.getUid() || '';
+  }, []);
   return (
     <View style={styles.profileContainer}>
       <View style={styles.infoContainer}>
@@ -30,6 +34,8 @@ const ProfileOverlay: React.FC<IProfileOverlay> = ({
         <View style={styles.detailContainer}>
           <Text style={styles.profileInfoText}>{fullName}</Text>
           <Text style={styles.profileSubInfoText}>{email}</Text>
+          <Text style={[styles.uidTitle, styles.bold]}>UID:</Text>
+          <Text style={styles.uidText}>{uid}</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
