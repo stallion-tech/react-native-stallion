@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.1...v1.1.2) (2024-04-11)
+
+
+### Bug Fixes
+
+* removed OTP flow and enable stallion by default ([dd86675](https://github.com/stallion-tech/react-native-stallion/commit/dd8667532743682b76ceebf9986d09b7620b7acd))
+
 ## [1.1.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.0...v1.1.1) (2024-01-01)
 
 
