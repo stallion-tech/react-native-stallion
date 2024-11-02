@@ -22,7 +22,7 @@ const Prod: React.FC = () => {
       <SlotView {...metaState.prodSlot} />
       {updateMetaState.currentlyRunningBundle ? (
         <>
-          <Text style={styles.cardTitle}>Currently Running Bundle</Text>
+          <Text style={styles.cardTitle}>Currently Active Bundle</Text>
           <MetaCard meta={updateMetaState.currentlyRunningBundle} />
         </>
       ) : null}
