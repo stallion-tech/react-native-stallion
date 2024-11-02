@@ -1,3 +1,13 @@
+# [2.0.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0-alpha.1) (2024-11-02)
+
+
+* feat!: stallion for prod ([47e095b](https://github.com/stallion-tech/react-native-stallion/commit/47e095b1954d7453b83f6fd950bf477b4df6de4a))
+
+
+### BREAKING CHANGES
+
+* stallion for prod release
+
 ## [1.1.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.1...v1.1.2) (2024-04-11)
 
 
