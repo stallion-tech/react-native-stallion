@@ -51,3 +51,4 @@ jobs:
           GIT_AUTHOR_NAME: ${{ secrets.GH_DEPLOY_NAME }}
           GIT_COMMITTER_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
           GIT_COMMITTER_NAME: ${{ secrets.GH_DEPLOY_NAME }}
+          DEBUG: semantic-release:*
