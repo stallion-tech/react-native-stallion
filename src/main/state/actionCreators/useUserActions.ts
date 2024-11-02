@@ -19,7 +19,7 @@ import {
   ILoginActionPayload,
   IVerifyOtpPayload,
 } from '../../../types/globalProvider.types';
-import { setApiKeyNative } from '../../utils/StallionNaitveUtils';
+import { setApiKeyNative } from '../../utils/StallionNativeUtils';
 
 const useUserActions = (
   dispatch: React.Dispatch<IUserAction>,
@@ -115,7 +115,7 @@ const useUserActions = (
       method: 'POST',
       headers: getApiHeaders(),
     })
-      .then((res) => res.json())
+      .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
       .then((userProfileResponse) => {
         if (userProfileResponse?.data?.email) {
           dispatch(
@@ -128,10 +128,10 @@ const useUserActions = (
           dispatch(setUserError(extractError(userProfileResponse)));
         }
       })
-      .catch((_) => {
+      .catch(() => {
         dispatch(setUserError(DEFAULT_ERROR_MESSAGE));
       });
-  }, [dispatch]);
+  }, [dispatch, setUserRequiresLogin]);
 
   return {
     loginUser,

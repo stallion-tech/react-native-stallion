@@ -30,7 +30,7 @@ const Login: React.FC = () => {
   } = useLoginFlow();
   return (
     <View style={styles.pageContainer}>
-      <View style={[styles.logoContainer, styles.center]}>
+      <View style={[styles.logoContainer]}>
         <Text style={styles.logoText}>{Login_TITLE}</Text>
       </View>
       <KeyboardAvoidingView

@@ -3,6 +3,7 @@ import { IBucketState } from './bucket.types';
 import { IStallionMeta } from './meta.types';
 import { IBundleState } from './bundle.types';
 import { IDownloadState } from './download.types';
+import { IUpdateMetaState } from '../main/state/reducers/updateMetaReducer';
 
 export interface ILoginActionPayload {
   email: string;
@@ -23,8 +24,10 @@ interface IGlobalContextActions {
   setUserRequiresLogin: (requiresLogin: boolean) => void;
   refreshMeta: () => void;
   selectBucket: (bucketId?: string | null) => void;
-  downloadBundle: (version: number, bucketId: string, url: string) => void;
+  downloadBundle: (url: string, hash: string) => void;
   getUserProfile: () => void;
+  setProgress: (newProgress: number) => void;
+  setDownloadErrorMessage: (msg: string) => void;
 }
 
 export interface IGlobalContext {
@@ -34,5 +37,6 @@ export interface IGlobalContext {
   bucketState: IBucketState;
   bundleState: IBundleState;
   downloadState: IDownloadState;
+  updateMetaState: IUpdateMetaState;
   actions: IGlobalContextActions;
 }

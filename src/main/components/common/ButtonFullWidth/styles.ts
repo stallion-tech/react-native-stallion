@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: COLORS.indigo,
+    backgroundColor: COLORS.black,
     elevation: 5,
     zIndex: 5,
     shadowColor: COLORS.black7,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   secondaryText: {
-    color: COLORS.black7,
+    color: COLORS.black,
   },
 });
 

@@ -15,18 +15,18 @@ const styles = StyleSheet.create({
     color: COLORS.text_major,
   },
   textInp: {
-    width: '80%',
+    width: '90%',
     height: HEADER_SLAB_HEIGHT,
     borderWidth: 1,
     borderColor: COLORS.black2,
     borderRadius: STD_MARGIN,
-    margin: STD_MARGIN,
+    marginBottom: STD_MARGIN,
     paddingHorizontal: STD_MARGIN * 2,
     color: COLORS.text_major,
   },
   buttonContainer: {
-    width: '80%',
-    margin: STD_MARGIN,
+    width: '90%',
+    margin: STD_MARGIN * 2,
   },
 });
 

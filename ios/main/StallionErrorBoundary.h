@@ -2,7 +2,7 @@
 //  StallionErrorBoundary.h
 //  react-native-stallion
 //
-//  Created by Jasbir Singh on 24/12/23.
+//  Created by Thor963 on 24/12/23.
 //
 
 #import <Foundation/Foundation.h>

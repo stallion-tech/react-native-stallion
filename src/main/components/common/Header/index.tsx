@@ -31,12 +31,14 @@ const Header: React.FC<IHeader> = ({
   return (
     <View style={styles.headerContainer}>
       {onBackPress ? (
-        <TouchableOpacity
-          style={[styles.headerSideSection, styles.alignStart]}
-          onPress={onBackPress}
-        >
-          <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
-        </TouchableOpacity>
+        <View style={[styles.headerSideSection, styles.alignStart]}>
+          <TouchableOpacity
+            onPress={onBackPress}
+            style={styles.actionButtonClickable}
+          >
+            <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={[styles.headerSideSection, styles.alignStart]}>
           {userName && onProfilePress ? (
@@ -50,26 +52,30 @@ const Header: React.FC<IHeader> = ({
         </View>
       )}
       <View style={styles.headerCenterSection}>
-        {errorLogoLoading ? (
-          <Text style={styles.headerText}>{title}</Text>
-        ) : (
-          <Image
-            source={{
-              uri: STALLION_LOGO_URL,
-            }}
-            style={styles.headerLogo}
-            resizeMode="contain"
-            onError={errorInLogoLoading}
-          />
-        )}
+        {title ? (
+          errorLogoLoading ? (
+            <Text style={styles.headerText}>{title}</Text>
+          ) : (
+            <Image
+              source={{
+                uri: STALLION_LOGO_URL,
+              }}
+              style={styles.headerLogo}
+              resizeMode="contain"
+              onError={errorInLogoLoading}
+            />
+          )
+        ) : null}
       </View>
       {onClosePress ? (
-        <TouchableOpacity
-          style={styles.headerSideSection}
-          onPress={onClosePress}
-        >
-          <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
-        </TouchableOpacity>
+        <View style={styles.headerSideSection}>
+          <TouchableOpacity
+            style={styles.actionButtonClickable}
+            onPress={onClosePress}
+          >
+            <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={styles.headerSideSection} />
       )}
