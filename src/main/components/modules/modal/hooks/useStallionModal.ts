@@ -99,9 +99,12 @@ const useStallionModal = () => {
           if (progress) {
             setProgress(progress);
           }
+          break;
       }
     });
-    onLaunchNative('Success');
+    requestAnimationFrame(() => {
+      onLaunchNative('Success');
+    });
     return () => {
       eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
     };

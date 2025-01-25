@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Button, Text } from 'react-native';
+import { StyleSheet, View, Button, Text, Alert } from 'react-native';
 import {
   withStallion,
   useStallionModal,
@@ -14,21 +14,28 @@ const App: React.FC = () => {
     useStallionUpdate();
 
   console.log(
-    'StallionInfo',
     isRestartRequired,
+    'isRestartRequired',
     currentlyRunningBundle,
     newReleaseBundle
   );
 
   React.useEffect(() => {
+    if (isRestartRequired) {
+      Alert.alert('Restart the app', newReleaseBundle?.toString());
+    }
+  }, [isRestartRequired]);
+
+  React.useEffect(() => {
     addEventListener((data) => {
-      console.log('StallionEvent', data);
+      // use data
     });
   }, []);
   return (
     <View style={styles.container}>
       <Text>Hello world</Text>
       <Button title="OpenModal" onPress={showModal} />
+      {isRestartRequired ? <Text>Restart the app</Text> : null}
     </View>
   );
 };

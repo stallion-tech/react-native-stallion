@@ -107,6 +107,7 @@ const useUpdateMetaActions = (
     if (currentlyRunningHash && !updateMetaState.currentlyRunningBundle) {
       getUpdateMetaData(currentlyRunningHash).then((res) => {
         if (res.data) {
+          console.log(res.data, 'jkljl!!');
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_CURRENTLY_RUNNING_META,
             payload: res.data,
@@ -123,8 +124,10 @@ const useUpdateMetaActions = (
 
   useEffect(() => {
     if (newReleaseHash && !updateMetaState.newBundle) {
+      console.log('getUpdateMetaData!! API call');
       getUpdateMetaData(newReleaseHash).then((res) => {
         if (res.data) {
+          console.log(res.data, 'jkljl!!');
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_NEW_BUNDLE_META,
             payload: res.data,

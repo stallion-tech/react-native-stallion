@@ -12,6 +12,7 @@ export interface IUpdateMeta {
   updatedAt: string;
   __v: number;
   id: string;
+  isMandatory: boolean;
 }
 
 export enum UpdateMetaActionKind {

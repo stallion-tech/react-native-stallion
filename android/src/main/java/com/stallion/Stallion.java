@@ -1,110 +1,149 @@
 package com.stallion;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
+import com.stallion.events.StallionEventConstants;
+import com.stallion.events.StallionEventManager;
+import com.stallion.storage.StallionConfigConstants;
+import com.stallion.storage.StallionStateManager;
+import com.stallion.storage.StallionMeta;
+import com.stallion.storage.StallionMetaConstants;
+import com.stallion.utils.StallionFileManager;
+
+import org.json.JSONObject;
 
 import java.io.File;
 
 public class Stallion {
 
+  private static StallionStateManager stateManager;
+
   public static String getJSBundleFile(Context applicationContext) {
     return getJSBundleFile(applicationContext, null);
   }
 
-  private static String getDefaultBundle(String defaultBundlePath) {
-    if(defaultBundlePath != null && !defaultBundlePath.isEmpty()) {
-      return defaultBundlePath;
-    } else {
-      return StallionConstants.DEFAULT_JS_BUNDLE_LOCATION_BASE + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-    }
-  }
-
-  private static String getAppVersion() throws PackageManager.NameNotFoundException {
-    Context appContext = StallionStorage.getInstance().mContext;
-    String parentPackageName= appContext.getPackageName();
-    PackageInfo pInfo = appContext.getPackageManager().getPackageInfo(parentPackageName, 0);
-    return pInfo.versionName;
-  }
-
-  private static void sendInstallEvent(String installedReleaseHash) {
-    WritableMap successEventPayload = Arguments.createMap();
-    successEventPayload.putString("releaseHash", installedReleaseHash);
-    StallionEventEmitter.sendEvent(
-      StallionEventEmitter.getEventPayload(
-        StallionConstants.NativeEventTypesProd.INSTALLED_PROD.toString(),
-        successEventPayload
-      )
-    );
-  }
-
   public static String getJSBundleFile(Context applicationContext, String defaultBundlePath) {
-    StallionStorage.getInstance().Initialize(applicationContext);
-    StallionStorage stallionStorageInstance = StallionStorage.getInstance();
-    String baseFolderPath = applicationContext.getFilesDir().getAbsolutePath();
-    String switchState = stallionStorageInstance.get(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER);
-    String currentAppVersion = "";
-    try {
-      String stallionAppVersionCache = stallionStorageInstance.get(StallionConstants.STALLION_APP_VERSION_IDENTIFIER);
-        currentAppVersion = getAppVersion();
-        if(!stallionAppVersionCache.equals(currentAppVersion)) {
-          stallionStorageInstance.set(StallionConstants.STALLION_APP_VERSION_IDENTIFIER, currentAppVersion);
-          StallionRollbackManager.fallbackProd();
-        }
-    } catch (PackageManager.NameNotFoundException e) {}
+    StallionStateManager.init(applicationContext);
+    stateManager = StallionStateManager.getInstance();
 
-    if(switchState.isEmpty()) {
-      stallionStorageInstance.set(StallionConstants.STALLION_SWITCH_STATE_IDENTIFIER, StallionConstants.SwitchState.PROD.toString());
-      switchState = StallionConstants.SwitchState.PROD.toString();
-    }
-    if(switchState.equals(StallionConstants.SwitchState.PROD.toString())) {
-      String currentProdSlot = stallionStorageInstance.get(StallionConstants.CURRENT_PROD_SLOT_KEY);
-      switch (currentProdSlot) {
-        case StallionConstants.TEMP_FOLDER_SLOT:
-          String newReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT);
-          if(!newReleaseHash.isEmpty()) {
-            StallionRollbackManager.stabilizeRelease();
-          }
-          StallionFileUtil.moveFile(
-            new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT),
-            new File(baseFolderPath, StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT)
-          );
-          String tempReleaseHash = stallionStorageInstance.get(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT);
-          stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, tempReleaseHash);
-          stallionStorageInstance.set(StallionConstants.CURRENT_PROD_SLOT_KEY, StallionConstants.NEW_FOLDER_SLOT);
-          stallionStorageInstance.set(StallionConstants.PROD_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, "");
-          sendInstallEvent(tempReleaseHash);
-          return baseFolderPath + StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-        case StallionConstants.NEW_FOLDER_SLOT:
-          return baseFolderPath + StallionConstants.PROD_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-        case StallionConstants.STABLE_FOLDER_SLOT:
-          return baseFolderPath + StallionConstants.PROD_DIRECTORY + StallionConstants.STABLE_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-        default:
-          return getDefaultBundle(defaultBundlePath);
-      }
-    }
-    if(switchState.equals(StallionConstants.SwitchState.STAGE.toString())) {
-      String currentStageSlot = stallionStorageInstance.get(StallionConstants.CURRENT_STAGE_SLOT_KEY);
-      switch (currentStageSlot) {
-        case StallionConstants.TEMP_FOLDER_SLOT:
-          StallionFileUtil.moveFile(
-            new File(baseFolderPath, StallionConstants.STAGE_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT),
-            new File(baseFolderPath, StallionConstants.STAGE_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT)
-          );
-          String tempReleaseHash = stallionStorageInstance.get(StallionConstants.STAGE_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT);
-          stallionStorageInstance.set(StallionConstants.STAGE_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT, tempReleaseHash);
-          stallionStorageInstance.set(StallionConstants.STAGE_DIRECTORY + StallionConstants.TEMP_FOLDER_SLOT, "");
-          stallionStorageInstance.set(StallionConstants.CURRENT_STAGE_SLOT_KEY, StallionConstants.NEW_FOLDER_SLOT);
-          return baseFolderPath + StallionConstants.STAGE_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-        case StallionConstants.NEW_FOLDER_SLOT:
-          return baseFolderPath + StallionConstants.STAGE_DIRECTORY + StallionConstants.NEW_FOLDER_SLOT + StallionConstants.UNZIP_FOLDER_NAME + StallionConstants.ANDROID_BUNDLE_FILE_NAME;
-        default:
-          return getDefaultBundle(defaultBundlePath);
-      }
+    StallionEventManager.init(stateManager);
+
+    String baseFolderPath = stateManager.getStallionConfig().getFilesDirectory();
+    StallionMeta stallionMeta = stateManager.stallionMeta;
+
+    StallionMetaConstants.SwitchState switchState = stallionMeta.getSwitchState();
+    if (switchState == StallionMetaConstants.SwitchState.PROD) {
+      return getProdBundlePath(baseFolderPath, defaultBundlePath);
+    } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
+      return getStageBundlePath(baseFolderPath, defaultBundlePath);
     }
     return getDefaultBundle(defaultBundlePath);
   }
+
+  private static void mountNewProdBundle(String baseFolderPath) {
+    StallionMeta stallionMeta = stateManager.stallionMeta;
+    String prodTempHash = stallionMeta.getProdTempHash();
+    if(prodTempHash != null && !prodTempHash.isEmpty()) {
+      try {
+        StallionFileManager.moveFile(
+          new File(baseFolderPath, StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.TEMP_FOLDER_SLOT),
+          new File(baseFolderPath, StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT)
+        );
+        stallionMeta.setProdNewHash(prodTempHash);
+        stallionMeta.setProdTempHash("");
+        stateManager.syncStallionMeta();
+        sendInstallEvent(prodTempHash);
+      } catch (Exception ignored) {}
+    }
+  }
+
+  private static void mountNewStageBundle(String baseFolderPath) {
+    StallionMeta stallionMeta = stateManager.stallionMeta;
+    String stageTempHash = stallionMeta.getStageTempHash();
+    if(stageTempHash != null && !stageTempHash.isEmpty()) {
+      try {
+        StallionFileManager.moveFile(
+          new File(baseFolderPath, StallionConfigConstants.STAGE_DIRECTORY + StallionConfigConstants.TEMP_FOLDER_SLOT),
+          new File(baseFolderPath, StallionConfigConstants.STAGE_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT)
+        );
+        stallionMeta.setStageNewHash(stageTempHash);
+        stallionMeta.setStageTempHash("");
+        stateManager.syncStallionMeta();
+      } catch (Exception ignored) {}
+    }
+  }
+
+  private static String getProdBundlePath(String baseFolderPath, String defaultBundlePath) {
+    StallionMeta stallionMeta = stateManager.stallionMeta;
+
+    mountNewProdBundle(baseFolderPath);
+
+    switch (stallionMeta.getCurrentProdSlot()) {
+      case NEW_SLOT:
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdNewHash());
+      case STABLE_SLOT:
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.STABLE_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdStableHash());
+      default:
+        return getDefaultBundle(defaultBundlePath);
+    }
+  }
+
+  private static String getStageBundlePath(String baseFolderPath, String defaultBundlePath) {
+    StallionMeta stallionMeta = stateManager.stallionMeta;
+
+    mountNewStageBundle(baseFolderPath);
+
+    switch (stallionMeta.getCurrentStageSlot()) {
+      case NEW_SLOT:
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.STAGE_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getStageNewHash());
+      default:
+        return getDefaultBundle(defaultBundlePath);
+    }
+  }
+
+  private static void sendInstallEvent(String releaseHash) {
+    try {
+      JSONObject eventPayload = new JSONObject();
+      eventPayload.put("releaseHash", releaseHash);
+
+      StallionEventManager.getInstance().sendEvent(
+        StallionEventConstants.NativeProdEventTypes.INSTALLED_PROD.toString(),
+        eventPayload
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void sendCorruptionEvent(String releaseHash, String folderPath) {
+    try {
+      JSONObject eventPayload = new JSONObject();
+      eventPayload.put("releaseHash", releaseHash);
+      eventPayload.put("folderPath", folderPath);
+
+      StallionEventManager.getInstance().sendEvent(
+        StallionEventConstants.NativeProdEventTypes.CORRUPTED_FILE_ERROR.toString(),
+        eventPayload
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static String resolveBundlePath(String folderPath, String defaultBundlePath, String releaseHash) {
+    String bundlePath = folderPath + StallionConfigConstants.UNZIP_FOLDER_NAME + StallionConfigConstants.ANDROID_BUNDLE_FILE_NAME;
+    if (new File(bundlePath).exists()) {
+      return bundlePath;
+    } else {
+      sendCorruptionEvent(releaseHash, folderPath);
+      return getDefaultBundle(defaultBundlePath);
+    }
+  }
+
+  private static String getDefaultBundle(String defaultBundlePath) {
+    return defaultBundlePath != null && !defaultBundlePath.isEmpty()
+      ? defaultBundlePath
+      : StallionConfigConstants.DEFAULT_JS_BUNDLE_LOCATION_BASE + StallionConfigConstants.ANDROID_BUNDLE_FILE_NAME;
+  }
 }
+

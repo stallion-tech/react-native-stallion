@@ -1,4 +1,4 @@
-package com.stallion;
+package com.stallion.networkmanager;
 
 public interface StallionDownloadCallback {
   void onReject(String prefix, String error);
