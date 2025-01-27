@@ -90,8 +90,13 @@ public class StallionEventManager {
       eventsObject.put(uniqueId, eventPayload.toString());
       stallionStateManager.setString(EVENTS_KEY, eventsObject.toString());
     } catch (JSONException e) {
+      cleanupEventStorage();
       e.printStackTrace();
     }
+  }
+
+  private void cleanupEventStorage() {
+    stallionStateManager.setString(EVENTS_KEY, "{}");
   }
 
   // Method to pop events as a batch
@@ -113,6 +118,7 @@ public class StallionEventManager {
       return batch.toString();
 
     } catch (JSONException e) {
+      cleanupEventStorage();
       e.printStackTrace();
     }
 

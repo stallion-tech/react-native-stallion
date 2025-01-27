@@ -7,9 +7,10 @@ import { IMetaAction } from '../../../types/meta.types';
 
 const useMetaActions = (dispatch: React.Dispatch<IMetaAction>) => {
   const refreshMeta = useCallback(async () => {
-    const stallionMeta = await getStallionMetaNative();
-    console.log('new Meta', stallionMeta);
-    dispatch(setMeta(stallionMeta));
+    try {
+      const stallionMeta = await getStallionMetaNative();
+      dispatch(setMeta(stallionMeta));
+    } catch (_) {}
   }, [dispatch]);
 
   useEffect(() => {

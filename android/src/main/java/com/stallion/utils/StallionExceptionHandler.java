@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.WritableMap;
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionMetaConstants;

@@ -30,8 +30,6 @@ public class StallionFileManager {
    */
   public static void unzipFile(String zipFilePath, String destDirectory) {
     validateFileExists(zipFilePath);
-    createDestinationDirectory(destDirectory);
-
     try (ZipFile zipFile = openZipFile(zipFilePath)) {
       extractZipEntries(zipFile, destDirectory);
     } catch (IOException e) {
@@ -43,20 +41,6 @@ public class StallionFileManager {
     File file = new File(filePath);
     if (!file.exists()) {
       throw new IllegalArgumentException(FILE_NOT_FOUND_ERROR + filePath);
-    }
-  }
-
-  private static void createDestinationDirectory(String destDirectory) {
-    File destDir = new File(destDirectory);
-
-    // If the destination directory exists, delete it
-    if (destDir.exists()) {
-      deleteFileOrFolderSilently(destDir);
-    }
-
-    // Attempt to create the destination directory
-    if (!destDir.mkdirs()) {
-      throw new RuntimeException("Failed to create destination directory: " + destDirectory);
     }
   }
 
@@ -147,8 +131,64 @@ public class StallionFileManager {
       throw new RuntimeException("Failed to create destination directory: " + toFile.getParent());
     }
     if (!fromFile.renameTo(toFile)) {
-      copyFile(fromFile, toFile);
+      copyFileOrDirectory(fromFile, toFile);
       deleteFileOrFolderSilently(fromFile);
+    }
+  }
+
+  /**
+   * Copies a file or directory to the specified destination.
+   *
+   * @param source      The source file or directory.
+   * @param destination The destination file or directory.
+   */
+  public static void copyFileOrDirectory(File source, File destination) {
+    if (!source.exists()) {
+      throw new IllegalArgumentException("Source does not exist: " + source.getAbsolutePath());
+    }
+
+    if (source.isDirectory()) {
+      // If the source is a directory, copy recursively
+      copyDirectory(source, destination);
+    } else {
+      // If the source is a file, copy the file
+      copyFile(source, destination);
+    }
+  }
+
+  /**
+   * Recursively copies a directory and its contents to a destination.
+   *
+   * @param sourceDir      The source directory to copy.
+   * @param destinationDir The destination directory.
+   */
+  public static void copyDirectory(File sourceDir, File destinationDir) {
+    if (!sourceDir.exists()) {
+      throw new IllegalArgumentException("Source directory does not exist: " + sourceDir.getAbsolutePath());
+    }
+    if (!sourceDir.isDirectory()) {
+      throw new IllegalArgumentException("Source is not a directory: " + sourceDir.getAbsolutePath());
+    }
+
+    // Ensure destination directory exists
+    if (!destinationDir.exists() && !destinationDir.mkdirs()) {
+      throw new RuntimeException("Failed to create destination directory: " + destinationDir.getAbsolutePath());
+    }
+
+    File[] files = sourceDir.listFiles();
+    if (files == null) {
+      throw new RuntimeException("Failed to list files in directory: " + sourceDir.getAbsolutePath());
+    }
+
+    for (File file : files) {
+      File destFile = new File(destinationDir, file.getName());
+      if (file.isDirectory()) {
+        // Recursively copy subdirectories
+        copyDirectory(file, destFile);
+      } else {
+        // Copy individual files
+        copyFile(file, destFile);
+      }
     }
   }
 

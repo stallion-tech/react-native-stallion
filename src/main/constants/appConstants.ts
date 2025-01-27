@@ -64,11 +64,11 @@ export const EMPTY_STATE = {
   error: null,
 };
 
-export const OTP_LENGTH = 6;
+export const PIN_LENGTH = 6;
 
 export const SUBMIT_BUTTON_TEXT = 'Continue';
-export const OTP_BACK_BUTTON_TEXT = 'BACK';
-export const OTP_INPUT_KEY = 'Enter OTP';
+export const PIN_BACK_BUTTON_TEXT = 'BACK';
+export const PIN_INPUT_KEY = 'Enter PIN';
 
 export const NOT_APPLICABLE_TEXT = 'N/A';
 

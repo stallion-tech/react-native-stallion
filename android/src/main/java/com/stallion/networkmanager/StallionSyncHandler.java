@@ -9,10 +9,18 @@ import com.stallion.utils.StallionSlotManager;
 import com.stallion.events.StallionEventConstants.NativeProdEventTypes;
 
 import org.json.JSONObject;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StallionSyncHandler {
 
+  private static final AtomicBoolean isSyncInProgress = new AtomicBoolean(false);
+
   public static void sync() {
+    // Ensure only one sync job runs at a time
+    if (!isSyncInProgress.compareAndSet(false, true)) {
+      return; // Exit if another job is already running
+    }
+
     new Thread(() -> {
       try {
         // Fetch StallionStateManager and StallionConfig
@@ -22,7 +30,7 @@ public class StallionSyncHandler {
         // Use appVersion directly from StallionConfig
         String appVersion = config.getAppVersion();
         String projectId = config.getProjectId();
-        String appliedBundleHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
+        String appliedBundleHash = stateManager.stallionMeta.getActiveReleaseHash();
 
         // Prepare payload for API call
         JSONObject requestPayload = new JSONObject();
@@ -39,12 +47,15 @@ public class StallionSyncHandler {
 
         // Process API response
         processReleaseMeta(releaseMeta, appVersion);
+
       } catch (Exception e) {
         emitSyncError(e);
+      } finally {
+        // Reset the flag to allow new jobs
+        isSyncInProgress.set(false);
       }
     }).start();
   }
-
   private static void processReleaseMeta(JSONObject releaseMeta, String appVersion) {
     if (releaseMeta.optBoolean("success")) {
       JSONObject data = releaseMeta.optJSONObject("data");
@@ -92,11 +103,12 @@ public class StallionSyncHandler {
     String downloadPath = stateManager.getStallionConfig().getFilesDirectory()
       + StallionConfigConstants.PROD_DIRECTORY
       + StallionConfigConstants.TEMP_FOLDER_SLOT;
+    String projectId = stateManager.getStallionConfig().getProjectId();
 
     emitDownloadStarted(newReleaseHash);
 
     StallionFileDownloader.downloadBundle(
-      newReleaseUrl,
+      newReleaseUrl + "?projectId=" + projectId,
       downloadPath,
       new StallionDownloadCallback() {
         @Override

@@ -22,12 +22,12 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     if (isRestartRequired) {
-      Alert.alert('Restart the app', newReleaseBundle?.toString());
+      Alert.alert('Restart the app', JSON.stringify(newReleaseBundle));
     }
-  }, [isRestartRequired]);
+  }, [isRestartRequired, newReleaseBundle]);
 
   React.useEffect(() => {
-    addEventListener((data) => {
+    addEventListener((_) => {
       // use data
     });
   }, []);

@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT } from '../../../../constants/appConstants';
+import {
+  HEADER_SLAB_HEIGHT,
+  STD_MARGIN,
+} from '../../../../constants/appConstants';
 import { COLORS } from '../../../../constants/colors';
 
 const styles = StyleSheet.create({
@@ -32,6 +35,19 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     margin: HEADER_SLAB_HEIGHT / 2,
+  },
+  textInp: {
+    width: '90%',
+    height: HEADER_SLAB_HEIGHT,
+    borderWidth: 1,
+    borderColor: COLORS.black2,
+    borderRadius: STD_MARGIN,
+    marginBottom: STD_MARGIN,
+    paddingHorizontal: STD_MARGIN * 2,
+    color: COLORS.text_major,
+  },
+  buttonContainer: {
+    padding: HEADER_SLAB_HEIGHT / 2,
   },
 });
 

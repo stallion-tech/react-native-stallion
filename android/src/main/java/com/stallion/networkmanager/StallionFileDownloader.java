@@ -68,7 +68,6 @@ public class StallionFileDownloader {
 
       } catch (Exception e) {
         Log.e(TAG, "Error in downloadBundle: " + e.getMessage(), e);
-        stallionDownloadCallback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, e.getMessage());
       }
     });
   }
@@ -149,6 +148,10 @@ public class StallionFileDownloader {
         }
       }
 
+      bout.close();
+      fout.close();
+      inputStream.close();
+
       // Check for incomplete download
       if (receivedBytes < totalBytes) {
         callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "Incomplete file download");
@@ -171,10 +174,10 @@ public class StallionFileDownloader {
     connection.setRequestMethod("GET");
 
     if(!appToken.isEmpty()) {
-      connection.setRequestProperty("x-app-token", appToken);
+      connection.setRequestProperty(StallionApiConstants.STALLION_APP_TOKEN_KEY, appToken);
     }
     if(!sdkToken.isEmpty()) {
-      connection.setRequestProperty("x-sdk-access-token", sdkToken);
+      connection.setRequestProperty(StallionApiConstants.STALLION_SDK_TOKEN_KEY, sdkToken);
     }
 
     connection.setDoInput(true);
@@ -194,8 +197,8 @@ public class StallionFileDownloader {
       }
 
       StallionFileManager.unzipFile(downloadedZip.getAbsolutePath(), destDirectory);
-      File otaBundle = new File(destDirectory + StallionApiConstants.UNZIP_FOLDER_NAME + StallionApiConstants.ANDROID_BUNDLE_FILE_NAME);
 
+      File otaBundle = new File(destDirectory + StallionApiConstants.UNZIP_FOLDER_NAME + StallionApiConstants.ANDROID_BUNDLE_FILE_NAME);
       if (otaBundle.exists()) {
         callback.onSuccess(StallionApiConstants.DOWNLOAD_SUCCESS_MESSAGE);
       } else {

@@ -55,6 +55,19 @@ public class StallionMeta {
     }
   }
 
+  public String getActiveReleaseHash() {
+    if(!this.prodTempHash.isEmpty()) {
+      return this.prodNewHash;
+    }
+    switch (this.currentProdSlot) {
+      case NEW_SLOT:
+        return this.prodNewHash;
+      case STABLE_SLOT:
+        return this.prodStableHash;
+      default: return "";
+    }
+  }
+
   public void setCurrentProdSlot(StallionMetaConstants.SlotStates currentProdSlot) {
     this.currentProdSlot = currentProdSlot;
   }
@@ -133,6 +146,7 @@ public class StallionMeta {
       prodJson.put("stableHash", prodStableHash);
       prodJson.put("currentSlot", currentProdSlot.name());
       metaJson.put("prodSlot", prodJson);
+
       metaJson.put("lastRolledBackHash", lastRolledBackHash);
 
     } catch (JSONException e) {

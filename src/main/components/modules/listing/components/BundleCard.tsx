@@ -29,11 +29,11 @@ const BundleCard: React.FC<IBundleCard> = ({
 }) => {
   const { metaState } = useContext(GlobalContext);
   const isApplied = useMemo<boolean>(() => {
-    return metaState.stageSlot.new === id;
-  }, [metaState.stageSlot.new, id]);
+    return metaState.stageSlot.newHash === id;
+  }, [metaState.stageSlot.newHash, id]);
   const isDownloaded = useMemo<boolean>(() => {
-    return metaState.stageSlot.temp === id;
-  }, [metaState.stageSlot.temp, id]);
+    return metaState.stageSlot.tempHash === id;
+  }, [metaState.stageSlot.tempHash, id]);
   return (
     <View style={styles.cardContainer}>
       <View style={styles.infoSection}>

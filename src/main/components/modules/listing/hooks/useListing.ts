@@ -14,8 +14,7 @@ const useListing = () => {
     bucketState,
     bundleState,
     metaState,
-    userState,
-    actions: { fetchBuckets, fetchBundles, selectBucket, getUserProfile },
+    actions: { fetchBuckets, fetchBundles, selectBucket },
   } = useContext(GlobalContext);
   const bundlesListingEnabled = useMemo(
     () => (bundleState.selectedBucketId ? true : false),
@@ -99,9 +98,6 @@ const useListing = () => {
 
   useEffect(() => {
     fetchListing();
-    if (!userState.data?.email) {
-      getUserProfile();
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

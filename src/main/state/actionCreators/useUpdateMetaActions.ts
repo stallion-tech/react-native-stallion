@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 
 import {
   IStallionMeta,
@@ -9,19 +9,18 @@ import {
   IUpdateMetaAction,
   UpdateMetaActionKind,
 } from '../../../types/updateMeta.types';
-import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
-import SharedDataManager from '../../utils/SharedDataManager';
-import { getAppHeaders } from '../../utils/apiUtils';
+import { API_PATHS } from '../../constants/apiConstants';
 import { IUpdateMetaState } from '../reducers/updateMetaReducer';
+import { useApiClient } from '../../utils/useApiClient';
+import { IStallionConfigJson } from '../../../types/config.types';
 
 const useUpdateMetaActions = (
   updateMetaState: IUpdateMetaState,
   metaState: IStallionMeta,
-  updateMetaDispatch: React.Dispatch<IUpdateMetaAction>
+  updateMetaDispatch: React.Dispatch<IUpdateMetaAction>,
+  configState: IStallionConfigJson
 ) => {
-  const dataManager = SharedDataManager.getInstance();
-  const [initialProdSlot, setInitialProdSlot] = useState<SLOT_STATES>();
-  const [initialSwitchSlot, setInitialSwitchSlot] = useState<string>();
+  const { getData } = useApiClient(configState);
 
   const currentSlot = useMemo<SLOT_STATES | null>(() => {
     if (metaState.switchState === SWITCH_STATES.PROD) {
@@ -33,81 +32,45 @@ const useUpdateMetaActions = (
   }, [metaState]);
 
   useEffect(() => {
-    if (metaState?.prodSlot?.currentSlot && !initialProdSlot) {
-      setInitialProdSlot(metaState?.prodSlot?.currentSlot);
+    if (metaState?.prodSlot?.currentSlot && !updateMetaState?.initialProdSlot) {
+      updateMetaDispatch({
+        type: UpdateMetaActionKind.SET_INIT_PROD_SLOT,
+        payload: metaState?.prodSlot?.currentSlot,
+      });
     }
-    if (!initialSwitchSlot) {
-      setInitialSwitchSlot(metaState.switchState + currentSlot);
-    }
-  }, [
-    metaState,
-    initialProdSlot,
-    setInitialProdSlot,
-    initialSwitchSlot,
-    setInitialSwitchSlot,
-    currentSlot,
-  ]);
-
-  useEffect(() => {
-    if (initialSwitchSlot) {
-      const currentSwitchSlot = metaState.switchState + currentSlot;
-      if (initialSwitchSlot !== currentSwitchSlot) {
-        updateMetaDispatch({
-          type: UpdateMetaActionKind.SET_SLOT_CHANGED,
-          payload: true,
-        });
-      } else {
-        updateMetaDispatch({
-          type: UpdateMetaActionKind.SET_SLOT_CHANGED,
-          payload: false,
-        });
-      }
-    }
-  }, [
-    metaState.switchState,
-    initialSwitchSlot,
-    currentSlot,
-    updateMetaDispatch,
-  ]);
+  }, [metaState, updateMetaDispatch, updateMetaState, currentSlot]);
 
   const currentlyRunningHash = useMemo<string>(() => {
-    switch (initialProdSlot) {
+    switch (updateMetaState.initialProdSlot) {
       case SLOT_STATES.DEFAULT:
         return '';
       case SLOT_STATES.NEW:
-        return metaState?.prodSlot?.new || '';
+        return metaState?.prodSlot?.newHash || '';
       case SLOT_STATES.STABLE:
-        return metaState?.prodSlot?.stable || '';
-      case SLOT_STATES.TEMP:
-        return metaState?.prodSlot?.temp || '';
+        return metaState?.prodSlot?.stableHash || '';
       default:
         return '';
     }
-  }, [metaState.prodSlot, initialProdSlot]);
+  }, [metaState.prodSlot, updateMetaState.initialProdSlot]);
 
   const newReleaseHash = useMemo<string>(() => {
-    return metaState.prodSlot?.temp || '';
+    return metaState.prodSlot?.tempHash || '';
   }, [metaState.prodSlot]);
 
   const getUpdateMetaData = useCallback(
     (releaseId: string): Promise<any> => {
-      return fetch(API_BASE_URL + API_PATHS.GET_META_FROM_HASH, {
-        method: 'POST',
-        body: JSON.stringify({
-          projectId: dataManager?.getProjectId(),
-          checksum: releaseId,
-        }),
-        headers: getAppHeaders(),
-      }).then((res) => res.json());
+      return getData(API_PATHS.GET_META_FROM_HASH, {
+        projectId: configState.projectId,
+        checksum: releaseId,
+      });
     },
-    [dataManager]
+    [configState, getData]
   );
 
   useEffect(() => {
     if (currentlyRunningHash && !updateMetaState.currentlyRunningBundle) {
       getUpdateMetaData(currentlyRunningHash).then((res) => {
         if (res.data) {
-          console.log(res.data, 'jkljl!!');
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_CURRENTLY_RUNNING_META,
             payload: res.data,
@@ -124,10 +87,8 @@ const useUpdateMetaActions = (
 
   useEffect(() => {
     if (newReleaseHash && !updateMetaState.newBundle) {
-      console.log('getUpdateMetaData!! API call');
       getUpdateMetaData(newReleaseHash).then((res) => {
         if (res.data) {
-          console.log(res.data, 'jkljl!!');
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_NEW_BUNDLE_META,
             payload: res.data,

@@ -2,7 +2,6 @@ package com.stallion.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.stallion.utils.StallionSlotManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +14,7 @@ public class StallionStateManager {
   private static StallionStateManager instance;
   private final SharedPreferences sharedPreferences;
   private final StallionConfig stallionConfig;
-  public final StallionMeta stallionMeta;
+  public StallionMeta stallionMeta;
   private boolean isMounted;
   private String pendingReleaseUrl;
   private String pendingReleaseHash;
@@ -28,27 +27,11 @@ public class StallionStateManager {
     this.isMounted = false;
     this.pendingReleaseUrl = "";
     this.pendingReleaseHash = "";
-    validateAppVersion(this.stallionConfig.getAppVersion());
-  }
-
-
-  private void validateAppVersion(String currentAppVersion) {
-    String cachedAppVersion = sharedPreferences.getString(StallionConfigConstants.STALLION_APP_VERSION_IDENTIFIER, "");;
-    if (
-      currentAppVersion != null
-        && !currentAppVersion.isEmpty()
-        && !cachedAppVersion.equals(currentAppVersion)
-    ) {
-      SharedPreferences.Editor editor = sharedPreferences.edit();
-      editor.putString(StallionConfigConstants.STALLION_APP_VERSION_IDENTIFIER, currentAppVersion);
-      editor.apply();
-      StallionSlotManager.fallbackProd();
-    }
   }
 
   public static synchronized void init(Context context) {
     if (instance == null) {
-      instance = new StallionStateManager(context.getApplicationContext());
+      instance = new StallionStateManager(context);
     }
   }
 
@@ -57,6 +40,11 @@ public class StallionStateManager {
       throw new IllegalStateException("StallionStateManager is not initialized. Call init() first.");
     }
     return instance;
+  }
+
+  public void updateStallionMeta(StallionMeta newStallionMeta) {
+    this.stallionMeta = newStallionMeta;
+    this.syncStallionMeta();
   }
 
   public void syncStallionMeta() {

@@ -1,3 +1,4 @@
+import { SLOT_STATES } from '../../../types/meta.types';
 import {
   IUpdateMeta,
   IUpdateMetaAction,
@@ -7,7 +8,7 @@ import {
 export interface IUpdateMetaState {
   currentlyRunningBundle: IUpdateMeta | null;
   newBundle: IUpdateMeta | null;
-  slotHasChanged: boolean | null;
+  initialProdSlot: SLOT_STATES | null;
 }
 
 const updateMetaReducer = (
@@ -30,11 +31,11 @@ const updateMetaReducer = (
         newBundle: newBundlePayload,
       };
 
-    case UpdateMetaActionKind.SET_SLOT_CHANGED:
-      const { payload: slotChangePayload } = action;
+    case UpdateMetaActionKind.SET_INIT_PROD_SLOT:
+      const { payload: initProdSlot } = action;
       return {
         ...state,
-        slotHasChanged: slotChangePayload,
+        initialProdSlot: initProdSlot,
       };
     default:
       return state;

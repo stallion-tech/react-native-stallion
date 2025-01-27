@@ -14,8 +14,10 @@ import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.networkmanager.StallionFileDownloader;
 import com.stallion.networkmanager.StallionDownloadCallback;
+import com.stallion.networkmanager.StallionStageManager;
 import com.stallion.networkmanager.StallionSyncHandler;
 import com.stallion.storage.StallionConfigConstants;
+
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
 import com.stallion.utils.StallionExceptionHandler;
@@ -35,17 +37,10 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
 
   public StallionModule(ReactApplicationContext reactContext) {
     super(reactContext);
-
-    this.currentReactContext = reactContext;
-    StallionExceptionHandler.initErrorBoundary(reactContext);
-
     StallionStateManager.init(reactContext);
     this.stallionStateManager = StallionStateManager.getInstance();
-
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = reactContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter.class
-    );
-    StallionEventManager.getInstance().setEmitter(eventEmitter);
+    this.currentReactContext = reactContext;
+    StallionExceptionHandler.initErrorBoundary(reactContext);
     reactContext.addLifecycleEventListener(this);
   }
 
@@ -73,24 +68,14 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   @ReactMethod
-  public void setStorage(String key, String value, Promise promise) {
-    try {
-      this.stallionStateManager.setString(key, value);
-      promise.resolve("success");
-    } catch (Exception e) {
-      promise.reject("setStorage error: ", e.toString());
-    }
-  }
-
-
-  @ReactMethod
-  public void getStorage(String key, Promise promise) {
-    promise.resolve(this.stallionStateManager.getString(key, ""));
-  }
-
-  @ReactMethod
   public void onLaunch(String launchData) {
     stallionStateManager.setIsMounted(true);
+
+    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = this.currentReactContext.getJSModule(
+      DeviceEventManagerModule.RCTDeviceEventEmitter.class
+    );
+    StallionEventManager.getInstance().setEmitter(eventEmitter);
+
     checkPendingDownloads();
   }
 
@@ -114,9 +99,30 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   @ReactMethod
+  public void getStallionMeta(Promise promise) {
+    try {
+      String stallionMetaJsonString = stallionStateManager.stallionMeta.toJSON().toString();
+      promise.resolve(stallionMetaJsonString);
+    } catch (Exception e) {
+      promise.reject("getStallionMeta error:", e.toString());
+    }
+  }
+
+  @ReactMethod
+  public void toggleStallionSwitch(String switchState, Promise promise) {
+    try {
+      stallionStateManager.stallionMeta.setSwitchState(StallionMetaConstants.SwitchState.fromString(switchState));
+      promise.resolve("Success");
+    } catch (Exception e) {
+      promise.reject("toggleStallionSwitch error:", e.toString());
+    }
+  }
+
+  @ReactMethod
   public void updateSdkToken(String newSdkToken, Promise promise) {
     try {
       stallionStateManager.getStallionConfig().updateSdkToken(newSdkToken);
+      promise.resolve("updateSdkToken success");
     } catch (Exception e) {
       promise.reject("updateSdkToken error:", e.toString());
     }
@@ -129,43 +135,7 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
 
   @ReactMethod
   public void downloadStageBundle(ReadableMap bundleInfo, Promise promise) {
-    String receivedDownloadUrl = bundleInfo.getString("url");
-    String receivedHash = bundleInfo.getString("hash");
-    if(
-        receivedDownloadUrl != null
-        && !receivedDownloadUrl.isEmpty()
-        && receivedHash != null
-        && !receivedHash.isEmpty()
-    ) {
-      String downloadPath = stallionStateManager.getStallionConfig().getFilesDirectory()
-        + StallionConfigConstants.STAGE_DIRECTORY
-        + StallionConfigConstants.TEMP_FOLDER_SLOT;
-
-      StallionFileDownloader.downloadBundle(
-        receivedDownloadUrl,
-        downloadPath,
-        new StallionDownloadCallback() {
-          @Override
-          public void onReject(String prefix, String error) {
-            promise.reject(prefix, error);
-          }
-
-          @Override
-          public void onSuccess(String successPayload) {
-            stallionStateManager.stallionMeta.setCurrentStageSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
-            stallionStateManager.stallionMeta.setStageNewHash(receivedHash);
-            stallionStateManager.syncStallionMeta();
-            emitDownloadSuccessStage(receivedHash);
-            promise.resolve(successPayload);
-          }
-
-          @Override
-          public void onProgress(double downloadFraction) {
-            emitDownloadProgressStage(receivedHash, downloadFraction);
-          }
-        }
-      );
-    }
+    StallionStageManager.downloadStageBundle(bundleInfo, promise);
   }
 
   @ReactMethod
@@ -201,28 +171,5 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
       // Reject the promise for other errors
       promise.reject("ACKNOWLEDGE_EVENTS_ERROR", "Failed to acknowledge events: " + e.getMessage(), e);
     }
-  }
-
-  private void emitDownloadSuccessStage(String releaseHash) {
-    JSONObject successPayload = new JSONObject();
-    try {
-      successPayload.put("releaseHash", releaseHash);
-    } catch (Exception ignored) { }
-    StallionEventManager.getInstance().sendEventWithoutCaching(
-      StallionEventConstants.NativeStageEventTypes.DOWNLOAD_COMPLETE_STAGE.toString(),
-      successPayload
-    );
-  }
-
-  private void emitDownloadProgressStage(String releaseHash, double newProgress) {
-    JSONObject successPayload = new JSONObject();
-    try {
-      successPayload.put("releaseHash", releaseHash);
-      successPayload.put("progress", String.valueOf(newProgress));
-    } catch (Exception ignored) { }
-    StallionEventManager.getInstance().sendEventWithoutCaching(
-      StallionEventConstants.NativeStageEventTypes.DOWNLOAD_PROGRESS_STAGE.toString(),
-      successPayload
-    );
   }
 }

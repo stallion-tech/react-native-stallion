@@ -1,6 +1,7 @@
 package com.stallion;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
@@ -9,6 +10,7 @@ import com.stallion.storage.StallionStateManager;
 import com.stallion.storage.StallionMeta;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.utils.StallionFileManager;
+import com.stallion.utils.StallionSlotManager;
 
 import org.json.JSONObject;
 
@@ -26,18 +28,33 @@ public class Stallion {
     StallionStateManager.init(applicationContext);
     stateManager = StallionStateManager.getInstance();
 
+    validateAppVersion(stateManager.getStallionConfig().getAppVersion());
+
     StallionEventManager.init(stateManager);
 
     String baseFolderPath = stateManager.getStallionConfig().getFilesDirectory();
     StallionMeta stallionMeta = stateManager.stallionMeta;
-
     StallionMetaConstants.SwitchState switchState = stallionMeta.getSwitchState();
+
     if (switchState == StallionMetaConstants.SwitchState.PROD) {
       return getProdBundlePath(baseFolderPath, defaultBundlePath);
     } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
       return getStageBundlePath(baseFolderPath, defaultBundlePath);
     }
     return getDefaultBundle(defaultBundlePath);
+  }
+
+  private static void validateAppVersion(String currentAppVersion) {
+    StallionStateManager stallionStateManager = StallionStateManager.getInstance();
+    String cachedAppVersion = stallionStateManager.getString(StallionConfigConstants.STALLION_APP_VERSION_IDENTIFIER, "");;
+    if (
+      currentAppVersion != null
+        && !currentAppVersion.isEmpty()
+        && !cachedAppVersion.equals(currentAppVersion)
+    ) {
+      stallionStateManager.setString(StallionConfigConstants.STALLION_APP_VERSION_IDENTIFIER, currentAppVersion);
+      StallionSlotManager.fallbackProd();
+    }
   }
 
   private static void mountNewProdBundle(String baseFolderPath) {
