@@ -1,7 +1,6 @@
 package com.stallion;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;

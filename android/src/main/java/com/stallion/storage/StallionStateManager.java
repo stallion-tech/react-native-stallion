@@ -51,7 +51,7 @@ public class StallionStateManager {
     try {
       SharedPreferences.Editor editor = sharedPreferences.edit();
       editor.putString(STALLION_META_KEY, stallionMeta.toJSON().toString());
-      editor.apply();
+      editor.commit();
     } catch (Exception ignored) {}
   }
 

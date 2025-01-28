@@ -10,10 +10,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
-import com.stallion.networkmanager.StallionFileDownloader;
-import com.stallion.networkmanager.StallionDownloadCallback;
 import com.stallion.networkmanager.StallionStageManager;
 import com.stallion.networkmanager.StallionSyncHandler;
 import com.stallion.storage.StallionConfigConstants;
@@ -24,7 +21,6 @@ import com.stallion.utils.StallionExceptionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +108,7 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   public void toggleStallionSwitch(String switchState, Promise promise) {
     try {
       stallionStateManager.stallionMeta.setSwitchState(StallionMetaConstants.SwitchState.fromString(switchState));
+      stallionStateManager.syncStallionMeta();
       promise.resolve("Success");
     } catch (Exception e) {
       promise.reject("toggleStallionSwitch error:", e.toString());

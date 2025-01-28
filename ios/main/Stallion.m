@@ -4,16 +4,33 @@
 @interface RCT_EXTERN_MODULE(Stallion, NSObject)
 
 RCT_EXTERN_METHOD(onLaunch: (NSString *)launchMessage)
+
 RCT_EXTERN_METHOD(sync)
-RCT_EXTERN_METHOD(downloadPackage:(NSDictionary *)bundleInfo
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject
-                  )
-RCT_EXTERN_METHOD(getStorage: (NSString *)storageKey callback:(RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(getUniqueId: (RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(getProjectId: (RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(getAppToken: (RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(setStorage: (NSString *)storageKey value:(NSString *)value)
+
+RCT_EXTERN_METHOD(downloadStageBundle: (NSDictionary *)bundleInfo
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(getStallionConfig: (RCTPromiseResolveBlock)promise
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(getStallionMeta: (RCTPromiseResolveBlock)promise
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(toggleStallionSwitch: (NSString *)switchState
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(updateSdkToken: (NSString *)newSdkToken
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(popEvents: (RCTPromiseResolveBlock)promise
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(acknowledgeEvents: (NSString *)eventIdsJson
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
 
 + (BOOL)requiresMainQueueSetup
 {

@@ -37,7 +37,7 @@ public class StallionStageManager {
           @Override
           public void onSuccess(String successPayload) {
             stallionStateManager.stallionMeta.setCurrentStageSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
-            stallionStateManager.stallionMeta.setStageNewHash(receivedHash);
+            stallionStateManager.stallionMeta.setStageTempHash(receivedHash);
             stallionStateManager.syncStallionMeta();
             emitDownloadSuccessStage(receivedHash);
             promise.resolve(successPayload);

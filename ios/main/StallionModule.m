@@ -4,120 +4,143 @@
 //
 //  Created by Thor963 on 17/05/23.
 //
-
 #import "StallionModule.h"
-#import "StallionErrorBoundary.h"
-#import "StallionEventManager.h"
+#import "StallionStateManager.h"
+#import "StallionEventHandler.h"
 #import "StallionObjConstants.h"
-#import "StallionRollbackHandler.h"
+#import "StallionSlotManager.h"
+#import "StallionFilemanager.h"
 
 @implementation StallionModule
 
-  + (NSURL *)getBundleURL {
-      return [self getBundleURL:nil];
-  }
-
-  + (NSURL *)getDefaultURL:(NSURL *)defaultBundleURL {
-    NSURL *defaultRNBundlePath = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-    if(defaultBundleURL != nil) {
-      return defaultBundleURL;
-    } else return defaultRNBundlePath;
-  }
-
-+ (void)initExceptionHandling {
-    [StallionErrorBoundary initErrorBoundary];
-    [StallionErrorBoundary toggleExceptionHandler:TRUE];
++ (NSURL *)getBundleURL {
+    return [self getBundleURL:nil];
 }
 
-+ (NSURL *)getBundlePathFromDirectory:(NSString *)directoryPath {
-  NSString *bundlePath = [NSString stringWithFormat:@"%@/%@/%@", directoryPath, [StallionObjConstants build_folder_name], [StallionObjConstants bundle_file_name]];
-    return [NSURL fileURLWithPath:bundlePath];
-}
++ (NSURL *)getBundleURL:(NSURL *)defaultBundlePath {
+    StallionStateManager *stateManager = [StallionStateManager sharedInstance];
+    StallionConfig *config = stateManager.stallionConfig;
+    NSString *currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:[StallionObjConstants app_version_identifier]];
+    NSString *cachedAppVersion = [stateManager getStringForKey:[StallionObjConstants app_version_cache_key] defaultValue:@""];
 
-  + (NSURL *)getBundleURL:(NSURL *)defaultBundleURL {
-    NSString *switchState = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.switch_state_identifier] ?: @"";
-    NSString *cachedAppVersion = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.app_version_cache_key] ?: @"";
-    NSString *currentAppVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:StallionObjConstants.app_version_identifier];
-      if (currentAppVersion != cachedAppVersion) {
-        [[NSUserDefaults standardUserDefaults] setObject:currentAppVersion forKey:StallionObjConstants.app_version_cache_key];
-        [StallionRollbackHandler fallbackProd];
-      }
-    
-      NSFileManager *fileManager = [NSFileManager defaultManager];
-      NSError *error = nil;
-      NSString *documentDirectoryPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    
-    NSString *tempDirectoryPath = [NSString stringWithFormat:@"%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants temp_folder_slot]];
-    NSString *newDirectoryPath = [NSString stringWithFormat:@"%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]];
-    NSString *stableDirectoryPath = [NSString stringWithFormat:@"%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants stable_folder_slot]];
-    
-      NSString *tempDirectoryProd = [documentDirectoryPath stringByAppendingPathComponent:tempDirectoryPath];
-    NSString *newDirectoryProd = [documentDirectoryPath stringByAppendingPathComponent:newDirectoryPath];
-    NSString *stableDirectoryProd = [documentDirectoryPath stringByAppendingPathComponent:stableDirectoryPath];
-    
-    NSString *tempDirectoryPathStage = [NSString stringWithFormat:@"%@/%@", [StallionObjConstants stage_directory], [StallionObjConstants temp_folder_slot]];
-    NSString *newDirectoryPathStage = [NSString stringWithFormat:@"%@/%@", [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]];
-    
-      NSString *tempDirectoryStage = [documentDirectoryPath stringByAppendingPathComponent:tempDirectoryPathStage];
-      NSString *newDirectoryStage = [documentDirectoryPath stringByAppendingPathComponent:newDirectoryPathStage];
-    
-    // possible slots
-    NSString *newFolderSlot = [NSString stringWithFormat:@"/%@", [StallionObjConstants new_folder_slot]];
-    NSString *stableFolderSlot = [NSString stringWithFormat:@"/%@", [StallionObjConstants stable_folder_slot]];
-    NSString *tempFolderSlot = [NSString stringWithFormat:@"/%@", [StallionObjConstants temp_folder_slot]];
-    
-      if (switchState == nil || [switchState isEqual:@""]) {
-        [[NSUserDefaults standardUserDefaults] setObject:StallionObjConstants.switch_state_prod forKey:StallionObjConstants.switch_state_identifier];
-        switchState = StallionObjConstants.switch_state_prod;
-      }
-      if([switchState isEqual:StallionObjConstants.switch_state_prod]) {
-        NSString *currentProdSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_prod_slot_key] ?: @"";
-        
-        if([currentProdSlot isEqual:tempFolderSlot]) {
-          NSString *newHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]];
-          NSString *newReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:newHashPath] ?: @"";
-          
-          if(![newReleaseHash isEqual:@""]) {
-            [StallionRollbackHandler stabilizeRelease];
-          }
-          
-          NSString *tempHashPath = [NSString stringWithFormat:@"/%@/%@", [StallionObjConstants prod_directory], [StallionObjConstants temp_folder_slot]];
-          NSString *tempReleaseHash = [[NSUserDefaults standardUserDefaults] stringForKey:tempHashPath] ?: @"";
-          [fileManager removeItemAtPath:newDirectoryProd error:&error];
-          [fileManager moveItemAtPath:tempDirectoryProd toPath:newDirectoryProd error:&error];
-          [fileManager removeItemAtPath:tempDirectoryProd error:&error];
-          [StallionRollbackHandler promoteTempProd];
-          [[StallionEventManager sharedInstance] queueRNEvent: StallionObjConstants.installed_prod_event withData:@{StallionObjConstants.release_hash_key:tempReleaseHash}];
-          [self initExceptionHandling];
-          return [self getBundlePathFromDirectory:newDirectoryProd];
-        }
-        if([currentProdSlot isEqual:newFolderSlot]) {
-          [self initExceptionHandling];
-          return [self getBundlePathFromDirectory:newDirectoryProd];
-        }
-        if([currentProdSlot isEqual:stableFolderSlot]) {
-          [self initExceptionHandling];
-          return [self getBundlePathFromDirectory:stableDirectoryProd];
-        }
-        return [self getDefaultURL:defaultBundleURL];
-      }
-    
-    if([switchState isEqual:StallionObjConstants.switch_state_stage]) {
-      NSString *currentStageSlot = [[NSUserDefaults standardUserDefaults] stringForKey:StallionObjConstants.current_stage_slot_key] ?: @"";
-      if([currentStageSlot isEqual:tempFolderSlot]) {
-        [fileManager removeItemAtPath:newDirectoryStage error:&error];
-        [fileManager moveItemAtPath:tempDirectoryStage toPath:newDirectoryStage error:&error];
-        [StallionRollbackHandler promoteTempStage];
-        [self initExceptionHandling];
-        return [self getBundlePathFromDirectory:newDirectoryStage];
-      }
-      if([currentStageSlot isEqual:newFolderSlot]) {
-        [self initExceptionHandling];
-        return [self getBundlePathFromDirectory:newDirectoryStage];
-      }
-      return [self getDefaultURL:defaultBundleURL];
+    // Validate app version and perform fallback if required
+    if (![currentAppVersion isEqualToString:cachedAppVersion]) {
+        [stateManager setStringForKey:[StallionObjConstants app_version_cache_key] value:currentAppVersion];
+        [StallionSlotManager fallbackProd];
     }
-    return [self getDefaultURL:defaultBundleURL];
-  }
+
+    NSString *baseFolderPath = config.filesDirectory;
+    StallionMeta *stallionMeta = stateManager.stallionMeta;
+    SwitchState switchState = stallionMeta.switchState;
+
+  if (switchState == SwitchStateProd) {
+        return [self getProdBundlePath:baseFolderPath defaultBundlePath:defaultBundlePath];
+  } else if (switchState == SwitchStateStage) {
+        return [self getStageBundlePath:baseFolderPath defaultBundlePath:defaultBundlePath];
+    }
+
+    return [self getDefaultBundle:defaultBundlePath];
+}
+
++ (NSURL *)getProdBundlePath:(NSString *)baseFolderPath defaultBundlePath:(NSURL *)defaultBundlePath {
+    StallionStateManager *stateManager = [StallionStateManager sharedInstance];
+    StallionMeta *stallionMeta = stateManager.stallionMeta;
+
+    [self mountNewProdBundle:baseFolderPath];
+
+    switch (stallionMeta.currentProdSlot) {
+        case SlotStateNewSlot:
+            return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]]
+                          defaultBundlePath:defaultBundlePath
+                                releaseHash:stallionMeta.prodNewHash];
+        case SlotStateStableSlot:
+            return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants stable_folder_slot]]
+                          defaultBundlePath:defaultBundlePath
+                                releaseHash:stallionMeta.prodStableHash];
+        default:
+            return [self getDefaultBundle:defaultBundlePath];
+    }
+}
+
++ (NSURL *)getStageBundlePath:(NSString *)baseFolderPath defaultBundlePath:(NSURL *)defaultBundlePath {
+    StallionStateManager *stateManager = [StallionStateManager sharedInstance];
+    StallionMeta *stallionMeta = stateManager.stallionMeta;
+
+    [self mountNewStageBundle:baseFolderPath];
+
+    switch (stallionMeta.currentStageSlot) {
+        case SlotStateNewSlot:
+            return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]]
+                          defaultBundlePath:defaultBundlePath
+                                releaseHash:stallionMeta.stageNewHash];
+        default:
+            return [self getDefaultBundle:defaultBundlePath];
+    }
+}
+
++ (void)mountNewProdBundle:(NSString *)baseFolderPath {
+    StallionStateManager *stateManager = [StallionStateManager sharedInstance];
+    StallionMeta *stallionMeta = stateManager.stallionMeta;
+    NSString *prodTempHash = stallionMeta.prodTempHash;
+
+    if (prodTempHash && prodTempHash.length > 0) {
+        @try {
+            [StallionFileManager moveFileFrom:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants temp_folder_slot]]
+                                            to:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]]];
+            stallionMeta.prodNewHash = prodTempHash;
+            stallionMeta.prodTempHash = @"";
+            [stateManager syncStallionMeta];
+            [self sendInstallEvent:prodTempHash];
+        } @catch (NSException *exception) {
+            NSLog(@"Error mounting new prod bundle: %@", exception.reason);
+        }
+    }
+}
+
++ (void)mountNewStageBundle:(NSString *)baseFolderPath {
+    StallionStateManager *stateManager = [StallionStateManager sharedInstance];
+    StallionMeta *stallionMeta = stateManager.stallionMeta;
+    NSString *stageTempHash = stallionMeta.stageTempHash;
+
+    if (stageTempHash && stageTempHash.length > 0) {
+        @try {
+            [StallionFileManager moveFileFrom:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants temp_folder_slot]]
+                                            to:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]]];
+            stallionMeta.stageNewHash = stageTempHash;
+            stallionMeta.stageTempHash = @"";
+            [stateManager syncStallionMeta];
+        } @catch (NSException *exception) {
+            NSLog(@"Error mounting new stage bundle: %@", exception.reason);
+        }
+    }
+}
+
++ (NSURL *)resolveBundlePath:(NSString *)folderPath defaultBundlePath:(NSURL *)defaultBundlePath releaseHash:(NSString *)releaseHash {
+    NSString *bundlePath = [NSString stringWithFormat:@"%@/%@/%@", folderPath, [StallionObjConstants build_folder_name], [StallionObjConstants bundle_file_name]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:bundlePath]) {
+        return [NSURL fileURLWithPath:bundlePath];
+    } else {
+        [self sendCorruptionEvent:releaseHash folderPath:folderPath];
+        return [self getDefaultBundle:defaultBundlePath];
+    }
+}
+
++ (void)sendInstallEvent:(NSString *)releaseHash {
+    NSDictionary *eventPayload = @{[StallionObjConstants release_hash_key]: releaseHash};
+    [[StallionEventHandler sharedInstance] sendEvent:[StallionObjConstants installed_prod_event] eventPayload:eventPayload];
+}
+
++ (void)sendCorruptionEvent:(NSString *)releaseHash folderPath:(NSString *)folderPath {
+    NSDictionary *eventPayload = @{
+        [StallionObjConstants release_hash_key]: releaseHash,
+        @"folderPath": folderPath
+    };
+    [[StallionEventHandler sharedInstance] sendEvent:@"CORRUPTED_FILE_ERROR" eventPayload:eventPayload];
+}
+
++ (NSURL *)getDefaultBundle:(NSURL *)defaultBundlePath {
+    NSURL *defaultRNBundlePath = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    return defaultBundlePath ?: defaultRNBundlePath;
+}
 
 @end

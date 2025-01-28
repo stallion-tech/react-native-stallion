@@ -104,16 +104,18 @@ public class StallionFileManager {
    * @param file The file or directory to delete.
    */
   public static void deleteFileOrFolderSilently(File file) {
-    if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      if (files != null) {
-        for (File child : files) {
-          deleteFileOrFolderSilently(child);
+    if(file.exists()) {
+      if (file.isDirectory()) {
+        File[] files = file.listFiles();
+        if (files != null) {
+          for (File child : files) {
+            deleteFileOrFolderSilently(child);
+          }
         }
       }
-    }
-    if (!file.delete()) {
-      throw new RuntimeException("Failed to delete file: " + file.getAbsolutePath());
+      if (!file.delete()) {
+        throw new RuntimeException("Failed to delete file: " + file.getAbsolutePath());
+      }
     }
   }
 
