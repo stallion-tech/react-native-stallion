@@ -34,7 +34,7 @@ export interface IStallionNativeEventData {
   progress?: string;
 }
 
-const STALLION_EVENT_POLLING_INTERVAL = 20000; // 20s
+const STALLION_EVENT_POLLING_INTERVAL = 9000; // 9s
 
 const processStallionEvent = (
   eventString: string
@@ -57,12 +57,13 @@ export const useStallionEvents = (
     eventEmitter.addListener(
       STALLION_NATIVE_EVENT,
       (nativeEventString: string) => {
+        console.log(nativeEventString, 'processStallionEvent');
         const eventData = processStallionEvent(nativeEventString);
         if (!eventData) return;
 
         const eventType = eventData?.type as string;
         if (REFRESH_META_EVENTS[eventType]) {
-          refreshMeta();
+          requestAnimationFrame(refreshMeta);
         }
         switch (eventType) {
           case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
@@ -118,22 +119,19 @@ export const useStallionEvents = (
 
   const popEvents = useCallback(() => {
     popEventsNative().then((eventsString: string) => {
+      console.log('popEvents events:', eventsString);
       try {
         const eventsArr: IStallionNativeEventData[] = JSON.parse(eventsString);
         if (eventsArr?.length) {
           syncStallionEvents(eventsArr);
+          setTimeout(popEvents, STALLION_EVENT_POLLING_INTERVAL);
         }
       } catch (_) {}
     });
   }, [syncStallionEvents]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      popEvents();
-    }, STALLION_EVENT_POLLING_INTERVAL);
-
-    return () => clearInterval(interval);
-
+    popEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

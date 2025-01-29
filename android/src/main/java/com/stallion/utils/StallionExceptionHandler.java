@@ -82,9 +82,7 @@ public class StallionExceptionHandler {
     // Emit exception event
     emitException(stackTraceString, currentStageHash, isAutoRollback, false);
 
-    if(isAutoRollback) {
-      StallionSlotManager.rollbackStage();
-    }
+    StallionSlotManager.rollbackStage();
 
     if (_reactActivity != null) {
       Intent errorIntent = new Intent(_reactActivity, StallionErrorActivity.class);

@@ -10,6 +10,7 @@
 #import "StallionObjConstants.h"
 #import "StallionSlotManager.h"
 #import "StallionFilemanager.h"
+#import "StallionExceptionHandler.h"
 
 @implementation StallionModule
 
@@ -18,6 +19,8 @@
 }
 
 + (NSURL *)getBundleURL:(NSURL *)defaultBundlePath {
+    [StallionStateManager initializeInstance];
+    [StallionExceptionHandler initExceptionHandler];
     StallionStateManager *stateManager = [StallionStateManager sharedInstance];
     StallionConfig *config = stateManager.stallionConfig;
     NSString *currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:[StallionObjConstants app_version_identifier]];
@@ -52,11 +55,13 @@
         case SlotStateNewSlot:
             return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants new_folder_slot]]
                           defaultBundlePath:defaultBundlePath
-                                releaseHash:stallionMeta.prodNewHash];
+                               releaseHash:stallionMeta.prodNewHash
+                                    isProd:true];
         case SlotStateStableSlot:
             return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants prod_directory], [StallionObjConstants stable_folder_slot]]
                           defaultBundlePath:defaultBundlePath
-                                releaseHash:stallionMeta.prodStableHash];
+                               releaseHash:stallionMeta.prodStableHash
+                                    isProd:true];
         default:
             return [self getDefaultBundle:defaultBundlePath];
     }
@@ -72,7 +77,7 @@
         case SlotStateNewSlot:
             return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]]
                           defaultBundlePath:defaultBundlePath
-                                releaseHash:stallionMeta.stageNewHash];
+                               releaseHash:stallionMeta.stageNewHash isProd:false];
         default:
             return [self getDefaultBundle:defaultBundlePath];
     }
@@ -115,19 +120,24 @@
     }
 }
 
-+ (NSURL *)resolveBundlePath:(NSString *)folderPath defaultBundlePath:(NSURL *)defaultBundlePath releaseHash:(NSString *)releaseHash {
++ (NSURL *)resolveBundlePath:(NSString *)folderPath defaultBundlePath:(NSURL *)defaultBundlePath releaseHash:(NSString *)releaseHash isProd:(Boolean*)isProd{
     NSString *bundlePath = [NSString stringWithFormat:@"%@/%@/%@", folderPath, [StallionObjConstants build_folder_name], [StallionObjConstants bundle_file_name]];
     if ([[NSFileManager defaultManager] fileExistsAtPath:bundlePath]) {
         return [NSURL fileURLWithPath:bundlePath];
     } else {
         [self sendCorruptionEvent:releaseHash folderPath:folderPath];
+        if(isProd) {
+            [StallionSlotManager rollbackProdWithAutoRollback:true errorString:@"Corruped File not found"];
+        } else {
+            [StallionSlotManager rollbackStage];
+        }
         return [self getDefaultBundle:defaultBundlePath];
     }
 }
 
 + (void)sendInstallEvent:(NSString *)releaseHash {
     NSDictionary *eventPayload = @{[StallionObjConstants release_hash_key]: releaseHash};
-    [[StallionEventHandler sharedInstance] sendEvent:[StallionObjConstants installed_prod_event] eventPayload:eventPayload];
+  [[StallionEventHandler sharedInstance] cacheEvent:[StallionObjConstants installed_prod_event] eventPayload:eventPayload];
 }
 
 + (void)sendCorruptionEvent:(NSString *)releaseHash folderPath:(NSString *)folderPath {
@@ -135,7 +145,7 @@
         [StallionObjConstants release_hash_key]: releaseHash,
         @"folderPath": folderPath
     };
-    [[StallionEventHandler sharedInstance] sendEvent:@"CORRUPTED_FILE_ERROR" eventPayload:eventPayload];
+    [[StallionEventHandler sharedInstance] cacheEvent:@"CORRUPTED_FILE_ERROR" eventPayload:eventPayload];
 }
 
 + (NSURL *)getDefaultBundle:(NSURL *)defaultBundlePath {

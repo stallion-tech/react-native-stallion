@@ -28,6 +28,7 @@ const useUserActions = (
   const loginUser = useCallback(
     (loginPayload: ILoginActionPayload) => {
       dispatch(setUserLoading());
+      console.log('loginUser ', loginPayload, configState);
       getData(API_PATHS.LOGIN, {
         ...loginPayload,
         projectId: configState.projectId,

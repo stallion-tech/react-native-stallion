@@ -10,16 +10,33 @@
 @implementation StallionMetaConstants
 
 + (SwitchState)switchStateFromString:(NSString *)value {
-    if ([value.lowercaseString isEqualToString:@"prod"]) return SwitchStateProd;
-    if ([value.lowercaseString isEqualToString:@"stage"]) return SwitchStateStage;
+    if ([value isEqualToString:@"PROD"]) return SwitchStateProd;
+    if ([value isEqualToString:@"STAGE"]) return SwitchStateStage;
     @throw [NSException exceptionWithName:@"InvalidSwitchStateException" reason:@"Invalid SwitchState" userInfo:nil];
 }
 
 + (SlotStates)slotStateFromString:(NSString *)value {
-    if ([value.lowercaseString isEqualToString:@"new_slot"]) return SlotStateNewSlot;
-    if ([value.lowercaseString isEqualToString:@"stable_slot"]) return SlotStateStableSlot;
-    if ([value.lowercaseString isEqualToString:@"default_slot"]) return SlotStateDefaultSlot;
+    if ([value isEqualToString:@"NEW_SLOT"]) return SlotStateNewSlot;
+    if ([value isEqualToString:@"STABLE_SLOT"]) return SlotStateStableSlot;
+    if ([value isEqualToString:@"DEFAULT_SLOT"]) return SlotStateDefaultSlot;
     @throw [NSException exceptionWithName:@"InvalidSlotStateException" reason:@"Invalid SlotState" userInfo:nil];
+}
+
++ (NSString *)stringFromSwitchState:(SwitchState)state {
+    switch (state) {
+        case SwitchStateProd: return @"PROD";
+        case SwitchStateStage: return @"STAGE";
+        default: return @"unknown";
+    }
+}
+
++ (NSString *)stringFromSlotState:(SlotStates)state {
+    switch (state) {
+        case SlotStateNewSlot: return @"NEW_SLOT";
+        case SlotStateStableSlot: return @"STABLE_SLOT";
+        case SlotStateDefaultSlot: return @"DEFAULT_SLOT";
+        default: return @"unknown";
+    }
 }
 
 @end

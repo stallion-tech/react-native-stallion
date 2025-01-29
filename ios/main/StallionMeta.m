@@ -29,56 +29,70 @@
 }
 
 - (NSDictionary *)toDictionary {
-    return @{
-        @"switchState": @(self.switchState),
-        @"stageSlot": @{
-                @"tempHash": self.stageTempHash,
-                @"newHash": self.stageNewHash,
-                @"currentSlot": @(self.currentStageSlot)
-        },
-        @"prodSlot": @{
-                @"tempHash": self.prodTempHash,
-                @"newHash": self.prodNewHash,
-                @"stableHash": self.prodStableHash,
-                @"currentSlot": @(self.currentProdSlot)
-        },
-        @"lastRolledBackHash": self.lastRolledBackHash
-    };
+    @try {
+        return @{
+            @"switchState": [StallionMetaConstants stringFromSwitchState:self.switchState] ?: @"",
+            @"stageSlot": @{
+                    @"tempHash": self.stageTempHash ?: @"",
+                    @"newHash": self.stageNewHash ?: @"",
+                    @"currentSlot": [StallionMetaConstants stringFromSlotState:self.currentStageSlot] ?: @""
+            },
+            @"prodSlot": @{
+                    @"tempHash": self.prodTempHash ?: @"",
+                    @"newHash": self.prodNewHash ?: @"",
+                    @"stableHash": self.prodStableHash ?: @"",
+                    @"currentSlot": [StallionMetaConstants stringFromSlotState:self.currentProdSlot] ?: @""
+            },
+            @"lastRolledBackHash": self.lastRolledBackHash ?: @""
+        };
+    } @catch (NSException *exception) {
+        NSLog(@"Error in toDictionary: %@", exception.reason);
+        return @{};
+    }
 }
 
 - (NSString *)getActiveReleaseHash {
-  if(![self.prodTempHash isEqual:@""]) {
-    return self.prodTempHash;
-  }
-  switch (self.currentProdSlot) {
-    case SlotStateNewSlot:
-      return self.prodNewHash;
-      
-    case SlotStateStableSlot:
-      return self.prodStableHash;
-      
-    default:
-      return @"";
-  }
+    if (![self.prodTempHash isEqual:@""]) {
+        return self.prodTempHash;
+    }
+    switch (self.currentProdSlot) {
+        case SlotStateNewSlot:
+            return self.prodNewHash;
+        case SlotStateStableSlot:
+            return self.prodStableHash;
+        default:
+            return @"";
+    }
 }
 
 + (instancetype)fromDictionary:(NSDictionary *)dict {
-    if (!dict || ![dict isKindOfClass:[NSDictionary class]]) {
-      return [[StallionMeta alloc] init];
+    @try {
+        if (!dict || ![dict isKindOfClass:[NSDictionary class]]) {
+            return [[StallionMeta alloc] init];
+        }
+
+        StallionMeta *meta = [[StallionMeta alloc] init];
+
+        meta.switchState = [StallionMetaConstants switchStateFromString:dict[@"switchState"] ?: @"prod"];
+        NSDictionary *stageSlot = dict[@"stageSlot"];
+        NSDictionary *prodSlot = dict[@"prodSlot"];
+
+        meta.stageTempHash = stageSlot[@"tempHash"] ?: @"";
+        meta.stageNewHash = stageSlot[@"newHash"] ?: @"";
+        meta.currentStageSlot = [StallionMetaConstants slotStateFromString:stageSlot[@"currentSlot"] ?: @"default_slot"];
+
+        meta.prodTempHash = prodSlot[@"tempHash"] ?: @"";
+        meta.prodNewHash = prodSlot[@"newHash"] ?: @"";
+        meta.prodStableHash = prodSlot[@"stableHash"] ?: @"";
+        meta.currentProdSlot = [StallionMetaConstants slotStateFromString:prodSlot[@"currentSlot"] ?: @"default_slot"];
+
+        meta.lastRolledBackHash = dict[@"lastRolledBackHash"] ?: @"";
+
+        return meta;
+    } @catch (NSException *exception) {
+        NSLog(@"Error in fromDictionary: %@", exception.reason);
+        return [[StallionMeta alloc] init];
     }
-  
-    StallionMeta *meta = [[StallionMeta alloc] init];
-    meta.switchState = [dict[@"switchState"] integerValue];
-    meta.stageTempHash = dict[@"stageSlot"][@"tempHash"];
-    meta.stageNewHash = dict[@"stageSlot"][@"newHash"];
-    meta.currentStageSlot = [dict[@"stageSlot"][@"currentSlot"] integerValue];
-    meta.prodTempHash = dict[@"prodSlot"][@"tempHash"];
-    meta.prodNewHash = dict[@"prodSlot"][@"newHash"];
-    meta.prodStableHash = dict[@"prodSlot"][@"stableHash"];
-    meta.currentProdSlot = [dict[@"prodSlot"][@"currentSlot"] integerValue];
-    meta.lastRolledBackHash = dict[@"lastRolledBackHash"];
-    return meta;
 }
 
 @end
-

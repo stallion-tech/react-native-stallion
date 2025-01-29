@@ -6,20 +6,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
+#import <React/RCTBridge.h>
 
 @class StallionStateManager;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface StallionEventHandler : RCTEventEmitter <RCTBridgeModule>
-
+@interface StallionEventHandler : NSObject
 + (instancetype)sharedInstance;
-+ (void)initWithStateManager:(StallionStateManager *)stateManager;
-
-- (void)sendEventWithoutCaching:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload;
-- (void)sendEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload;
+- (void)cacheEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload;
 - (NSString *)popEvents;
 - (void)acknowledgeEvents:(NSArray<NSString *> *)eventIds;
 

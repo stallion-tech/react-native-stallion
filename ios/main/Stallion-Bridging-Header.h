@@ -6,4 +6,4 @@
 #import <StallionEventHandler.h>
 #import <StallionMetaConstants.h>
 #import <StallionSlotManager.h>
-#import <StallionFilemanager.h>
+#import <StallionExceptionHandler.h>

@@ -10,15 +10,13 @@ import {
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
-  const { isRestartRequired, currentlyRunningBundle, newReleaseBundle } =
-    useStallionUpdate();
+  const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
 
-  console.log(
-    isRestartRequired,
-    'isRestartRequired',
-    currentlyRunningBundle,
-    newReleaseBundle
-  );
+  // console.log(
+  //   isRestartRequired,
+  //   'isRestartRequired',
+  //   newReleaseBundle
+  // );
 
   React.useEffect(() => {
     if (isRestartRequired) {

@@ -100,14 +100,14 @@
         [stateManager syncStallionMeta];
     }
 
-    [[StallionEventHandler sharedInstance] sendEvent:eventName eventPayload:eventPayload];
+    [[StallionEventHandler sharedInstance] cacheEvent:eventName eventPayload:eventPayload];
 }
 
 + (void)emitStabilizeEvent:(NSString *)newReleaseHash {
     NSMutableDictionary *eventPayload = [NSMutableDictionary dictionary];
     eventPayload[@"releaseHash"] = newReleaseHash;
 
-  [[StallionEventHandler sharedInstance] sendEvent:StallionObjConstants.stabilized_prod_event eventPayload:eventPayload];
+  [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.stabilized_prod_event eventPayload:eventPayload];
 }
 
 @end

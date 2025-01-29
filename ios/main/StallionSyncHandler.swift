@@ -29,6 +29,7 @@ class StallionSyncHandler {
                   // Use appVersion directly from StallionConfig
                   let appVersion = config.appVersion ?? ""
                   let projectId = config.projectId ?? ""
+                  let uid = config.uid ?? ""
                   let appliedBundleHash = stateManager?.stallionMeta?.getActiveReleaseHash() ?? ""
 
                   // Prepare payload for API call
@@ -36,7 +37,7 @@ class StallionSyncHandler {
                       "appVersion": appVersion,
                       "platform": StallionConstants.PlatformValue,
                       "projectId": projectId,
-                      "appliedBundleHash": appliedBundleHash
+                      "appliedBundleHash": appliedBundleHash,
                   ]
 
                   // Make API call using URLSession
@@ -61,6 +62,7 @@ class StallionSyncHandler {
           // Add tokens
           request.setValue(StallionStateManager.sharedInstance()?.stallionConfig?.appToken, forHTTPHeaderField: StallionConstants.STALLION_APP_TOKEN_KEY)
           request.setValue(StallionStateManager.sharedInstance()?.stallionConfig?.sdkToken, forHTTPHeaderField: StallionConstants.STALLION_SDK_TOKEN_KEY)
+        request.setValue(StallionStateManager.sharedInstance()?.stallionConfig?.uid, forHTTPHeaderField: StallionConstants.STALLION_UID_KEY)
 
           // Convert payload to JSON
           do {
@@ -76,7 +78,7 @@ class StallionSyncHandler {
                   emitSyncError(error)
                   return
               }
-
+            
               guard let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                   let responseError = NSError(domain: "Invalid response from server", code: -2)
                   emitSyncError(responseError)
@@ -144,9 +146,7 @@ class StallionSyncHandler {
         guard let stateManager = StallionStateManager.sharedInstance(),
               let config = stateManager.stallionConfig else { return }
 
-      let downloadPath = config.filesDirectory +
-            StallionConstants.PROD_DIRECTORY +
-            StallionConstants.TEMP_FOLDER_SLOT
+      let downloadPath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT
       let projectId = config.projectId ?? ""
       
       guard let fromUrl = URL(string: newReleaseUrl + "?projectId=" + projectId) else { return }
@@ -175,38 +175,38 @@ class StallionSyncHandler {
     // MARK: - Event Emission
 
     private static func emitSyncError(_ error: Error) {
-        let syncErrorPayload: [String: Any] = ["error": error.localizedDescription]
-        StallionEventHandler.sharedInstance().sendEvent(
-            StallionConstants.NativeEventTypesProd.SYNC_ERROR_PROD,
-            eventPayload: syncErrorPayload
-        )
+      let syncErrorPayload: NSDictionary = ["error": error.localizedDescription]
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.SYNC_ERROR_PROD,
+                             eventBody: syncErrorPayload,
+                             shouldCache: true
+      )
     }
 
     private static func emitDownloadError(releaseHash: String, error: String) {
-        let errorPayload: [String: Any] = [
+        let errorPayload: NSDictionary = [
             "releaseHash": releaseHash,
             "error": error
         ]
-        StallionEventHandler.sharedInstance().sendEvent(
-            StallionConstants.NativeEventTypesProd.DOWNLOAD_ERROR_PROD,
-            eventPayload: errorPayload
-        )
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_ERROR_PROD,
+                             eventBody: errorPayload,
+                             shouldCache: true
+      )
     }
 
     private static func emitDownloadSuccess(releaseHash: String) {
-        let successPayload: [String: Any] = ["releaseHash": releaseHash]
-        StallionEventHandler.sharedInstance().sendEvent(
-            StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
-            eventPayload: successPayload
-        )
+      let successPayload: NSDictionary = ["releaseHash": releaseHash]
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
+                             eventBody: successPayload,
+                             shouldCache: true
+      )
     }
 
     private static func emitDownloadStarted(releaseHash: String) {
-        let startedPayload: [String: Any] = ["releaseHash": releaseHash]
-        StallionEventHandler.sharedInstance().sendEvent(
-            StallionConstants.NativeEventTypesProd.DOWNLOAD_STARTED_PROD,
-            eventPayload: startedPayload
-        )
+        let startedPayload: NSDictionary = ["releaseHash": releaseHash]
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
+                             eventBody: startedPayload,
+                             shouldCache: true
+      )
     }
 }
 

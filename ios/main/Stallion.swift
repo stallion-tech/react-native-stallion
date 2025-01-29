@@ -4,19 +4,24 @@ import Foundation
 import React
 
 @objc(Stallion)
-class Stallion: NSObject {
-  private let stallionStateManager: StallionStateManager;
+class Stallion: RCTEventEmitter {
+  
+  static weak var sharedInstance: Stallion?
+  private var stallionStateManager: StallionStateManager;
 
     override init() {
-        super.init()
-      StallionStateManager.initializeInstance();
-      stallionStateManager = StallionStateManager.sharedInstance();
-        StallionSyncHandler.sync()
-        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+      StallionStateManager.initializeInstance()
+      self.stallionStateManager = StallionStateManager.sharedInstance()
+      
+      super.init()
+      Stallion.sharedInstance = self
+      StallionExceptionHandler.initExceptionHandler()
+      StallionSyncHandler.sync()
+      NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
-
-    @objc static func requiresMainQueueSetup() -> Bool {
-        return false
+  
+    override func supportedEvents() -> [String]! {
+      return [StallionConstants.STALLION_NATIVE_EVENT_NAME]
     }
 
     @objc func appDidBecomeActive() {
@@ -96,7 +101,7 @@ class Stallion: NSObject {
         StallionSyncHandler.sync()
     }
 
-    @objc func downloadStageBundle(_ bundleInfo: NSDictionary, resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+    @objc func downloadStageBundle(_ bundleInfo: NSDictionary, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
       StallionStageManager.downloadStageBundle(bundleInfo: bundleInfo, promise: resolver, rejecter: rejecter)
     }
 
@@ -121,6 +126,26 @@ class Stallion: NSObject {
         } catch {
             rejecter("ACKNOWLEDGE_EVENTS_ERROR", error.localizedDescription, error)
         }
+    }
+  
+  /// ✅ Expose a function to send events externally
+  @objc static func sendEventToRn(eventName: String, eventBody: NSDictionary, shouldCache: Bool) {
+    if(shouldCache) {
+      StallionEventHandler.sharedInstance().cacheEvent(eventName, eventPayload: eventBody as! [AnyHashable : Any])
+    }
+    if let mutableDict = eventBody.mutableCopy() as? NSMutableDictionary {
+        mutableDict["type"] = eventName
+      do {
+        let eventJson = try JSONSerialization.data(withJSONObject: mutableDict, options: [])
+          if let eventString = String(data: eventJson, encoding: .utf8) {
+            DispatchQueue.main.async {
+              Stallion.sharedInstance?.sendEvent(withName: StallionConstants.STALLION_NATIVE_EVENT_NAME, body: eventString)
+            }
+          } else {
+              throw NSError(domain: "StallionConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Unable to encode JSON to string."])
+          }
+      } catch {};
+    }
     }
 }
 

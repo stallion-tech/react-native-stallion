@@ -22,5 +22,7 @@ typedef NS_ENUM(NSInteger, SlotStates) {
 
 + (SwitchState)switchStateFromString:(NSString *)value;
 + (SlotStates)slotStateFromString:(NSString *)value;
++ (NSString *)stringFromSwitchState:(SwitchState)state;
++ (NSString *)stringFromSlotState:(SlotStates)state;
 
 @end

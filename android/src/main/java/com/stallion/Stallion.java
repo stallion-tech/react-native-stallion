@@ -96,9 +96,9 @@ public class Stallion {
 
     switch (stallionMeta.getCurrentProdSlot()) {
       case NEW_SLOT:
-        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdNewHash());
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdNewHash(), true);
       case STABLE_SLOT:
-        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.STABLE_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdStableHash());
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.STABLE_FOLDER_SLOT, defaultBundlePath, stallionMeta.getProdStableHash(), true);
       default:
         return getDefaultBundle(defaultBundlePath);
     }
@@ -111,7 +111,7 @@ public class Stallion {
 
     switch (stallionMeta.getCurrentStageSlot()) {
       case NEW_SLOT:
-        return resolveBundlePath(baseFolderPath + StallionConfigConstants.STAGE_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getStageNewHash());
+        return resolveBundlePath(baseFolderPath + StallionConfigConstants.STAGE_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT, defaultBundlePath, stallionMeta.getStageNewHash(), false);
       default:
         return getDefaultBundle(defaultBundlePath);
     }
@@ -146,12 +146,17 @@ public class Stallion {
     }
   }
 
-  private static String resolveBundlePath(String folderPath, String defaultBundlePath, String releaseHash) {
+  private static String resolveBundlePath(String folderPath, String defaultBundlePath, String releaseHash, Boolean isProd) {
     String bundlePath = folderPath + StallionConfigConstants.UNZIP_FOLDER_NAME + StallionConfigConstants.ANDROID_BUNDLE_FILE_NAME;
     if (new File(bundlePath).exists()) {
       return bundlePath;
     } else {
-      sendCorruptionEvent(releaseHash, folderPath);
+      if(isProd) {
+        StallionSlotManager.rollbackProd(true, "Corruped file not found" + folderPath);
+        sendCorruptionEvent(releaseHash, folderPath);
+      } else {
+        StallionSlotManager.rollbackStage();
+      }
       return getDefaultBundle(defaultBundlePath);
     }
   }

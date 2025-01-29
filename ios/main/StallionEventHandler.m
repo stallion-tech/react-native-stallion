@@ -5,118 +5,86 @@
 //  Created by Jasbir Singh Shergill on 28/01/25.
 //
 
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 #import "StallionEventHandler.h"
 #import "StallionStateManager.h"
+
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventEmitter.h>
 
 static NSString *const STALLION_NATIVE_EVENT_NAME = @"STALLION_NATIVE_EVENT";
 static NSString *const EVENTS_KEY = @"stored_events";
 static NSInteger const MAX_BATCH_COUNT_SIZE = 5;
 
-@interface StallionEventHandler ()
-
-@property (nonatomic, strong) StallionStateManager *stallionStateManager;
-
-@end
-
 @implementation StallionEventHandler
 
-static StallionEventHandler *_instance = nil;
-
 + (instancetype)sharedInstance {
-    if (!_instance) {
-        @throw [NSException exceptionWithName:@"UninitializedException"
-                                       reason:@"Call initWithStateManager: first"
-                                     userInfo:nil];
-    }
-    return _instance;
-}
-
-+ (void)initWithStateManager:(StallionStateManager *)stateManager {
+    static StallionEventHandler *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _instance = [[StallionEventHandler alloc] initWithStateManager:stateManager];
+        sharedInstance = [[self alloc] init];
     });
+    return sharedInstance;
 }
 
-- (instancetype)initWithStateManager:(StallionStateManager *)stateManager {
-    self = [super init];
-    if (self) {
-        self.stallionStateManager = stateManager;
-    }
-    return self;
-}
-
-// Removed the setEmitter method, as it's no longer required.
-
-- (void)sendEventWithoutCaching:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload {
-    NSMutableDictionary *mutablePayload = [eventPayload mutableCopy];
-    mutablePayload[@"type"] = eventName;
-
-    // Emit the event to React Native using self.bridge
-    if (self.bridge) {
-        [self sendEventWithName:STALLION_NATIVE_EVENT_NAME body:mutablePayload];
-    } else {
-        NSLog(@"Bridge is not set. Event not sent.");
-    }
-}
-
-- (void)sendEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload {
+// Emit event to React Native and store locally
+- (void)cacheEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload {
     NSMutableDictionary *mutablePayload = [eventPayload mutableCopy];
     NSString *uniqueId = [[NSUUID UUID] UUIDString];
     mutablePayload[@"eventId"] = uniqueId;
     mutablePayload[@"eventTimestamp"] = @([[NSDate date] timeIntervalSince1970] * 1000);
     mutablePayload[@"type"] = eventName;
-
-    // Emit the event to React Native using self.bridge
-    if (self.bridge) {
-        [self sendEventWithName:STALLION_NATIVE_EVENT_NAME body:mutablePayload];
-    } else {
-        NSLog(@"Bridge is not set. Event not sent.");
-    }
-
-    // Store the event locally
+    // Store event locally
     [self storeEventLocally:uniqueId eventPayload:mutablePayload];
 }
 
+// Store event locally in StallionStateManager
 - (void)storeEventLocally:(NSString *)uniqueId eventPayload:(NSDictionary *)eventPayload {
+    StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
     @try {
-        NSString *eventsString = [self.stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
-        NSMutableDictionary *eventsObject = [NSJSONSerialization JSONObjectWithData:[
-          eventsString dataUsingEncoding:NSUTF8StringEncoding]
-          options:NSJSONReadingMutableContainers
-          error:nil
-        ];
+        NSString *eventsString = [stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
+        
+        NSMutableDictionary *eventsObject = [NSJSONSerialization JSONObjectWithData:[eventsString dataUsingEncoding:NSUTF8StringEncoding]
+                                                                            options:NSJSONReadingMutableContainers
+                                                                              error:nil];
+
         if (!eventsObject) {
             eventsObject = [NSMutableDictionary dictionary];
         }
 
         eventsObject[uniqueId] = eventPayload;
+
         NSData *updatedData = [NSJSONSerialization dataWithJSONObject:eventsObject options:0 error:nil];
         NSString *updatedString = [[NSString alloc] initWithData:updatedData encoding:NSUTF8StringEncoding];
-        [self.stallionStateManager setStringForKey:EVENTS_KEY value:updatedString];
+
+        [stallionStateManager setStringForKey:EVENTS_KEY value:updatedString];
     } @catch (NSException *exception) {
         [self cleanupEventStorage];
     }
 }
 
+// Cleanup event storage
 - (void)cleanupEventStorage {
-    [self.stallionStateManager setStringForKey:EVENTS_KEY value:@"{}"];
+    StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
+    [stallionStateManager setStringForKey:EVENTS_KEY value:@"{}"];
 }
 
+// Fetch stored events and return as JSON string
 - (NSString *)popEvents {
+    StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
     @try {
-        NSString *eventsString = [self.stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
+        NSString *eventsString = [stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
         NSDictionary *eventsObject = [NSJSONSerialization JSONObjectWithData:[eventsString dataUsingEncoding:NSUTF8StringEncoding]
                                                                       options:NSJSONReadingMutableContainers
                                                                         error:nil];
+
         if (!eventsObject) {
             return @"[]";
         }
 
         NSMutableArray *batch = [NSMutableArray array];
         NSArray *keys = [eventsObject allKeys];
+
         for (int i = 0; i < MIN(keys.count, MAX_BATCH_COUNT_SIZE); i++) {
             NSString *key = keys[i];
             [batch addObject:eventsObject[key]];
@@ -131,12 +99,15 @@ static StallionEventHandler *_instance = nil;
     return @"[]";
 }
 
+// Acknowledge (remove) events by ID
 - (void)acknowledgeEvents:(NSArray<NSString *> *)eventIds {
+    StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
     @try {
-        NSString *eventsString = [self.stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
+        NSString *eventsString = [stallionStateManager getStringForKey:EVENTS_KEY defaultValue:@"{}"];
         NSMutableDictionary *eventsObject = [[NSJSONSerialization JSONObjectWithData:[eventsString dataUsingEncoding:NSUTF8StringEncoding]
                                                                               options:NSJSONReadingMutableContainers
                                                                                 error:nil] mutableCopy];
+
         if (!eventsObject) {
             return;
         }
@@ -147,17 +118,11 @@ static StallionEventHandler *_instance = nil;
 
         NSData *updatedData = [NSJSONSerialization dataWithJSONObject:eventsObject options:0 error:nil];
         NSString *updatedString = [[NSString alloc] initWithData:updatedData encoding:NSUTF8StringEncoding];
-        [self.stallionStateManager setStringForKey:EVENTS_KEY value:updatedString];
+
+        [stallionStateManager setStringForKey:EVENTS_KEY value:updatedString];
     } @catch (NSException *exception) {
         // Ignore exceptions
     }
-}
-
-#pragma mark - RCTEventEmitter Overrides
-
-// Required to specify supported events
-- (NSArray<NSString *> *)supportedEvents {
-    return @[STALLION_NATIVE_EVENT_NAME];
 }
 
 @end

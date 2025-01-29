@@ -30,6 +30,7 @@ void handleException(NSException *exception) {
     StallionStateManager *stateManager = [StallionStateManager sharedInstance];
     StallionMeta *meta = stateManager.stallionMeta;
     StallionConfig *config = stateManager.stallionConfig;
+    BOOL isAutoRollback = !stateManager.isMounted;
 
     NSString *readableError = [exception reason];
   
@@ -39,10 +40,9 @@ void handleException(NSException *exception) {
 
   if (meta.switchState == SwitchStateProd) {
         SlotStates currentProdSlot = meta.currentProdSlot;
-        NSString *currentHash = meta.prodStableHash ?: @"";
-        BOOL isAutoRollback = !stateManager.isMounted;
+    NSString *currentHash = meta.getActiveReleaseHash ?: @"";
 
-    [[StallionEventHandler sharedInstance] sendEvent:StallionObjConstants.exception_prod_event
+    [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_prod_event
           eventPayload:@{
               @"error": readableError,
               StallionObjConstants.release_hash_key: currentHash,
@@ -54,6 +54,13 @@ void handleException(NSException *exception) {
 
   } else if (meta.switchState == SwitchStateStage) {
         [StallionSlotManager rollbackStage];
+    
+    [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_stage_event
+          eventPayload:@{
+              @"error": readableError,
+              StallionObjConstants.release_hash_key: meta.stageNewHash,
+              StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
+          }];
 
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Stallion Exception Handler"
            message:[NSString stringWithFormat:@"%@\n%@",
