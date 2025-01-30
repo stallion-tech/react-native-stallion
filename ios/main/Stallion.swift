@@ -15,7 +15,6 @@ class Stallion: RCTEventEmitter {
       
       super.init()
       Stallion.sharedInstance = self
-      StallionExceptionHandler.initExceptionHandler()
       StallionSyncHandler.sync()
       NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }

@@ -107,6 +107,7 @@ export const useStallionEvents = (
           projectId: configState.projectId,
           eventData: stallionEvents,
         }).then((res) => {
+          console.log(res, 'syncStallionEvents response');
           if (res?.success) {
             try {
               const eventIds = stallionEvents.map((event) => event.eventId);
