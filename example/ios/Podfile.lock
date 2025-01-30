@@ -266,7 +266,7 @@ PODS:
   - React-jsinspector (0.71.10)
   - React-logger (0.71.10):
     - glog
-  - react-native-stallion (1.0.0):
+  - react-native-stallion (2.0.0):
     - React-Core
     - ZIPFoundation
   - React-perflogger (0.71.10)
@@ -496,7 +496,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 4bb480a183a354e4dbfb1012936b1a2bb9357de7
   React-jsinspector: cdc854f8b13abd202afa54bc12578e5afb9cfae1
   React-logger: ef2269b3afa6ba868da90496c3e17a4ec4f4cee0
-  react-native-stallion: 1f9462b1c1b6653ec0936487bab2f68819c311af
+  react-native-stallion: 84fae0abf4ae9bb8316f5cf8905e95b274d9f8b1
   React-perflogger: 217095464d5c4bb70df0742fa86bf2a363693468
   React-RCTActionSheet: 8deae9b85a4cbc6a2243618ea62a374880a2c614
   React-RCTAnimation: 59c62353a8b59ce206044786c5d30e4754bffa64
