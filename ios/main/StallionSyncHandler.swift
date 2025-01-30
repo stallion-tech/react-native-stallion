@@ -120,7 +120,21 @@ class StallionSyncHandler {
 
         if isRolledBack && appVersion == targetAppVersion {
           StallionSlotManager.rollbackProd(withAutoRollback: false, errorString: "")
+          emitManualRollbackProd()
         }
+    }
+  
+    private static func emitManualRollbackProd() {
+      let stateManager = StallionStateManager.sharedInstance()
+      let appliedBundleHash = stateManager?.stallionMeta?.getActiveReleaseHash() ?? ""
+        let rollbackPayload: NSDictionary = [
+          "releaseHash":appliedBundleHash,
+        ]
+      Stallion.sendEventToRn(
+        eventName: StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD,
+        eventBody: rollbackPayload,
+        shouldCache: false
+      )
     }
 
     private static func handleNewReleaseData(_ newReleaseData: [String: Any]) {
@@ -203,7 +217,7 @@ class StallionSyncHandler {
 
     private static func emitDownloadStarted(releaseHash: String) {
         let startedPayload: NSDictionary = ["releaseHash": releaseHash]
-      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
+        Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_STARTED_PROD,
                              eventBody: startedPayload,
                              shouldCache: true
       )

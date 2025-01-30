@@ -29,7 +29,6 @@ BOOL exceptionAlertDismissed = FALSE;
 void handleException(NSException *exception) {
     StallionStateManager *stateManager = [StallionStateManager sharedInstance];
     StallionMeta *meta = stateManager.stallionMeta;
-    StallionConfig *config = stateManager.stallionConfig;
     BOOL isAutoRollback = !stateManager.isMounted;
 
     NSString *readableError = [exception reason];
@@ -39,8 +38,7 @@ void handleException(NSException *exception) {
   }
 
   if (meta.switchState == SwitchStateProd) {
-        SlotStates currentProdSlot = meta.currentProdSlot;
-    NSString *currentHash = meta.getActiveReleaseHash ?: @"";
+    NSString *currentHash = [meta getActiveReleaseHash] ?: @"";
 
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_prod_event
           eventPayload:@{

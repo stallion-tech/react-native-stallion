@@ -101,7 +101,6 @@ class StallionFileDownloader: NSObject {
     }
     
     private func isValidZip(downloadedZip: URL) throws -> Bool {
-        let fileManager = FileManager.default
         let headerSize = 4
         
         guard let inputStream = InputStream(url: downloadedZip) else {

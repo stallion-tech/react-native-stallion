@@ -3,6 +3,8 @@ package com.stallion.storage;
 public class StallionConfigConstants {
   public static final String MODULE_NAME = "Stallion";
 
+  public static final String PLATFORM = "android";
+
   public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
   public static final String UNIQUE_ID_IDENTIFIER = "stallionDeviceId";

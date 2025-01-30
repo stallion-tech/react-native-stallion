@@ -29,11 +29,21 @@ static NSInteger const MAX_BATCH_COUNT_SIZE = 5;
 
 // Emit event to React Native and store locally
 - (void)cacheEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload {
+    StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
+    
+    NSString *projectId = stallionStateManager.stallionConfig.projectId ?: @"";
+    NSString *appVersion = stallionStateManager.stallionConfig.appVersion ?: @"";
+    NSString *uid = stallionStateManager.stallionConfig.uid ?: @"";
+  
     NSMutableDictionary *mutablePayload = [eventPayload mutableCopy];
     NSString *uniqueId = [[NSUUID UUID] UUIDString];
     mutablePayload[@"eventId"] = uniqueId;
     mutablePayload[@"eventTimestamp"] = @([[NSDate date] timeIntervalSince1970] * 1000);
     mutablePayload[@"type"] = eventName;
+    mutablePayload[@"projectId"] = projectId;
+    mutablePayload[@"platform"] = @"ios";
+    mutablePayload[@"appVersion"] = appVersion;
+    mutablePayload[@"uid"] = uid;
     // Store event locally
     [self storeEventLocally:uniqueId eventPayload:mutablePayload];
 }

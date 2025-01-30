@@ -52,6 +52,7 @@ export const useStallionEvents = (
   configState: IStallionConfigJson
 ) => {
   const { getData } = useApiClient(configState);
+
   useEffect(() => {
     const eventEmitter = new NativeEventEmitter(StallionNativeModule);
     eventEmitter.addListener(
@@ -101,37 +102,39 @@ export const useStallionEvents = (
 
   const syncStallionEvents = useCallback(
     (stallionEvents: IStallionNativeEventData[]) => {
-      getData(API_PATHS.LOG_EVENTS, {
-        projectId: configState.projectId,
-        eventData: stallionEvents,
-      }).then((res) => {
-        if (res?.success) {
-          try {
-            const eventIds = stallionEvents.map((event) => event.eventId);
-            const eventIdString = JSON.stringify(eventIds);
-            acknowledgeEventsNative(eventIdString);
-          } catch (_) {}
-        }
-      });
+      if (configState?.projectId) {
+        getData(API_PATHS.LOG_EVENTS, {
+          projectId: configState.projectId,
+          eventData: stallionEvents,
+        }).then((res) => {
+          if (res?.success) {
+            try {
+              const eventIds = stallionEvents.map((event) => event.eventId);
+              const eventIdString = JSON.stringify(eventIds);
+              acknowledgeEventsNative(eventIdString);
+            } catch (_) {}
+          }
+        });
+      }
     },
     [getData, configState]
   );
 
   const popEvents = useCallback(() => {
     popEventsNative().then((eventsString: string) => {
-      console.log('popEvents events:', eventsString);
       try {
         const eventsArr: IStallionNativeEventData[] = JSON.parse(eventsString);
+        console.log(eventsArr, 'popEventsNative');
         if (eventsArr?.length) {
           syncStallionEvents(eventsArr);
+          requestAnimationFrame(refreshMeta);
           setTimeout(popEvents, STALLION_EVENT_POLLING_INTERVAL);
         }
       } catch (_) {}
     });
-  }, [syncStallionEvents]);
+  }, [syncStallionEvents, refreshMeta]);
 
   useEffect(() => {
     popEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [popEvents]);
 };

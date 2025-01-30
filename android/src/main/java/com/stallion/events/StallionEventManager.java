@@ -1,6 +1,8 @@
 package com.stallion.events;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.stallion.storage.StallionConfig;
+import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionStateManager;
 
 import org.json.JSONArray;
@@ -61,18 +63,24 @@ public class StallionEventManager {
   // Method to send an event
   public void sendEvent(String eventName, JSONObject eventPayload) {
     try {
+      StallionConfig stallionConfig = this.stallionStateManager.getStallionConfig();
       // Generate a unique ID for the event
       String uniqueId = UUID.randomUUID().toString();
 
-      // Add unique ID and timestamp to the event payload
-      eventPayload.put("eventId", uniqueId);
-      eventPayload.put("eventTimestamp", System.currentTimeMillis());
       eventPayload.put("type", eventName);
 
       // Emit the event to React Native
       if (eventEmitter != null) {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
+
+      // Add unique ID and timestamp to the event payload
+      eventPayload.put("eventId", uniqueId);
+      eventPayload.put("eventTimestamp", System.currentTimeMillis());
+      eventPayload.put("projectId", stallionConfig.getProjectId());
+      eventPayload.put("platform", StallionConfigConstants.PLATFORM);
+      eventPayload.put("appVersion", stallionConfig.getAppVersion());
+      eventPayload.put("uid", stallionConfig.getUid());
 
       // Store the event locally
       storeEventLocally(uniqueId, eventPayload);
