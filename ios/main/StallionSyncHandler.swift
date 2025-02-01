@@ -13,7 +13,7 @@ class StallionSyncHandler {
     private static let syncQueue = DispatchQueue(label: "com.stallion.syncQueue")
 
   static func sync() {
-          syncQueue.sync {
+          syncQueue.async {
               guard !isSyncInProgress else { return }
               isSyncInProgress = true
           }

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { NativeEventEmitter } from 'react-native';
 import {
   NativeEventTypesProd,
@@ -15,6 +15,7 @@ import StallionNativeModule from '../../StallionNativeModule';
 import { IStallionConfigJson } from '../../types/config.types';
 import { useApiClient } from '../utils/useApiClient';
 import { API_PATHS } from '../constants/apiConstants';
+import debounce from '../utils/debounce';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -34,7 +35,7 @@ export interface IStallionNativeEventData {
   progress?: string;
 }
 
-const STALLION_EVENT_POLLING_INTERVAL = 9000; // 9s
+const STALLION_EVENT_DEBOUNCE_INTERVAL = 3000; // 3s
 
 const processStallionEvent = (
   eventString: string
@@ -52,53 +53,6 @@ export const useStallionEvents = (
   configState: IStallionConfigJson
 ) => {
   const { getData } = useApiClient(configState);
-
-  useEffect(() => {
-    const eventEmitter = new NativeEventEmitter(StallionNativeModule);
-    eventEmitter.addListener(
-      STALLION_NATIVE_EVENT,
-      (nativeEventString: string) => {
-        console.log(nativeEventString, 'processStallionEvent');
-        const eventData = processStallionEvent(nativeEventString);
-        if (!eventData) return;
-
-        const eventType = eventData?.type as string;
-        if (REFRESH_META_EVENTS[eventType]) {
-          requestAnimationFrame(refreshMeta);
-        }
-        switch (eventType) {
-          case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
-          case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
-          case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
-          case NativeEventTypesProd.INSTALLED_PROD:
-          case NativeEventTypesProd.SYNC_ERROR_PROD:
-          case NativeEventTypesProd.ROLLED_BACK_PROD:
-          case NativeEventTypesProd.STABILIZED_PROD:
-          case NativeEventTypesProd.EXCEPTION_PROD:
-          case NativeEventTypesProd.AUTO_ROLLED_BACK_PROD:
-            stallionEventEmitter.emit(eventData);
-            break;
-          case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:
-            try {
-              const progress = Number(eventData?.progress);
-              if (progress) {
-                setProgress(progress);
-              }
-            } catch (_) {}
-            break;
-        }
-      }
-    );
-    return () => {
-      eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
-    };
-  }, [refreshMeta, setProgress]);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      onLaunchNative('Success');
-    });
-  }, []);
 
   const syncStallionEvents = useCallback(
     (stallionEvents: IStallionNativeEventData[]) => {
@@ -129,13 +83,65 @@ export const useStallionEvents = (
         if (eventsArr?.length) {
           syncStallionEvents(eventsArr);
           requestAnimationFrame(refreshMeta);
-          setTimeout(popEvents, STALLION_EVENT_POLLING_INTERVAL);
         }
       } catch (_) {}
     });
   }, [syncStallionEvents, refreshMeta]);
 
+  const popEventsDebounced = useMemo(
+    () => debounce(popEvents, STALLION_EVENT_DEBOUNCE_INTERVAL),
+    [popEvents]
+  );
+
   useEffect(() => {
-    popEvents();
-  }, [popEvents]);
+    const eventEmitter = new NativeEventEmitter(StallionNativeModule);
+    eventEmitter.addListener(
+      STALLION_NATIVE_EVENT,
+      (nativeEventString: string) => {
+        console.log(nativeEventString, 'processStallionEvent');
+        const eventData = processStallionEvent(nativeEventString);
+        if (!eventData) return;
+
+        const eventType = eventData?.type as string;
+        if (REFRESH_META_EVENTS[eventType]) {
+          requestAnimationFrame(refreshMeta);
+          popEventsDebounced();
+        }
+        switch (eventType) {
+          case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
+          case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
+          case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
+          case NativeEventTypesProd.INSTALLED_PROD:
+          case NativeEventTypesProd.SYNC_ERROR_PROD:
+          case NativeEventTypesProd.ROLLED_BACK_PROD:
+          case NativeEventTypesProd.STABILIZED_PROD:
+          case NativeEventTypesProd.EXCEPTION_PROD:
+          case NativeEventTypesProd.AUTO_ROLLED_BACK_PROD:
+            stallionEventEmitter.emit(eventData);
+            break;
+          case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:
+            try {
+              const progress = Number(eventData?.progress);
+              if (progress) {
+                setProgress(progress);
+              }
+            } catch (_) {}
+            break;
+        }
+      }
+    );
+    return () => {
+      eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
+    };
+  }, [refreshMeta, setProgress, popEventsDebounced]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      onLaunchNative('Success');
+    });
+  }, []);
+
+  useEffect(() => {
+    popEventsDebounced();
+  }, [popEventsDebounced]);
 };

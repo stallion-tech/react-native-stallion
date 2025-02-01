@@ -15,19 +15,17 @@
 static StallionStateManager *_instance = nil;
 
 + (instancetype)sharedInstance {
-    if (!_instance) {
-        @throw [NSException exceptionWithName:@"UninitializedException"
-                                       reason:@"Call initializeInstance first"
-                                     userInfo:nil];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if (!_instance) {
+            _instance = [[StallionStateManager alloc] init];
+        }
+    });
     return _instance;
 }
 
 + (void)initializeInstance {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _instance = [[StallionStateManager alloc] init];
-    });
+    [self sharedInstance]; // Ensures safe initialization
 }
 
 - (instancetype)init {

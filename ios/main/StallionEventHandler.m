@@ -14,7 +14,7 @@
 
 static NSString *const STALLION_NATIVE_EVENT_NAME = @"STALLION_NATIVE_EVENT";
 static NSString *const EVENTS_KEY = @"stored_events";
-static NSInteger const MAX_BATCH_COUNT_SIZE = 5;
+static NSInteger const MAX_BATCH_COUNT_SIZE = 9;
 
 @implementation StallionEventHandler
 

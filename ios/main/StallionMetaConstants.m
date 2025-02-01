@@ -19,7 +19,7 @@
     if ([value isEqualToString:@"NEW_SLOT"]) return SlotStateNewSlot;
     if ([value isEqualToString:@"STABLE_SLOT"]) return SlotStateStableSlot;
     if ([value isEqualToString:@"DEFAULT_SLOT"]) return SlotStateDefaultSlot;
-    @throw [NSException exceptionWithName:@"InvalidSlotStateException" reason:@"Invalid SlotState" userInfo:nil];
+    return SlotStateDefaultSlot;
 }
 
 + (NSString *)stringFromSwitchState:(SwitchState)state {

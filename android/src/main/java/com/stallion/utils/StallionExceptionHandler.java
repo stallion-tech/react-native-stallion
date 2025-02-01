@@ -28,8 +28,8 @@ public class StallionExceptionHandler {
 
       // Safely trim the stack trace string
       String stackTraceString = Log.getStackTraceString(throwable);
-      stackTraceString = stackTraceString.length() > 200
-        ? stackTraceString.substring(0, 200) + "..."
+      stackTraceString = stackTraceString.length() > 900
+        ? stackTraceString.substring(0, 900) + "..."
         : stackTraceString;
 
       StallionStateManager stateManager = StallionStateManager.getInstance();

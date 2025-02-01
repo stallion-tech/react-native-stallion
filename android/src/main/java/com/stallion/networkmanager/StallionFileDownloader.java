@@ -205,8 +205,8 @@ public class StallionFileDownloader {
         callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, StallionApiConstants.CORRUPTED_FILE_ERROR);
       }
     } catch (Exception e) {
-      Log.e(TAG, "Error during file validation or unzipping: " + e.getMessage(), e);
-      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, StallionApiConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE);
+      String filesystemError = e.getMessage();
+      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, StallionApiConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE + filesystemError);
     } finally {
       StallionFileManager.deleteFileOrFolderSilently(downloadedZip);
     }

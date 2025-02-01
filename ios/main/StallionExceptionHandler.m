@@ -33,8 +33,8 @@ void handleException(NSException *exception) {
 
     NSString *readableError = [exception reason];
   
-  if (readableError.length > 200) {
-      readableError = [readableError substringToIndex:200];
+  if (readableError.length > 900) {
+      readableError = [readableError substringToIndex:900];
   }
 
   if (meta.switchState == SwitchStateProd) {
