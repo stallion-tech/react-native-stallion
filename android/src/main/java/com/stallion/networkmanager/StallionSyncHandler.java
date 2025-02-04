@@ -139,7 +139,7 @@ public class StallionSyncHandler {
   private static void emitSyncError(Exception e) {
     JSONObject syncErrorPayload = new JSONObject();
     try {
-      syncErrorPayload.put("error", e.toString());
+      syncErrorPayload.put("meta", e.toString());
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       NativeProdEventTypes.SYNC_ERROR_PROD.toString(),
@@ -151,7 +151,7 @@ public class StallionSyncHandler {
     JSONObject errorPayload = new JSONObject();
     try {
       errorPayload.put("releaseHash", releaseHash);
-      errorPayload.put("error", error);
+      errorPayload.put("meta", error);
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       NativeProdEventTypes.DOWNLOAD_ERROR_PROD.toString(),

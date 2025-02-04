@@ -9,7 +9,6 @@ const useConfigActions = (dispatch: React.Dispatch<IConfigAction>) => {
   const refreshConfig = useCallback(async () => {
     try {
       const stallionConfig = await getStallionConfigNative();
-      console.log('stallionConfig', stallionConfig);
       dispatch(setConfig(stallionConfig));
     } catch (_) {}
   }, [dispatch]);

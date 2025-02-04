@@ -133,7 +133,7 @@ class StallionSyncHandler {
       Stallion.sendEventToRn(
         eventName: StallionConstants.NativeEventTypesProd.ROLLED_BACK_PROD,
         eventBody: rollbackPayload,
-        shouldCache: false
+        shouldCache: true
       )
     }
 
@@ -189,7 +189,7 @@ class StallionSyncHandler {
     // MARK: - Event Emission
 
     private static func emitSyncError(_ error: Error) {
-      let syncErrorPayload: NSDictionary = ["error": error.localizedDescription]
+      let syncErrorPayload: NSDictionary = ["meta": error.localizedDescription]
       Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.SYNC_ERROR_PROD,
                              eventBody: syncErrorPayload,
                              shouldCache: true
@@ -199,7 +199,7 @@ class StallionSyncHandler {
     private static func emitDownloadError(releaseHash: String, error: String) {
         let errorPayload: NSDictionary = [
             "releaseHash": releaseHash,
-            "error": error
+            "meta": error
         ]
       Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_ERROR_PROD,
                              eventBody: errorPayload,

@@ -61,7 +61,6 @@ export const useStallionEvents = (
           projectId: configState.projectId,
           eventData: stallionEvents,
         }).then((res) => {
-          console.log(res, 'syncStallionEvents response');
           if (res?.success) {
             try {
               const eventIds = stallionEvents.map((event) => event.eventId);
@@ -79,7 +78,6 @@ export const useStallionEvents = (
     popEventsNative().then((eventsString: string) => {
       try {
         const eventsArr: IStallionNativeEventData[] = JSON.parse(eventsString);
-        console.log(eventsArr, 'popEventsNative');
         if (eventsArr?.length) {
           syncStallionEvents(eventsArr);
           requestAnimationFrame(refreshMeta);
@@ -98,7 +96,6 @@ export const useStallionEvents = (
     eventEmitter.addListener(
       STALLION_NATIVE_EVENT,
       (nativeEventString: string) => {
-        console.log(nativeEventString, 'processStallionEvent');
         const eventData = processStallionEvent(nativeEventString);
         if (!eventData) return;
 

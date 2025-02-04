@@ -76,7 +76,7 @@ public class StallionSlotManager {
     try {
       JSONObject eventPayload = new JSONObject();
       eventPayload.put("releaseHash", rolledBackReleaseHash);
-      eventPayload.put("error", errorString);
+      eventPayload.put("meta", errorString);
 
       String eventName = isAutoRollback
         ? NativeProdEventTypes.AUTO_ROLLED_BACK_PROD.toString()

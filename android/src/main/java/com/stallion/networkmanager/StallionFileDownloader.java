@@ -23,7 +23,7 @@ import com.stallion.utils.StallionFileManager;
 public class StallionFileDownloader {
 
   private static final String TAG = "StallionFileDownloader";
-  private static final ExecutorService executor = Executors.newFixedThreadPool(2);
+  private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
   public static void downloadBundle(
     String downloadUrl,

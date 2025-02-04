@@ -42,7 +42,7 @@ void handleException(NSException *exception) {
 
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_prod_event
           eventPayload:@{
-              @"error": readableError,
+              @"meta": readableError,
               StallionObjConstants.release_hash_key: currentHash,
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];
@@ -55,7 +55,7 @@ void handleException(NSException *exception) {
     
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_stage_event
           eventPayload:@{
-              @"error": readableError,
+              @"meta": readableError,
               StallionObjConstants.release_hash_key: meta.stageNewHash,
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];

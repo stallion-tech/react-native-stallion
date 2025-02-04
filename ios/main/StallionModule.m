@@ -143,7 +143,7 @@
 + (void)sendCorruptionEvent:(NSString *)releaseHash folderPath:(NSString *)folderPath {
     NSDictionary *eventPayload = @{
         [StallionObjConstants release_hash_key]: releaseHash,
-        @"folderPath": folderPath
+        @"meta": folderPath
     };
     [[StallionEventHandler sharedInstance] cacheEvent:@"CORRUPTED_FILE_ERROR" eventPayload:eventPayload];
 }

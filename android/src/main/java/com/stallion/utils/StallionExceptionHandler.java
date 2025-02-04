@@ -48,7 +48,7 @@ public class StallionExceptionHandler {
   private static void emitException(String stackTraceString, String releaseHash, boolean isAutoRollback, boolean isProd) {
     JSONObject syncErrorPayload = new JSONObject();
     try {
-      syncErrorPayload.put("error", stackTraceString);
+      syncErrorPayload.put("meta", stackTraceString);
       syncErrorPayload.put("releaseHash", releaseHash);
       syncErrorPayload.put("isAutoRollback", Boolean.toString(isAutoRollback));
     } catch (Exception ignored) { }

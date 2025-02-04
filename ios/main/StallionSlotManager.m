@@ -90,7 +90,7 @@
 + (void)emitRollbackEvent:(BOOL)isAutoRollback rolledBackReleaseHash:(NSString *)rolledBackReleaseHash errorString:(NSString *)errorString {
     NSMutableDictionary *eventPayload = [NSMutableDictionary dictionary];
     eventPayload[@"releaseHash"] = rolledBackReleaseHash;
-    eventPayload[@"error"] = errorString;
+    eventPayload[@"meta"] = errorString;
 
   NSString *eventName = isAutoRollback ? StallionObjConstants.auto_rolled_back_prod_event : StallionObjConstants.rolled_back_prod_event;
 

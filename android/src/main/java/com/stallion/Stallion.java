@@ -135,7 +135,7 @@ public class Stallion {
     try {
       JSONObject eventPayload = new JSONObject();
       eventPayload.put("releaseHash", releaseHash);
-      eventPayload.put("folderPath", folderPath);
+      eventPayload.put("meta", folderPath);
 
       StallionEventManager.getInstance().sendEvent(
         StallionEventConstants.NativeProdEventTypes.CORRUPTED_FILE_ERROR.toString(),

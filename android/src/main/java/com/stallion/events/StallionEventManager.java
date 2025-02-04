@@ -74,6 +74,10 @@ public class StallionEventManager {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
 
+      // change type for sending to server
+      eventPayload.remove("type");
+      eventPayload.put("eventType", eventName);
+
       // Add unique ID and timestamp to the event payload
       eventPayload.put("eventId", uniqueId);
       eventPayload.put("eventTimestamp", System.currentTimeMillis());
