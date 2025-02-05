@@ -1,3 +1,10 @@
+# [2.0.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2025-02-05)
+
+
+### Features
+
+* stallion refactor ([4a47f10](https://github.com/stallion-tech/react-native-stallion/commit/4a47f10702f2b12357dd5ce39e67681c4721e0df))
+
 # [2.0.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0-alpha.1) (2024-11-02)
 
 
