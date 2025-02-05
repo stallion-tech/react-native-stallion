@@ -266,7 +266,7 @@ PODS:
   - React-jsinspector (0.71.10)
   - React-logger (0.71.10):
     - glog
-  - react-native-stallion (1.0.0):
+  - react-native-stallion (2.0.0):
     - React-Core
     - ZIPFoundation
   - React-perflogger (0.71.10)
@@ -474,7 +474,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  boost: 7dcd2de282d72e344012f7d6564d024930a6a440
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: ddb55c55295ea51ed98aa7e2e08add2f826309d5
   FBReactNativeSpec: 90fc1a90b4b7a171e0a7c20ea426c1bf6ce4399c
@@ -496,7 +496,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 4bb480a183a354e4dbfb1012936b1a2bb9357de7
   React-jsinspector: cdc854f8b13abd202afa54bc12578e5afb9cfae1
   React-logger: ef2269b3afa6ba868da90496c3e17a4ec4f4cee0
-  react-native-stallion: 1f9462b1c1b6653ec0936487bab2f68819c311af
+  react-native-stallion: 84fae0abf4ae9bb8316f5cf8905e95b274d9f8b1
   React-perflogger: 217095464d5c4bb70df0742fa86bf2a363693468
   React-RCTActionSheet: 8deae9b85a4cbc6a2243618ea62a374880a2c614
   React-RCTAnimation: 59c62353a8b59ce206044786c5d30e4754bffa64
@@ -515,4 +515,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9a9aa0a040c90af3265f1a609cda6629a7db8694
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

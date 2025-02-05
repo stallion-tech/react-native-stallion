@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import Login from '../login';
@@ -10,76 +10,71 @@ import { COLORS } from '../../../constants/colors';
 import Listing from '../listing';
 import useStallionModal from './hooks/useStallionModal';
 import OverlayLoader from '../../../components/common/OverlayLoader';
-import ProfileOverlay from '../../common/ProfileOverlay';
 import { SWITCH_STATES } from '../../../../types/meta.types';
 import Prod from '../prod';
+import { GlobalContext } from '../../../state';
 
 const StallionModal: React.FC = () => {
   const {
-    userState,
     isModalVisible,
+    actions: { setIsModalVisible },
+  } = useContext(GlobalContext);
+  return (
+    <Modal
+      transparent={true}
+      animationType="slide"
+      visible={isModalVisible}
+      onRequestClose={() => setIsModalVisible(false)}
+    >
+      {isModalVisible ? <Content /> : null}
+    </Modal>
+  );
+};
+
+const Content: React.FC = () => {
+  const {
     onBackPress,
     onClosePress,
     loginRequired,
     isBackEnabled,
     isDownloading,
     downloadProgress,
-    showProfileSection,
     metaState,
-    closeProfileSection,
-    presentProfileSection,
-    performLogout,
     downloadError,
     handleSwitch,
-    isRestartRequired,
   } = useStallionModal();
   return (
-    <Modal
-      transparent={true}
-      animationType="slide"
-      visible={isModalVisible}
-      onRequestClose={onClosePress}
-    >
-      {isModalVisible ? (
-        <SafeAreaView style={styles.container}>
-          <Header
-            userName={showProfileSection ? null : userState.data?.fullName}
-            title={loginRequired ? null : HEADER_TITLE}
-            onClosePress={onClosePress}
-            onBackPress={isBackEnabled ? onBackPress : null}
-            onProfilePress={presentProfileSection}
-          />
-          <View style={styles.listingSection}>
-            {loginRequired ? (
-              <Login />
-            ) : metaState.switchState === SWITCH_STATES.STAGE ? (
-              <Listing />
-            ) : (
-              <Prod />
-            )}
-            {isDownloading ? (
-              <OverlayLoader currentDownloadFraction={downloadProgress} />
-            ) : null}
-            {showProfileSection ? (
-              <ProfileOverlay
-                fullName={userState.data?.fullName}
-                email={userState.data?.email}
-                onBackPress={closeProfileSection}
-                onLogoutPress={performLogout}
-              />
-            ) : null}
-          </View>
-          {loginRequired || showProfileSection ? null : (
-            <Footer
-              switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
-              onSwitchToggle={handleSwitch}
-              errorMessage={downloadError}
-              isRestartRequired={isRestartRequired}
-            />
-          )}
-        </SafeAreaView>
-      ) : null}
-    </Modal>
+    <SafeAreaView style={styles.container}>
+      <Header
+        title={loginRequired ? null : HEADER_TITLE}
+        onClosePress={onClosePress}
+        onBackPress={isBackEnabled ? onBackPress : null}
+      />
+      <View style={styles.listingSection}>
+        {loginRequired ? (
+          <Login />
+        ) : metaState.switchState === SWITCH_STATES.STAGE ? (
+          <Listing />
+        ) : (
+          <Prod />
+        )}
+        {isDownloading ? (
+          <OverlayLoader currentDownloadFraction={downloadProgress} />
+        ) : null}
+      </View>
+      {loginRequired ? null : (
+        <Footer
+          switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
+          onSwitchToggle={handleSwitch}
+          errorMessage={downloadError}
+          isRestartRequired={
+            metaState?.prodSlot?.tempHash || metaState?.stageSlot?.tempHash
+              ? true
+              : false
+          }
+        />
+      )}
+    </SafeAreaView>
   );
 };
 

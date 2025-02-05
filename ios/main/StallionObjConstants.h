@@ -30,6 +30,7 @@
 @property (class, nonatomic, readonly) NSString *rolled_back_prod_event;
 @property (class, nonatomic, readonly) NSString *installed_prod_event;
 @property (class, nonatomic, readonly) NSString *exception_prod_event;
+@property (class, nonatomic, readonly) NSString *exception_stage_event;
 @property (class, nonatomic, readonly) NSString *stabilized_prod_event;
 
 @property (class, nonatomic, readonly) NSString *release_hash_key;

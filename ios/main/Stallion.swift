@@ -1,109 +1,150 @@
 import Foundation
 
+import Foundation
+import React
+
 @objc(Stallion)
 class Stallion: RCTEventEmitter {
-    public static var shared: RCTEventEmitter?
-    
+  
+  static weak var sharedInstance: Stallion?
+  private var stallionStateManager: StallionStateManager;
+
     override init() {
-        super.init()
-        Stallion.shared = self
-        StallionSyncManager.sync()
-        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+      StallionStateManager.initializeInstance()
+      self.stallionStateManager = StallionStateManager.sharedInstance()
+      
+      super.init()
+      Stallion.sharedInstance = self
+      StallionSyncHandler.sync()
+      NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
   
     override func supportedEvents() -> [String]! {
       return [StallionConstants.STALLION_NATIVE_EVENT_NAME]
     }
-  
+
     @objc func appDidBecomeActive() {
-      StallionSyncManager.sync()
+        StallionSyncHandler.sync()
     }
-    
-  @objc(downloadPackage:withResolver:withRejecter:)
-    func downloadPackage(bundleInfo: NSDictionary, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
-        let receivedDownloadUrl = (bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.DownloadUrl) as? String) ?? ""
-        let receivedReleaseHash = (bundleInfo.value(forKey: StallionConstants.DownloadReqBodyKeys.Hash) as? String) ?? ""
-        let stageDownloadEventBody = ["releaseHash": receivedReleaseHash]
-      
-        guard let fromUrl = URL(string: receivedDownloadUrl) else { return }
-        
+
+    @objc func onLaunch(_ launchData: String) {
+        stallionStateManager.isMounted = true
+        checkPendingDownloads()
+    }
+
+    private func checkPendingDownloads() {
+        guard let pendingReleaseUrl = stallionStateManager.pendingReleaseUrl,
+              let pendingReleaseHash = stallionStateManager.pendingReleaseHash,
+              !pendingReleaseUrl.isEmpty,
+              !pendingReleaseHash.isEmpty else { return }
+
+        StallionSyncHandler.downloadNewRelease(newReleaseHash: pendingReleaseHash, newReleaseUrl: pendingReleaseUrl)
+        stallionStateManager.pendingReleaseUrl = ""
+        stallionStateManager.pendingReleaseHash = ""
+    }
+
+  @objc func getStallionConfig(_ promise: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+      do {
+          if let config = stallionStateManager.stallionConfig {
+            let configJsonData = try JSONSerialization.data(withJSONObject: config.toDictionary(), options: [])
+              if let configJsonString = String(data: configJsonData, encoding: .utf8) {
+                  promise(configJsonString)
+              } else {
+                  throw NSError(domain: "StallionConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Unable to encode JSON to string."])
+              }
+          } else {
+              throw NSError(domain: "StallionConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "StallionConfig is nil."])
+          }
+      } catch {
+          rejecter("getStallionConfig error", error.localizedDescription, error)
+      }
+  }
+
+  @objc func getStallionMeta(_ promise: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+      do {
+          if let meta = stallionStateManager.stallionMeta {
+            let metaJsonData = try JSONSerialization.data(withJSONObject: meta.toDictionary(), options: [])
+              if let metaJsonString = String(data: metaJsonData, encoding: .utf8) {
+                  promise(metaJsonString)
+              } else {
+                  throw NSError(domain: "StallionMetaError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Unable to encode JSON to string."])
+              }
+          } else {
+              throw NSError(domain: "StallionMetaError", code: 500, userInfo: [NSLocalizedDescriptionKey: "StallionMeta is nil."])
+          }
+      } catch {
+          rejecter("getStallionMeta error", error.localizedDescription, error)
+      }
+  }
+
+    @objc func toggleStallionSwitch(_ switchState: String, resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
         do {
-            try StallionDownloader().load(
-                url: fromUrl,
-                downloadPaths: [StallionConstants.STAGE_DIRECTORY, StallionConstants.TEMP_FOLDER_SLOT],
-                onProgress: {progress in
-                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE, data: ["releaseHash": receivedReleaseHash, "progress": progress]
-                  )
-                },
-                resolve: {resOp in
-                  StallionUtil.setLs(key: StallionConstants.CURRENT_STAGE_SLOT_KEY, value: "/" + StallionConstants.TEMP_FOLDER_SLOT)
-                  StallionUtil.setLs(key: "/" + StallionConstants.STAGE_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT, value: receivedReleaseHash)
-                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE, data: stageDownloadEventBody
-                  )
-                  resolve(resOp)
-                },
-                reject: {code, message, error in
-                  StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE, data: stageDownloadEventBody
-                  )
-                  reject(code, message, error)
-                }
-            )
+          stallionStateManager.stallionMeta.switchState = StallionMetaConstants.switchState(from: switchState)
+            stallionStateManager.syncStallionMeta()
+            resolver("Success")
         } catch {
-            let errorString = StallionConstants.DownloadPromiseResponses.GenericError
-            StallionEventEmitter.sendEvent(eventType: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE, data: stageDownloadEventBody
-            )
-            reject("500", errorString, NSError(domain: errorString, code: 500))
+            rejecter("toggleStallionSwitch error", error.localizedDescription, error)
+        }
+    }
+
+    @objc func updateSdkToken(_ newSdkToken: String, resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+        do {
+            stallionStateManager.stallionConfig.updateSdkToken(newSdkToken)
+            resolver("updateSdkToken success")
+        } catch {
+            rejecter("updateSdkToken error", error.localizedDescription, error)
+        }
+    }
+
+    @objc func sync() {
+        StallionSyncHandler.sync()
+    }
+
+    @objc func downloadStageBundle(_ bundleInfo: NSDictionary, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+      StallionStageManager.downloadStageBundle(bundleInfo: bundleInfo, promise: resolver, rejecter: rejecter)
+    }
+
+    @objc func popEvents(_ promise: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+        do {
+            let events = StallionEventHandler.sharedInstance().popEvents()
+            promise(events)
+        } catch {
+            rejecter("popEvents error", error.localizedDescription, error)
+        }
+    }
+
+    @objc func acknowledgeEvents(_ eventIdsJson: String, resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+        do {
+            guard let data = eventIdsJson.data(using: .utf8),
+                  let eventIds = try JSONSerialization.jsonObject(with: data, options: []) as? [String] else {
+                throw NSError(domain: "InvalidJSONFormat", code: 400, userInfo: nil)
+            }
+
+            StallionEventHandler.sharedInstance().acknowledgeEvents(eventIds)
+            resolver("Events acknowledged successfully.")
+        } catch {
+            rejecter("ACKNOWLEDGE_EVENTS_ERROR", error.localizedDescription, error)
         }
     }
   
-    @objc
-    func getStorage(_ storageKey: String, callback: RCTResponseSenderBlock) {
-        let value = StallionUtil.getLs(key: storageKey)
-        callback([value])
+  /// ✅ Expose a function to send events externally
+  @objc static func sendEventToRn(eventName: String, eventBody: NSDictionary, shouldCache: Bool) {
+    if(shouldCache) {
+      StallionEventHandler.sharedInstance().cacheEvent(eventName, eventPayload: eventBody as! [AnyHashable : Any])
     }
-    
-    @objc
-    func setStorage(_ storageKey: String, value: String) {
-      StallionUtil.setLs(key: storageKey, value: value)
-    }
-    
-    @objc
-    func onLaunch(_ launchData: String) {
-      StallionObjUtil.isMounted = true
-      emitPendingEvents()
-    }
-  
-    @objc
-    func sync() {
-      StallionSyncManager.sync()
-    }
-  
-    @objc
-    func getUniqueId(_ callback: RCTResponseSenderBlock) {
-      callback([StallionSyncManager.getUniqueId()])
-    }
-  
-    @objc
-    func getProjectId(_ callback: RCTResponseSenderBlock) {
-      let projectId = Bundle.main.infoDictionary?[StallionConstants.STALLION_PROJECT_ID_IDENTIFIER] as? String ?? ""
-      callback([projectId])
-    }
-    
-    @objc
-    func getAppToken(_ callback: RCTResponseSenderBlock) {
-      let appToken = Bundle.main.infoDictionary?[StallionConstants.STALLION_APP_TOKEN_IDENTIFIER] as? String ?? ""
-      callback([appToken])
-    }
-  
-    func emitPendingEvents() {
-      let flushedEvents = StallionEventManager.sharedInstance().flushAllEvents() as NSArray
-      for event in flushedEvents {
-          if var eventDict = event as? [String: Any] {
-            var payload = eventDict["payload"] as? Dictionary<String, Any> ?? [:]
-            payload[StallionConstants.APP_VERION_EVENT_KEY] = StallionSyncManager.getAppVersion()
-            eventDict["payload"] = payload
-            Stallion.shared?.sendEvent(withName: StallionConstants.STALLION_NATIVE_EVENT_NAME, body: eventDict)
+    if let mutableDict = eventBody.mutableCopy() as? NSMutableDictionary {
+        mutableDict["type"] = eventName
+      do {
+        let eventJson = try JSONSerialization.data(withJSONObject: mutableDict, options: [])
+          if let eventString = String(data: eventJson, encoding: .utf8) {
+            DispatchQueue.main.async {
+              Stallion.sharedInstance?.sendEvent(withName: StallionConstants.STALLION_NATIVE_EVENT_NAME, body: eventString)
+            }
+          } else {
+              throw NSError(domain: "StallionConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Unable to encode JSON to string."])
           }
-      }
+      } catch {};
+    }
     }
 }
+

@@ -18,6 +18,10 @@ import { IGlobalContext } from '../../types/globalProvider.types';
 import { IDownloadState } from '../../types/download.types';
 import useDownloadActions from './actionCreators/useDownloadActions';
 import updateMetaReducer from './reducers/updateMetaReducer';
+import configReducer from './reducers/configReducer';
+import { IStallionConfigJson } from '../../types/config.types';
+import useConfigActions from './actionCreators/useConfigActions';
+import { useStallionEvents } from './useStallionEvents';
 
 export const GlobalContext = createContext({} as IGlobalContext);
 
@@ -26,6 +30,10 @@ const GlobalProvider: React.FC = ({ children }) => {
   const [metaState, metaDispatch] = useReducer(
     metaReducer,
     {} as IStallionMeta
+  );
+  const [configState, configDispatch] = useReducer(
+    configReducer,
+    {} as IStallionConfigJson
   );
   const [userState, userDispatch] = useReducer(userReducer, EMPTY_STATE);
   const [bucketState, bucketDispatch] = useReducer(bucketReducer, EMPTY_STATE);
@@ -37,31 +45,41 @@ const GlobalProvider: React.FC = ({ children }) => {
   const [updateMetaState, updateMetaDispatch] = useReducer(updateMetaReducer, {
     currentlyRunningBundle: null,
     newBundle: null,
-    slotHasChanged: false,
+    initialProdSlot: null,
   });
 
-  useUpdateMetaActions(updateMetaState, metaState, updateMetaDispatch);
+  useUpdateMetaActions(
+    updateMetaState,
+    metaState,
+    updateMetaDispatch,
+    configState
+  );
 
   const { refreshMeta } = useMetaActions(metaDispatch);
-  const {
-    loginUser,
-    verifyOtp,
-    retryLogin,
-    setUserRequiresLogin,
-    getUserProfile,
-  } = useUserActions(userDispatch, userState);
+  const { refreshConfig } = useConfigActions(configDispatch);
+
+  const { loginUser, clearUserLogin } = useUserActions(
+    userDispatch,
+    refreshConfig,
+    configState
+  );
   const { fetchBuckets } = useBucketActions(
     bucketDispatch,
-    setUserRequiresLogin
+    clearUserLogin,
+    configState
   );
   const { fetchBundles, selectBucket } = useBundleActions(
     bundleDispatch,
     bundleState,
-    setUserRequiresLogin
+    clearUserLogin,
+    configState
   );
   const { downloadBundle, setProgress, setDownloadErrorMessage } =
-    useDownloadActions(downloadDispatch, refreshMeta);
-  const value = {
+    useDownloadActions(downloadDispatch, refreshMeta, configState);
+
+  useStallionEvents(refreshMeta, setProgress, configState);
+
+  const value: IGlobalContext = {
     isModalVisible,
     metaState,
     userState,
@@ -69,20 +87,19 @@ const GlobalProvider: React.FC = ({ children }) => {
     bundleState,
     downloadState,
     updateMetaState,
+    configState,
     actions: {
       loginUser,
       setIsModalVisible,
-      verifyOtp,
-      retryLogin,
       fetchBuckets,
-      setUserRequiresLogin,
+      clearUserLogin,
       refreshMeta,
       fetchBundles,
       selectBucket,
       downloadBundle,
-      getUserProfile,
       setProgress,
       setDownloadErrorMessage,
+      refreshConfig,
     },
   };
 

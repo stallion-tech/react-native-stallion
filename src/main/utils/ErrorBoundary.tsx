@@ -6,6 +6,7 @@ import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
 import { getStallionMetaNative } from './StallionNativeUtils';
 import {
+  HEADER_TITLE,
   STALLION_EB_BTN_TXT,
   STALLION_EB_INFO,
   STD_MARGIN,
@@ -57,7 +58,7 @@ class ErrorBoundary extends Component<
     if (this.state.errorText) {
       return (
         <SafeAreaView style={styles.ebContainer}>
-          <Header />
+          <Header title={HEADER_TITLE} />
           <View style={styles.ebContentContainer}>
             <View style={styles.ebInfoTextContainer}>
               <Text style={styles.ebInfoText}>{STALLION_EB_INFO}</Text>

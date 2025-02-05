@@ -89,6 +89,10 @@
     return @"EXCEPTION_PROD";
 }
 
++ (NSString *)exception_stage_event {
+    return @"EXCEPTION_STAGE";
+}
+
 + (NSString *)stabilized_prod_event {
     return @"STABILIZED_PROD";
 }

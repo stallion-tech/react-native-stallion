@@ -16,7 +16,7 @@ import { stallionEventEmitter } from './main/utils/StallionEventEmitter';
 export let withStallion: IWithStallion;
 export let useStallionModal: () => IUseStallionModal;
 
-if (StallionNativeModule?.getUniqueId) {
+if (StallionNativeModule?.getStallionConfig) {
   withStallion = withStallionMain;
   useStallionModal = useStallionModalMain;
 } else {

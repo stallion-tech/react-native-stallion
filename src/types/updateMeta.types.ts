@@ -1,3 +1,5 @@
+import { SLOT_STATES } from './meta.types';
+
 export interface IUpdateMeta {
   version: number;
   author: string;
@@ -12,12 +14,13 @@ export interface IUpdateMeta {
   updatedAt: string;
   __v: number;
   id: string;
+  isMandatory: boolean;
 }
 
 export enum UpdateMetaActionKind {
   SET_CURRENTLY_RUNNING_META = 'SET_CURRENTLY_RUNNING_META',
   SET_NEW_BUNDLE_META = 'SET_NEW_BUNDLE_META',
-  SET_SLOT_CHANGED = 'SET_SLOT_CHANGED',
+  SET_INIT_PROD_SLOT = 'SET_INIT_PROD_SLOT',
 }
 
 interface ISetRunningUpdateMeta {
@@ -30,12 +33,12 @@ interface ISetNewUpdateMeta {
   payload: IUpdateMeta | null;
 }
 
-export interface ISetSlotChanged {
-  type: UpdateMetaActionKind.SET_SLOT_CHANGED;
-  payload: boolean | null;
+export interface ISetInitProdSlot {
+  type: UpdateMetaActionKind.SET_INIT_PROD_SLOT;
+  payload: SLOT_STATES;
 }
 
 export type IUpdateMetaAction =
   | ISetRunningUpdateMeta
   | ISetNewUpdateMeta
-  | ISetSlotChanged;
+  | ISetInitProdSlot;

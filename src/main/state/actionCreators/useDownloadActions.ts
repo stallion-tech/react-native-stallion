@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 
-import SharedDataManager from '../../utils/SharedDataManager';
 import { downloadBundleNative } from '../../utils/StallionNativeUtils';
 import {
   setDownloadData,
@@ -9,16 +8,17 @@ import {
 } from '../actions/downloadActions';
 
 import { IDownloadAction } from '../../../types/download.types';
+import { IStallionConfigJson } from '../../../types/config.types';
 
 const useDownloadActions = (
   dispatch: React.Dispatch<IDownloadAction>,
-  refreshStallionMeta: () => void
+  refreshStallionMeta: () => void,
+  configState: IStallionConfigJson
 ) => {
-  const dataManager = SharedDataManager.getInstance();
   const downloadBundle = useCallback(
     (apiDownloadUrl: string, hash: string) => {
       dispatch(setDownloadLoading());
-      const projectId = dataManager?.getProjectId() || '';
+      const projectId = configState.projectId;
       const url = `${apiDownloadUrl}?projectId=${projectId}`;
       requestAnimationFrame(() => {
         downloadBundleNative({
@@ -38,7 +38,7 @@ const useDownloadActions = (
           });
       });
     },
-    [dispatch, dataManager, refreshStallionMeta]
+    [dispatch, refreshStallionMeta, configState]
   );
 
   const setProgress = useCallback(

@@ -1,22 +1,19 @@
-import { NATIVE_CONSTANTS } from '../main/constants/appConstants';
-
 export enum SWITCH_STATES {
   PROD = 'PROD',
   STAGE = 'STAGE',
 }
 
 export enum SLOT_STATES {
-  STABLE = NATIVE_CONSTANTS.STABLE_FOLDER_SLOT,
-  NEW = NATIVE_CONSTANTS.NEW_FOLDER_SLOT,
-  DEFAULT = NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT,
-  TEMP = NATIVE_CONSTANTS.TEMP_FOLDER_SLOT,
+  STABLE = 'STABLE_SLOT',
+  NEW = 'NEW_SLOT',
+  DEFAULT = 'DEFAULT_SLOT',
 }
 
 export interface IStallionSlotData {
   currentSlot: SLOT_STATES;
-  stable?: string;
-  new?: string;
-  temp?: string;
+  stableHash?: string;
+  newHash?: string;
+  tempHash?: string;
 }
 
 export interface IStallionMeta {

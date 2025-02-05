@@ -1,9 +1,6 @@
-type EventListener = (data?: IStallionEventData) => void;
+import { IStallionNativeEventData } from '../state/useStallionEvents';
 
-export interface IStallionEventData {
-  type: string;
-  payload: any;
-}
+type EventListener = (data?: IStallionNativeEventData) => void;
 
 class EventEmitter {
   private events: EventListener[] = [];
@@ -21,7 +18,7 @@ class EventEmitter {
   }
 
   // Method to emit an event
-  emit(data?: IStallionEventData): void {
+  emit(data?: IStallionNativeEventData): void {
     this.events.forEach((listener) => listener(data));
   }
 }

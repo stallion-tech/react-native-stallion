@@ -72,7 +72,9 @@ const styles = StyleSheet.create({
   },
   releaseNoteDescriptionText: {
     fontSize: 14,
+    width: '70%',
     color: COLORS.black,
+    marginLeft: STD_MARGIN / 2,
   },
   descContainer: {
     flexDirection: 'row',

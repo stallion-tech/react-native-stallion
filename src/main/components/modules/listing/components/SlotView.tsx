@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { COLORS } from '../../../../constants/colors';
-import { IStallionSlotData } from '../../../../../types/meta.types';
+import {
+  IStallionSlotData,
+  SLOT_STATES,
+} from '../../../../../types/meta.types';
 import {
   NATIVE_CONSTANTS,
   STD_MARGIN,
@@ -20,7 +23,7 @@ const StallionSlot: React.FC<IStallionSlot> = ({ title, hash, isActive }) => {
         styles.centerContainer,
         styles.slotItem,
         {
-          backgroundColor: isActive ? COLORS.green : '',
+          backgroundColor: isActive ? COLORS.green : undefined,
         },
       ]}
     >
@@ -52,35 +55,35 @@ const StallionSlot: React.FC<IStallionSlot> = ({ title, hash, isActive }) => {
 };
 
 const SlotView: React.FC<IStallionSlotData> = (props) => {
-  const { currentSlot, temp, stable } = props;
+  const { currentSlot, tempHash, stableHash, newHash } = props;
   const activeSlot = currentSlot as unknown as string;
   return (
     <View style={[styles.centerContainer, styles.colContainer]}>
-      {temp ? (
+      {tempHash ? (
         <StallionSlot
           title={NATIVE_CONSTANTS.TEMP_FOLDER_SLOT}
-          hash={temp}
-          isActive={activeSlot === NATIVE_CONSTANTS.TEMP_FOLDER_SLOT}
+          hash={tempHash}
+          isActive={false}
         />
       ) : null}
-      {props.new ? (
+      {newHash ? (
         <StallionSlot
           title={NATIVE_CONSTANTS.NEW_FOLDER_SLOT}
-          hash={props.new}
-          isActive={activeSlot === NATIVE_CONSTANTS.NEW_FOLDER_SLOT}
+          hash={newHash}
+          isActive={activeSlot === SLOT_STATES.NEW}
         />
       ) : null}
-      {stable ? (
+      {stableHash ? (
         <StallionSlot
           title={NATIVE_CONSTANTS.STABLE_FOLDER_SLOT}
-          hash={stable}
-          isActive={activeSlot === NATIVE_CONSTANTS.STABLE_FOLDER_SLOT}
+          hash={stableHash}
+          isActive={activeSlot === SLOT_STATES.STABLE}
         />
       ) : null}
       <StallionSlot
         title={NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT}
         hash={''}
-        isActive={activeSlot === NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT}
+        isActive={activeSlot === SLOT_STATES.DEFAULT}
       />
     </View>
   );

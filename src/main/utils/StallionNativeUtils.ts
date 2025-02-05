@@ -2,105 +2,61 @@ import StallionNativeModule from '../../StallionNativeModule';
 
 import {
   TDownloadBundleNative,
-  TSetApiKeyNative,
+  TSetSdkTokenNative,
+  TGetStallionMetaNative,
   TToggleStallionSwitchNative,
   TOnLaunchBundleNative,
+  TGetStallionConfigNative,
 } from 'src/types/utils.types';
-import { NATIVE_CONSTANTS } from '../constants/appConstants';
-import {
-  IStallionMeta,
-  SLOT_STATES,
-  SWITCH_STATES,
-} from '../../types/meta.types';
 
-export const setApiKeyNative: TSetApiKeyNative = (apiKey: String) => {
-  StallionNativeModule?.setStorage(NATIVE_CONSTANTS.SDK_TOKEN, apiKey);
-};
+export const setSdkTokenNative: TSetSdkTokenNative =
+  StallionNativeModule?.updateSdkToken;
 
-export const getApiKeyNative = async (): Promise<string> => {
-  return await getStorageNative(NATIVE_CONSTANTS.SDK_TOKEN);
-};
-
-export const getStorageNative = (key: string): Promise<string> => {
-  return new Promise((res) => {
-    StallionNativeModule?.getStorage(key, (value: string) => {
-      res(value);
-    });
+export const getStallionMetaNative: TGetStallionMetaNative = () => {
+  return new Promise((resolve, reject) => {
+    StallionNativeModule?.getStallionMeta()
+      .then((metaString: string) => {
+        try {
+          resolve(JSON.parse(metaString));
+        } catch (_) {
+          reject('invalid meta string');
+        }
+      })
+      .catch(() => {
+        reject('failed to fetch meta string');
+      });
   });
 };
 
-export const getStallionMetaNative = async (): Promise<IStallionMeta> => {
-  return {
-    switchState: (await getStorageNative(
-      NATIVE_CONSTANTS.SWITCH_STATE_INDENTIFIER
-    )) as SWITCH_STATES,
-    stageSlot: {
-      currentSlot: (await getStorageNative(
-        NATIVE_CONSTANTS.CURRENT_STAGE_SLOT_KEY
-      )) as unknown as SLOT_STATES,
-      new: await getStorageNative(
-        NATIVE_CONSTANTS.STAGE_DIRECTORY + NATIVE_CONSTANTS.NEW_FOLDER_SLOT
-      ),
-      temp: await getStorageNative(
-        NATIVE_CONSTANTS.STAGE_DIRECTORY + NATIVE_CONSTANTS.TEMP_FOLDER_SLOT
-      ),
-    },
-    prodSlot: {
-      currentSlot: (await getStorageNative(
-        NATIVE_CONSTANTS.CURRENT_PROD_SLOT_KEY
-      )) as unknown as SLOT_STATES,
-      new: await getStorageNative(
-        NATIVE_CONSTANTS.PROD_DIRECTORY + NATIVE_CONSTANTS.NEW_FOLDER_SLOT
-      ),
-      stable: await getStorageNative(
-        NATIVE_CONSTANTS.PROD_DIRECTORY + NATIVE_CONSTANTS.STABLE_FOLDER_SLOT
-      ),
-      temp: await getStorageNative(
-        NATIVE_CONSTANTS.PROD_DIRECTORY + NATIVE_CONSTANTS.TEMP_FOLDER_SLOT
-      ),
-    },
-  };
+export const getStallionConfigNative: TGetStallionConfigNative = () => {
+  return new Promise((resolve, reject) => {
+    StallionNativeModule?.getStallionConfig()
+      .then((configString: string) => {
+        try {
+          resolve(JSON.parse(configString));
+        } catch (_) {
+          reject('invalid config string');
+        }
+      })
+      .catch(() => {
+        reject('failed to fetch config string');
+      });
+  });
 };
 
-export const toggleStallionSwitchNative: TToggleStallionSwitchNative = (
-  newSwitchState
-) => {
-  StallionNativeModule?.setStorage(
-    NATIVE_CONSTANTS.SWITCH_STATE_INDENTIFIER,
-    newSwitchState
-  );
-};
+export const toggleStallionSwitchNative: TToggleStallionSwitchNative =
+  StallionNativeModule?.toggleStallionSwitch;
 
 export const downloadBundleNative: TDownloadBundleNative =
-  StallionNativeModule?.downloadPackage;
+  StallionNativeModule?.downloadStageBundle;
 
 export const onLaunchNative: TOnLaunchBundleNative =
   StallionNativeModule?.onLaunch;
 
 export const sync: () => void = StallionNativeModule?.sync;
 
-export const getUidNative = async (): Promise<string> => {
-  return new Promise((resolve) => {
-    StallionNativeModule?.getUniqueId((uid: string) => {
-      resolve(uid);
-    });
-  });
-};
+export const popEventsNative: () => Promise<string> =
+  StallionNativeModule?.popEvents;
 
-export const getProjectIdNative = async (): Promise<string> => {
-  return new Promise((resolve) => {
-    StallionNativeModule?.getProjectId((projectId: string) => {
-      resolve(projectId);
-    });
-  });
-};
-
-export const getAppTokenNative = async (): Promise<string> => {
-  return new Promise((resolve) => {
-    StallionNativeModule?.getAppToken((appToken: string) => {
-      resolve(appToken);
-    });
-  });
-};
-
-export const syncNative = StallionNativeModule?.sync;
+export const acknowledgeEventsNative: (eventIds: string) => Promise<string> =
+  StallionNativeModule?.acknowledgeEvents;
