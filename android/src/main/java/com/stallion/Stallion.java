@@ -8,7 +8,6 @@ import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionStateManager;
 import com.stallion.storage.StallionMeta;
 import com.stallion.storage.StallionMetaConstants;
-import com.stallion.utils.StallionExceptionHandler;
 import com.stallion.utils.StallionFileManager;
 import com.stallion.utils.StallionSlotManager;
 
@@ -26,7 +25,6 @@ public class Stallion {
 
   public static String getJSBundleFile(Context applicationContext, String defaultBundlePath) {
     StallionStateManager.init(applicationContext);
-    StallionExceptionHandler.initErrorBoundary(applicationContext);
     stateManager = StallionStateManager.getInstance();
 
     validateAppVersion(stateManager.getStallionConfig().getAppVersion());

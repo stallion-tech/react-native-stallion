@@ -3,6 +3,8 @@ package com.stallion.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.stallion.utils.StallionExceptionHandler;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,6 +34,7 @@ public class StallionStateManager {
   public static synchronized void init(Context context) {
     if (instance == null) {
       instance = new StallionStateManager(context);
+      StallionExceptionHandler.initErrorBoundary(context);
     }
   }
 

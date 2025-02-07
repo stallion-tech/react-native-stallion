@@ -17,7 +17,6 @@ import com.stallion.storage.StallionConfigConstants;
 
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
-import com.stallion.utils.StallionExceptionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +35,6 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     StallionStateManager.init(reactContext);
     this.stallionStateManager = StallionStateManager.getInstance();
     this.currentReactContext = reactContext;
-    StallionExceptionHandler.initErrorBoundary(reactContext);
     reactContext.addLifecycleEventListener(this);
   }
 
