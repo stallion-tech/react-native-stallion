@@ -1,14 +1,14 @@
 package com.stallion.utils;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
+import java.lang.ref.WeakReference;
 
 import org.json.JSONObject;
 
@@ -17,11 +17,17 @@ public class StallionExceptionHandler {
   private static Thread.UncaughtExceptionHandler _androidUncaughtExceptionHandler;
   private static Thread _exceptionThread;
   private static Throwable _exceptionThrowable;
-  private static Activity _reactActivity;
+  private static WeakReference<Context> _context = new WeakReference<>(null);
+  private static boolean isErrorBoundaryInitialized = false;
 
-  public static void initErrorBoundary(ReactApplicationContext currentContext) {
+  public static void initErrorBoundary(Context currentContext) {
+    if (isErrorBoundaryInitialized) {
+      return; // Prevent multiple initializations
+    }
+    isErrorBoundaryInitialized = true;
+
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-    _reactActivity = currentContext.getCurrentActivity();
+    _context = new WeakReference<>(currentContext);
     Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
       _exceptionThread = thread;
       _exceptionThrowable = throwable;
@@ -84,11 +90,12 @@ public class StallionExceptionHandler {
 
     StallionSlotManager.rollbackStage();
 
-    if (_reactActivity != null) {
-      Intent errorIntent = new Intent(_reactActivity, StallionErrorActivity.class);
+    // Safely retrieve Activity
+    Context context = _context.get();
+    if (context != null) {
+      Intent errorIntent = new Intent(context, StallionErrorActivity.class);
       errorIntent.putExtra("stack_trace_string", stackTraceString);
-      _reactActivity.startActivity(errorIntent);
-      _reactActivity.finish();
+      context.startActivity(errorIntent);
     } else {
       continueExceptionFlow();
     }
