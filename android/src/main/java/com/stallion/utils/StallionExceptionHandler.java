@@ -17,17 +17,15 @@ public class StallionExceptionHandler {
   private static Thread.UncaughtExceptionHandler _androidUncaughtExceptionHandler;
   private static Thread _exceptionThread;
   private static Throwable _exceptionThrowable;
-  private static WeakReference<Context> _context = new WeakReference<>(null);
   private static boolean isErrorBoundaryInitialized = false;
 
-  public static void initErrorBoundary(Context currentContext) {
+  public static void initErrorBoundary() {
     if (isErrorBoundaryInitialized) {
       return; // Prevent multiple initializations
     }
     isErrorBoundaryInitialized = true;
 
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-    _context = new WeakReference<>(currentContext);
     Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
       _exceptionThread = thread;
       _exceptionThrowable = throwable;
@@ -90,15 +88,7 @@ public class StallionExceptionHandler {
 
     StallionSlotManager.rollbackStage();
 
-    // Safely retrieve Activity
-    Context context = _context.get();
-    if (context != null) {
-      Intent errorIntent = new Intent(context, StallionErrorActivity.class);
-      errorIntent.putExtra("stack_trace_string", stackTraceString);
-      context.startActivity(errorIntent);
-    } else {
-      continueExceptionFlow();
-    }
+    continueExceptionFlow();
   }
 
   public static void continueExceptionFlow() {

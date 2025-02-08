@@ -34,7 +34,7 @@ public class StallionStateManager {
   public static synchronized void init(Context context) {
     if (instance == null) {
       instance = new StallionStateManager(context);
-      StallionExceptionHandler.initErrorBoundary(context);
+      StallionExceptionHandler.initErrorBoundary();
     }
   }
 
@@ -91,7 +91,7 @@ public class StallionStateManager {
   public void setString(String key, String value) {
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putString(key, value);
-    editor.apply();
+    editor.commit();
   }
 
   public StallionConfig getStallionConfig() {
