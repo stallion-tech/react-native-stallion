@@ -1,14 +1,11 @@
 package com.stallion.utils;
 
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
-import java.lang.ref.WeakReference;
 
 import org.json.JSONObject;
 
