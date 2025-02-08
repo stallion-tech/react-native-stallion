@@ -1,3 +1,10 @@
+# [2.0.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2025-02-08)
+
+
+### Bug Fixes
+
+* modified exception handler initialisation ([#28](https://github.com/stallion-tech/react-native-stallion/issues/28)) ([7fdea47](https://github.com/stallion-tech/react-native-stallion/commit/7fdea47e8a618c4f57802cc6d016795a6d33d88d))
+
 # [2.0.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2025-02-05)
 
 
