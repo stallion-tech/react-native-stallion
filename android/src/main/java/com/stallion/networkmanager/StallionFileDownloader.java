@@ -128,7 +128,7 @@ public class StallionFileDownloader {
 
       // Ensure totalBytes is valid
       if (totalBytes <= 0) {
-        callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "Invalid content length: " + totalBytes);
+        callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "Invalid content length: ");
         return;
       }
 
@@ -158,7 +158,7 @@ public class StallionFileDownloader {
         return;
       }
     } catch (IOException e) {
-      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "IOException occurred: " + e.getMessage());
+      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "IOException occurred: ");
       throw e;
     } finally {
       if (connection != null) {
@@ -205,8 +205,11 @@ public class StallionFileDownloader {
         callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, StallionApiConstants.CORRUPTED_FILE_ERROR);
       }
     } catch (Exception e) {
-      String filesystemError = e.getMessage();
-      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, StallionApiConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE + filesystemError);
+      String filesystemError = e.getMessage() != null ? e.getMessage() : "Unknown filesystem error";
+      callback.onReject(
+        StallionApiConstants.DOWNLOAD_ERROR_PREFIX,
+        StallionApiConstants.DOWNLOAD_FILESYSTEM_ERROR_MESSAGE + filesystemError
+      );
     } finally {
       StallionFileManager.deleteFileOrFolderSilently(downloadedZip);
     }

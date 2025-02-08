@@ -139,7 +139,8 @@ public class StallionSyncHandler {
   private static void emitSyncError(Exception e) {
     JSONObject syncErrorPayload = new JSONObject();
     try {
-      syncErrorPayload.put("meta", e.toString());
+      String syncErrorString = e.getMessage() != null ? e.getMessage() : "Unknown error";
+      syncErrorPayload.put("meta", syncErrorString);
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       NativeProdEventTypes.SYNC_ERROR_PROD.toString(),
