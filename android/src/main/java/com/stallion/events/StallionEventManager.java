@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StallionEventManager {
   public  static final String STALLION_NATIVE_EVENT_NAME = "STALLION_NATIVE_EVENT";
@@ -20,7 +21,7 @@ public class StallionEventManager {
 
   private static StallionEventManager instance;
   private final StallionStateManager stallionStateManager;
-  private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
+  private final AtomicReference<DeviceEventManagerModule.RCTDeviceEventEmitter> eventEmitterRef = new AtomicReference<>();
 
   // Private constructor for Singleton
   private StallionEventManager(StallionStateManager stateManager) {
@@ -35,7 +36,11 @@ public class StallionEventManager {
   }
 
   public void setEmitter(DeviceEventManagerModule.RCTDeviceEventEmitter deviceEmitter) {
-    eventEmitter = deviceEmitter;
+    eventEmitterRef.set(deviceEmitter);
+  }
+
+  public DeviceEventManagerModule.RCTDeviceEventEmitter getEmitter() {
+    return eventEmitterRef.get();
   }
 
   // Get instance method
@@ -49,9 +54,9 @@ public class StallionEventManager {
   public void sendEventWithoutCaching(String eventName, JSONObject eventPayload) {
     try {
       eventPayload.put("type", eventName);
-
+      DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = eventEmitterRef.get();
       // Emit the event to React Native
-      if (eventEmitter != null) {
+      if (eventEmitter != null && stallionStateManager.getIsMounted()) {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
 
@@ -69,8 +74,9 @@ public class StallionEventManager {
 
       eventPayload.put("type", eventName);
 
+      DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = eventEmitterRef.get();
       // Emit the event to React Native
-      if (eventEmitter != null) {
+      if (eventEmitter != null && stallionStateManager.getIsMounted()) {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
 

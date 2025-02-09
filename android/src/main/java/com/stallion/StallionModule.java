@@ -27,19 +27,27 @@ import java.util.List;
 
 @ReactModule(name = StallionConfigConstants.MODULE_NAME)
 public class StallionModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
-  private final ReactApplicationContext currentReactContext;
   private final StallionStateManager stallionStateManager;
 
   public StallionModule(ReactApplicationContext reactContext) {
     super(reactContext);
     StallionStateManager.init(reactContext);
     this.stallionStateManager = StallionStateManager.getInstance();
-    this.currentReactContext = reactContext;
+    StallionEventManager.init(this.stallionStateManager);
     reactContext.addLifecycleEventListener(this);
   }
 
   @Override
   public void onHostResume() {
+    if (
+        StallionEventManager.getInstance().getEmitter() == null
+          && getReactApplicationContext().getCatalystInstance() != null
+    ) {
+      DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext().getJSModule(
+        DeviceEventManagerModule.RCTDeviceEventEmitter.class
+      );
+      StallionEventManager.getInstance().setEmitter(eventEmitter);
+    }
     StallionSyncHandler.sync();
   }
 
@@ -52,7 +60,8 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    this.currentReactContext.removeLifecycleEventListener(this);
+    stallionStateManager.setIsMounted(false);
+    getReactApplicationContext().removeLifecycleEventListener(this);
   }
 
   @Override
@@ -64,12 +73,6 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void onLaunch(String launchData) {
     stallionStateManager.setIsMounted(true);
-
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = this.currentReactContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter.class
-    );
-    StallionEventManager.getInstance().setEmitter(eventEmitter);
-
     checkPendingDownloads();
   }
 
