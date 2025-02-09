@@ -1,3 +1,10 @@
+# [2.0.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2025-02-09)
+
+
+### Bug Fixes
+
+* modified event emitter ([365aecd](https://github.com/stallion-tech/react-native-stallion/commit/365aecdc72021f9c84cdaae2ea9f51c14b313ab5))
+
 # [2.0.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2025-02-08)
 
 
