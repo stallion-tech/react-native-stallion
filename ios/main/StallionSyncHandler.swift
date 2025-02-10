@@ -10,17 +10,16 @@ import Foundation
 class StallionSyncHandler {
 
     private static var isSyncInProgress = false
+    private static var isDownloadInProgress = false
     private static let syncQueue = DispatchQueue(label: "com.stallion.syncQueue")
 
-  static func sync() {
+    static func sync() {
           syncQueue.async {
               guard !isSyncInProgress else { return }
               isSyncInProgress = true
           }
 
           DispatchQueue.global().async {
-              defer { isSyncInProgress = false }
-
               do {
                   // Fetch StallionStateManager and StallionConfig
                   let stateManager = StallionStateManager.sharedInstance()
@@ -44,6 +43,7 @@ class StallionSyncHandler {
                   makeApiCall(payload: requestPayload, appVersion: appVersion)
 
               } catch {
+                  defer { isSyncInProgress = false }
                   emitSyncError(error)
               }
           }
@@ -69,17 +69,20 @@ class StallionSyncHandler {
               let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
               request.httpBody = jsonData
           } catch {
+              defer { isSyncInProgress = false }
               emitSyncError(error)
               return
           }
 
           let task = URLSession.shared.dataTask(with: request) { data, response, error in
               if let error = error {
+                  defer { isSyncInProgress = false }
                   emitSyncError(error)
                   return
               }
             
               guard let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                  defer { isSyncInProgress = false }
                   let responseError = NSError(domain: "Invalid response from server", code: -2)
                   emitSyncError(responseError)
                   return
@@ -88,12 +91,15 @@ class StallionSyncHandler {
               // Parse the JSON response
               do {
                   if let releaseMeta = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                      defer { isSyncInProgress = false }
                       processReleaseMeta(releaseMeta, appVersion: appVersion)
                   } else {
+                      defer { isSyncInProgress = false }
                       let parsingError = NSError(domain: "Invalid JSON format", code: -3)
                       emitSyncError(parsingError)
                   }
               } catch {
+                  defer { isSyncInProgress = false }
                   emitSyncError(error)
               }
           }
@@ -145,6 +151,11 @@ class StallionSyncHandler {
     static func downloadNewRelease(newReleaseHash: String, newReleaseUrl: String) {
         guard let stateManager = StallionStateManager.sharedInstance(),
               let config = stateManager.stallionConfig else { return }
+      
+      syncQueue.async {
+          guard !isDownloadInProgress else { return }
+          isDownloadInProgress = true
+      }
 
       let downloadPath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT
       let projectId = config.projectId ?? ""
@@ -156,6 +167,7 @@ class StallionSyncHandler {
       StallionFileDownloader().downloadBundle(url: fromUrl, downloadDirectory: downloadPath, onProgress: { progress in
         // Handle progress updates if necessary
     }, resolve: { _ in
+      defer { isDownloadInProgress = false }
       stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
       stateManager.stallionMeta?.prodTempHash =  newReleaseHash
       if let currentProdNewHash = stateManager.stallionMeta?.prodNewHash,
@@ -165,6 +177,7 @@ class StallionSyncHandler {
       stateManager.syncStallionMeta()
       emitDownloadSuccess(releaseHash: newReleaseHash)
     }, reject: { code, prefix, error  in
+      defer { isDownloadInProgress = false }
       emitDownloadError(
         releaseHash: newReleaseHash,
         error: "\(String(describing: prefix))\(String(describing: error))"
