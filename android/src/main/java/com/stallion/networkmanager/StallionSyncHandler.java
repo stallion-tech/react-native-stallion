@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StallionSyncHandler {
 
   private static final AtomicBoolean isSyncInProgress = new AtomicBoolean(false);
+  private static final AtomicBoolean isDownloadInProgress = new AtomicBoolean(false);
 
   public static void sync() {
     // Ensure only one sync job runs at a time
@@ -99,41 +100,51 @@ public class StallionSyncHandler {
   }
 
   public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl) {
-    StallionStateManager stateManager = StallionStateManager.getInstance();
-    String downloadPath = stateManager.getStallionConfig().getFilesDirectory()
-      + StallionConfigConstants.PROD_DIRECTORY
-      + StallionConfigConstants.TEMP_FOLDER_SLOT;
-    String projectId = stateManager.getStallionConfig().getProjectId();
+    // Ensure only one download job runs at a time
+    if (!isDownloadInProgress.compareAndSet(false, true)) {
+      return; // Exit if another job is already running
+    }
+    try {
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      String downloadPath = stateManager.getStallionConfig().getFilesDirectory()
+        + StallionConfigConstants.PROD_DIRECTORY
+        + StallionConfigConstants.TEMP_FOLDER_SLOT;
+      String projectId = stateManager.getStallionConfig().getProjectId();
 
-    emitDownloadStarted(newReleaseHash);
+      emitDownloadStarted(newReleaseHash);
 
-    StallionFileDownloader.downloadBundle(
-      newReleaseUrl + "?projectId=" + projectId,
-      downloadPath,
-      new StallionDownloadCallback() {
-        @Override
-        public void onReject(String prefix, String error) {
-          emitDownloadError(newReleaseHash, prefix + error);
-        }
-
-        @Override
-        public void onSuccess(String successPayload) {
-          stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
-          stateManager.stallionMeta.setProdTempHash(newReleaseHash);
-          String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
-          if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
-           StallionSlotManager.stabilizeProd();
+      StallionFileDownloader.downloadBundle(
+        newReleaseUrl + "?projectId=" + projectId,
+        downloadPath,
+        new StallionDownloadCallback() {
+          @Override
+          public void onReject(String prefix, String error) {
+            isDownloadInProgress.set(false);
+            emitDownloadError(newReleaseHash, prefix + error);
           }
-          stateManager.syncStallionMeta();
-          emitDownloadSuccess(newReleaseHash);
-        }
 
-        @Override
-        public void onProgress(double downloadFraction) {
-          // Optional: Handle progress updates
+          @Override
+          public void onSuccess(String successPayload) {
+            isDownloadInProgress.set(false);
+            stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
+            stateManager.stallionMeta.setProdTempHash(newReleaseHash);
+            String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
+            if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
+              StallionSlotManager.stabilizeProd();
+            }
+            stateManager.syncStallionMeta();
+            emitDownloadSuccess(newReleaseHash);
+          }
+
+          @Override
+          public void onProgress(double downloadFraction) {
+            // Optional: Handle progress updates
+          }
         }
-      }
-    );
+      );
+    } catch (Exception ignored) {
+      isDownloadInProgress.set(false);
+    }
   }
 
   private static void emitSyncError(Exception e) {
