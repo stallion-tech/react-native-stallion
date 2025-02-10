@@ -1,3 +1,10 @@
+# [2.0.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2025-02-10)
+
+
+### Bug Fixes
+
+* disabled parallel download ([#31](https://github.com/stallion-tech/react-native-stallion/issues/31)) ([a742de2](https://github.com/stallion-tech/react-native-stallion/commit/a742de200870b38e8fc3201c0efa45108dddb59d))
+
 # [2.0.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2025-02-09)
 
 
