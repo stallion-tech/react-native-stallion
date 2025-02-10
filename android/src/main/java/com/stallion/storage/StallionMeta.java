@@ -57,7 +57,7 @@ public class StallionMeta {
 
   public String getActiveReleaseHash() {
     if(!this.prodTempHash.isEmpty()) {
-      return this.prodNewHash;
+      return this.prodTempHash;
     }
     switch (this.currentProdSlot) {
       case NEW_SLOT:
