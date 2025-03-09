@@ -18,6 +18,7 @@
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
+  [StallionModule getBundleURL];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
   return [StallionModule getBundleURL];

@@ -1,73 +1,80 @@
-import React from 'react';
-import { View, Text, KeyboardAvoidingView } from 'react-native';
-
-import Otp from './components/Otp';
-import Email from './components/Email';
+import React, { useState, useCallback, useContext } from 'react';
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  TextInput,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+} from 'react-native';
 
 import {
-  DEFAULT_ERROR_PREFIX,
   KEYBOARD_AVOIDING_BEHAVIOUR,
   Login_TITLE,
+  PIN_LENGTH,
+  PIN_INPUT_KEY,
+  SUBMIT_BUTTON_TEXT,
 } from '../../../constants/appConstants';
-import useLoginFlow from './hooks/useLoginFlow';
 import styles from './styles';
 import Spinner from '../../common/Spinner';
+import { COLORS } from '../../../constants/colors';
+import ButtonFullWidth from '../../common/ButtonFullWidth';
+import { GlobalContext } from '../../../../main/state';
 
 const Login: React.FC = () => {
   const {
-    email,
-    password,
-    otp,
-    handleEmailChange,
-    handlePasswordChange,
-    handleOtpChange,
-    handleEmailSubmit,
-    handleOtpSubmit,
-    isOtpRequested,
-    userApiError,
-    userApiIsLoading,
-    handleBack,
-  } = useLoginFlow();
+    userState,
+    actions: { loginUser },
+  } = useContext(GlobalContext);
+
+  const [pin, setPin] = useState<string>('');
+  const handleNumberFormating = useCallback(
+    (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+      try {
+        const text = e.nativeEvent.text;
+        setPin(text.replace(/[^0-9]/g, ''));
+      } catch (_) {}
+    },
+    [setPin]
+  );
+
+  const handleSubmitClick = useCallback(() => {
+    if (pin.length === PIN_LENGTH) {
+      loginUser({
+        pin,
+      });
+    }
+  }, [loginUser, pin]);
   return (
     <View style={styles.pageContainer}>
-      <View style={[styles.logoContainer, styles.center]}>
+      <View style={[styles.logoContainer]}>
         <Text style={styles.logoText}>{Login_TITLE}</Text>
       </View>
       <KeyboardAvoidingView
         behavior={KEYBOARD_AVOIDING_BEHAVIOUR}
         style={[styles.center, styles.inputSection]}
       >
-        {isOtpRequested ? (
-          <Otp
-            otp={otp}
-            email={email}
-            handleOtpChange={handleOtpChange}
-            handleSubmitClick={handleOtpSubmit}
-            handleBack={handleBack}
-            isEditable={!userApiIsLoading}
-          />
-        ) : (
-          <Email
-            email={email}
-            password={password}
-            isEditable={!userApiIsLoading}
-            handleEmailChange={handleEmailChange}
-            handlePasswordChange={handlePasswordChange}
-            handleSubmitClick={handleEmailSubmit}
-          />
-        )}
-        {userApiIsLoading ? (
-          <View style={styles.spinnerContainer}>
-            <Spinner />
-          </View>
-        ) : null}
-        {userApiError ? (
-          <Text style={styles.errorText}>
-            {DEFAULT_ERROR_PREFIX}
-            {userApiError}
-          </Text>
-        ) : null}
+        <TextInput
+          style={styles.textInp}
+          placeholder={PIN_INPUT_KEY}
+          placeholderTextColor={COLORS.black5}
+          value={pin}
+          onChange={handleNumberFormating}
+          maxLength={PIN_LENGTH}
+          keyboardType={'numeric'}
+        />
       </KeyboardAvoidingView>
+      <View style={styles.buttonContainer}>
+        <ButtonFullWidth
+          onPress={handleSubmitClick}
+          buttonText={SUBMIT_BUTTON_TEXT}
+          enabled={!userState.isLoading && pin?.length === PIN_LENGTH}
+        />
+      </View>
+      {userState.isLoading ? <Spinner /> : null}
+      {userState.error ? (
+        <Text style={styles.errorText}>{userState.error}</Text>
+      ) : null}
     </View>
   );
 };

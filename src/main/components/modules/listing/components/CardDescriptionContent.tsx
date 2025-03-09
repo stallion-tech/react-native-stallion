@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { COLORS } from '../../../../constants/colors';
+import { STD_MARGIN } from '../../../../constants/appConstants';
 
 interface ICardDescriptionContent {
   title: string;
@@ -20,9 +21,13 @@ const CardDescriptionContent: React.FC<ICardDescriptionContent> = ({
 
 const styles = StyleSheet.create({
   centerContainer: { justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 12, fontWeight: '500', color: COLORS.black7 },
+  title: {
+    fontSize: STD_MARGIN * 1.3,
+    fontWeight: '500',
+    color: COLORS.black7,
+  },
   subtitle: {
-    fontSize: 14,
+    fontSize: STD_MARGIN * 1.1,
     fontWeight: '600',
     marginTop: 5,
     color: COLORS.black,

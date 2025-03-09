@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - alpha
 
 jobs:
   build-and-publish:
@@ -47,6 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GIT_AUTHOR_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
-          GIT_AUTHOR_NAME : ${{ secrets.GH_DEPLOY_NAME }}
+          GIT_AUTHOR_NAME: ${{ secrets.GH_DEPLOY_NAME }}
           GIT_COMMITTER_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
           GIT_COMMITTER_NAME: ${{ secrets.GH_DEPLOY_NAME }}
+          DEBUG: semantic-release:*
