@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0) (2025-03-11)
+
+
+* feat!: stallion for production ([0305133](https://github.com/stallion-tech/react-native-stallion/commit/0305133eee9e8766be2532bb6f0fcb4ec6b25417))
+
+
+### BREAKING CHANGES
+
+* stallion production version added, analytics events added, login logic modified
+
 # [2.0.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2025-02-10)
 
 
