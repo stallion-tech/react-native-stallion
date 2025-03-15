@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
-import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
-import SharedDataManager from '../../utils/SharedDataManager';
+import { API_PATHS } from '../../constants/apiConstants';
 
 import {
   DEFAULT_ERROR_MESSAGE,
@@ -25,13 +23,16 @@ import {
   setSelectedBucketId,
   setBundleNextPageLoading,
 } from '../actions/bundleActions';
+import { useApiClient } from '../../utils/useApiClient';
+import { IStallionConfigJson } from '../../../types/config.types';
 
 const useBundleActions = (
   dispatch: React.Dispatch<IBundleAction>,
   bundleState: IBundleState,
-  setUserRequiresLogin: (requiresLogin: boolean) => void
+  clearUserLogin: (shouldClear: boolean) => void,
+  configState: IStallionConfigJson
 ) => {
-  const dataManager = SharedDataManager.getInstance();
+  const { getData } = useApiClient(configState, clearUserLogin);
   const fetchBundles = useCallback(
     (bucketId?: string | null, pageOffset?: string | null) => {
       const selectedBucketId = bucketId || bundleState.selectedBucketId;
@@ -41,18 +42,13 @@ const useBundleActions = (
       } else {
         dispatch(setBundleNextPageLoading(true));
       }
-      fetch(API_BASE_URL + API_PATHS.FETCH_BUNDLES_ADVANCED, {
-        method: 'POST',
-        body: JSON.stringify({
-          projectId: dataManager?.getProjectId(),
-          bucketId: selectedBucketId,
-          platform: CURRENT_PLATFORM,
-          pageSize: BUNDLE_API_PAGE_SIZE,
-          paginationOffset: pageOffsetReceivedValue,
-        }),
-        headers: getApiHeaders(),
+      getData(API_PATHS.FETCH_BUNDLES_ADVANCED, {
+        projectId: configState.projectId,
+        bucketId: selectedBucketId,
+        platform: CURRENT_PLATFORM,
+        pageSize: BUNDLE_API_PAGE_SIZE,
+        paginationOffset: pageOffsetReceivedValue,
       })
-        .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
         .then((bundleResponse) => {
           const bundlesData = bundleResponse?.data?.paginatedData;
           const nextPageOffset = bundleResponse?.data?.paginationOffset;
@@ -77,7 +73,7 @@ const useBundleActions = (
           dispatch(setBundleError(DEFAULT_ERROR_MESSAGE));
         });
     },
-    [dispatch, dataManager, bundleState.selectedBucketId, setUserRequiresLogin]
+    [dispatch, bundleState.selectedBucketId, configState, getData]
   );
 
   const selectBucket = useCallback(

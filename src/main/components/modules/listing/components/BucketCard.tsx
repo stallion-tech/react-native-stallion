@@ -6,6 +6,7 @@ import BucketCardInfoSection from './BucketCardInfoSection';
 
 import { CARD_TYPES } from '../../../../constants/appConstants';
 import styles from './styles';
+import { SWITCH_STATES } from '../../../../../types/meta.types';
 
 export interface IBucketCard {
   type: CARD_TYPES.BUCKET;
@@ -17,17 +18,13 @@ export interface IBucketCard {
 }
 
 const BucketCard: React.FC<IBucketCard> = ({
-  id,
   name,
   updatedAt,
   bundleCount,
   handlePress,
 }) => {
   const { metaState } = useContext(GlobalContext);
-  const isApplied = useMemo<boolean>(
-    () => metaState?.activeBucket === id,
-    [metaState, id]
-  );
+  const isApplied = useMemo<boolean>(() => false, []);
   return (
     <TouchableOpacity
       style={styles.cardContainer}
@@ -40,7 +37,7 @@ const BucketCard: React.FC<IBucketCard> = ({
           updatedAt={updatedAt}
           bundleCount={bundleCount?.toString()}
           isApplied={isApplied}
-          switchState={metaState?.switchState || false}
+          switchState={metaState?.switchState === SWITCH_STATES.STAGE}
         />
       </View>
     </TouchableOpacity>

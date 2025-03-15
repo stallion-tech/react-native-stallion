@@ -24,54 +24,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  errTxt: {
+  restartInfoSection: {
+    height: STD_MARGIN * 2.5,
+    backgroundColor: COLORS.indigo,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ribbonMessage: {
     fontSize: STD_MARGIN * 1.2,
     color: COLORS.white,
     marginHorizontal: STD_MARGIN / 2,
+    fontWeight: 'bold',
   },
   footerContainer: {
     paddingHorizontal: STD_MARGIN,
     paddingVertical: STD_MARGIN / 2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.white,
   },
-  infoTitle: {
-    fontSize: STD_MARGIN * 1.2,
-    color: COLORS.text_major,
-  },
-  infoSubTitle: {
-    fontSize: STD_MARGIN * 1.2,
-    marginTop: STD_MARGIN / 2,
-    color: COLORS.text_major,
-  },
-  alignCenter: {
+  switchContainer: {
+    borderWidth: 0.5,
+    borderColor: COLORS.black5,
+    padding: STD_MARGIN / 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: STD_MARGIN,
   },
-  dividerSection: {
+  tabContainer: {
     flex: 1,
-    justifyContent: 'flex-start',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: STD_MARGIN * 1.3,
+    borderRadius: STD_MARGIN,
   },
-  dividerSection2: {
-    flex: 0.7,
-    justifyContent: 'flex-start',
+  tabSelected: {
+    backgroundColor: COLORS.black,
   },
-  bold: {
+  titleSelected: {
+    fontSize: STD_MARGIN * 1.2,
+    color: COLORS.white,
+  },
+  titleBasic: {
+    textAlign: 'center',
+    fontSize: STD_MARGIN * 1.5,
+    color: COLORS.black,
     fontWeight: 'bold',
-  },
-  noDownloadText: {
-    alignSelf: 'center',
-    color: COLORS.black5,
-  },
-  greenColor: {
-    color: COLORS.green,
-  },
-  redColor: {
-    color: COLORS.red,
-  },
-  switchButton: {
-    marginTop: STD_MARGIN / 2,
   },
 });
 

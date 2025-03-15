@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 export const HEADER_TITLE = 'Stallion';
-export const Login_TITLE = 'Login';
+export const Login_TITLE = 'Login to continue';
 export const PROFILE_TITLE = 'Profile';
 export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
@@ -11,13 +11,14 @@ export const CLOSE_BUTTON_TEXT = 'close';
 export const BACK_BUTTON_TEXT = 'back';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
+export const APPLIED_TEXT = 'Applied';
 export const LOGOUT_BUTTON_TEXT = 'Logout';
 
 export const FOOTER_INFO_TITLE = 'Active Bucket: ';
 export const FOOTER_INFO_SUBTITLE = 'Version: ';
 export enum SWITCH_TEXTS {
-  ON = 'Enabled',
-  OFF = 'Disabled',
+  ON = 'Testing',
+  OFF = 'Production',
 }
 
 export const SWITCH_TITLE = 'Switch ';
@@ -63,11 +64,11 @@ export const EMPTY_STATE = {
   error: null,
 };
 
-export const OTP_LENGTH = 6;
+export const PIN_LENGTH = 6;
 
-export const SUBMIT_BUTTON_TEXT = 'SUBMIT';
-export const OTP_BACK_BUTTON_TEXT = 'BACK';
-export const OTP_INPUT_KEY = 'Enter OTP';
+export const SUBMIT_BUTTON_TEXT = 'Continue';
+export const PIN_BACK_BUTTON_TEXT = 'BACK';
+export const PIN_INPUT_KEY = 'Enter PIN';
 
 export const NOT_APPLICABLE_TEXT = 'N/A';
 
@@ -98,3 +99,39 @@ export const DOWNLOAD_ALERT_SWITCH_MESSAGE = 'Stallion has been switched on. ';
 export const DOWNLOAD_ALERT_MESSAGE =
   'Restart the app for changes to take effect.';
 export const DOWNLOAD_ALERT_BUTTON = 'Ok';
+
+export enum NATIVE_CONSTANTS {
+  SDK_TOKEN = 'x-sdk-access-token',
+  APP_TOKEN = 'x-app-token',
+  SWITCH_STATE_INDENTIFIER = 'switchState',
+  PROD_DIRECTORY = '/StallionProd',
+  STAGE_DIRECTORY = '/StallionStage',
+  TEMP_FOLDER_SLOT = '/temp',
+  NEW_FOLDER_SLOT = '/StallionNew',
+  STABLE_FOLDER_SLOT = '/StallionStable',
+  DEFAULT_FOLDER_SLOT = '/Default',
+  CURRENT_PROD_SLOT_KEY = 'stallionProdCurrentSlot',
+  CURRENT_STAGE_SLOT_KEY = 'stallionStageCurrentSlot',
+}
+
+export enum NativeEventTypesProd {
+  DOWNLOAD_STARTED_PROD = 'DOWNLOAD_STARTED_PROD',
+  DOWNLOAD_ERROR_PROD = 'DOWNLOAD_ERROR_PROD',
+  DOWNLOAD_PROGRESS_PROD = 'DOWNLOAD_PROGRESS_PROD',
+  DOWNLOAD_COMPLETE_PROD = 'DOWNLOAD_COMPLETE_PROD',
+  SYNC_ERROR_PROD = 'SYNC_ERROR_PROD',
+  ROLLED_BACK_PROD = 'ROLLED_BACK_PROD',
+  INSTALLED_PROD = 'INSTALLED_PROD',
+  STABILIZED_PROD = 'STABILIZED_PROD',
+  EXCEPTION_PROD = 'EXCEPTION_PROD',
+  AUTO_ROLLED_BACK_PROD = 'AUTO_ROLLED_BACK_PROD',
+}
+export enum NativeEventTypesStage {
+  DOWNLOAD_ERROR_STAGE = 'DOWNLOAD_ERROR_STAGE',
+  DOWNLOAD_PROGRESS_STAGE = 'DOWNLOAD_PROGRESS_STAGE',
+  DOWNLOAD_COMPLETE_STAGE = 'DOWNLOAD_COMPLETE_STAGE',
+}
+
+export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
+
+export const RESTART_REQUIRED_MESSAGE = 'Restart required. Bundle has changed';

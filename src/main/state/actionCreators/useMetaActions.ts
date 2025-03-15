@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect } from 'react';
 
-import { getStallionMeta } from '../../utils/StallionNaitveUtils';
+import { getStallionMetaNative } from '../../utils/StallionNativeUtils';
 import { setMeta } from '../actions/metaActions';
 
 import { IMetaAction } from '../../../types/meta.types';
 
 const useMetaActions = (dispatch: React.Dispatch<IMetaAction>) => {
-  const refreshMeta = useCallback(() => {
-    getStallionMeta((meta) => {
-      dispatch(setMeta(meta));
-    });
+  const refreshMeta = useCallback(async () => {
+    try {
+      const stallionMeta = await getStallionMetaNative();
+      dispatch(setMeta(stallionMeta));
+    } catch (_) {}
   }, [dispatch]);
 
   useEffect(() => {

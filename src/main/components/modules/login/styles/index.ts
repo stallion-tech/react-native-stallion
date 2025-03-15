@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT } from '../../../../constants/appConstants';
+import {
+  HEADER_SLAB_HEIGHT,
+  STD_MARGIN,
+} from '../../../../constants/appConstants';
 import { COLORS } from '../../../../constants/colors';
 
 const styles = StyleSheet.create({
@@ -13,16 +16,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    flex: 1,
+    width: '90%',
+    alignSelf: 'center',
+    paddingVertical: HEADER_SLAB_HEIGHT / 2,
   },
   logoText: {
-    fontSize: HEADER_SLAB_HEIGHT,
-    color: COLORS.text_major,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black,
+    fontWeight: '500',
   },
   inputSection: {
-    flex: 2,
     justifyContent: 'flex-start',
-    paddingTop: HEADER_SLAB_HEIGHT,
   },
   errorText: {
     fontSize: HEADER_SLAB_HEIGHT / 4,
@@ -31,6 +35,19 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     margin: HEADER_SLAB_HEIGHT / 2,
+  },
+  textInp: {
+    width: '90%',
+    height: HEADER_SLAB_HEIGHT,
+    borderWidth: 1,
+    borderColor: COLORS.black2,
+    borderRadius: STD_MARGIN,
+    marginBottom: STD_MARGIN,
+    paddingHorizontal: STD_MARGIN * 2,
+    color: COLORS.text_major,
+  },
+  buttonContainer: {
+    padding: HEADER_SLAB_HEIGHT / 2,
   },
 });
 

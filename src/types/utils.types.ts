@@ -1,17 +1,14 @@
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { IStallionMeta } from './meta.types';
+import { IUpdateMeta } from './updateMeta.types';
+import { IStallionMeta, SWITCH_STATES } from './meta.types';
+import { IStallionConfigJson } from './config.types';
 
 interface IBundleInfo {
-  bucketId: string;
-  version: number;
   url: string;
+  hash: string;
 }
-type TCallback = (apiKey: string) => void;
-type TMetaCallback = (newMeta: IStallionMeta) => void;
 
-export interface IStallionInitParams {
-  projectId: string;
-}
+export interface IStallionInitParams {}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,
@@ -30,12 +27,24 @@ export interface IUseStallionModal {
 export type TextChangeEventType =
   NativeSyntheticEvent<TextInputChangeEventData>;
 
-export type TSetApiKeyNative = (apiKey: string) => void;
+export type TSetSdkTokenNative = (sdkToken: string) => Promise<string>;
 
-export type TGetApiKeyNative = (cb: TCallback) => void;
+export type TGetStallionMetaNative = () => Promise<IStallionMeta>;
 
-export type TGetStallionMeta = (cb: TMetaCallback) => void;
+export type TGetStallionConfigNative = () => Promise<IStallionConfigJson>;
 
-export type TToggleStallionSwitchNative = (switchState: boolean) => void;
+export type TToggleStallionSwitchNative = (
+  switchState: SWITCH_STATES
+) => Promise<string>;
 
-export type TDownloadBundleNative = (bundleInfo: IBundleInfo) => Promise<any>;
+export type TDownloadBundleNative = (
+  bundleInfo: IBundleInfo
+) => Promise<string>;
+
+export type TOnLaunchBundleNative = (launchMessage: string) => void;
+
+export interface IUseStallionUpdate {
+  isRestartRequired: boolean;
+  currentlyRunningBundle: IUpdateMeta | null;
+  newReleaseBundle: IUpdateMeta | null;
+}

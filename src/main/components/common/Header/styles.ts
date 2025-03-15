@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
+import {
+  HEADER_SLAB_HEIGHT,
+  STD_MARGIN,
+} from '../../../constants/appConstants';
 import { COLORS } from '../../../constants/colors';
 
 const PROFILE_BUTTON_EDGE = HEADER_SLAB_HEIGHT / 1.7;
@@ -24,7 +27,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    padding: HEADER_SLAB_HEIGHT / 5,
   },
   headerProfileButton: {
     height: PROFILE_BUTTON_EDGE,
@@ -32,7 +34,8 @@ const styles = StyleSheet.create({
     borderRadius: PROFILE_BUTTON_EDGE / 2,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.indigo,
+    backgroundColor: COLORS.black,
+    marginLeft: STD_MARGIN,
   },
   headerCenterSection: {
     flex: 2,
@@ -44,9 +47,14 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     fontWeight: 'bold',
   },
+  actionButtonClickable: {
+    padding: STD_MARGIN,
+  },
   actionButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3.5,
-    color: COLORS.text_major,
+    color: COLORS.black,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
   alignStart: {
     alignItems: 'flex-start',

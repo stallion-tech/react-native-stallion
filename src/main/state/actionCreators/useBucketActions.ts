@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 
-import SharedDataManager from '../../utils/SharedDataManager';
 import { extractError } from '../../utils/errorUtil';
-import { apiAuthMiddleware, getApiHeaders } from '../../utils/apiUtils';
 import {
   setBucketData,
   setBucketError,
@@ -13,24 +11,22 @@ import {
   DEFAULT_ERROR_MESSAGE,
   EMPTY_ERROR_MESSAGE,
 } from '../../constants/appConstants';
-import { API_BASE_URL, API_PATHS } from '../../constants/apiConstants';
+import { API_PATHS } from '../../constants/apiConstants';
 import { IBucketAction, IBucketDataList } from '../../../types/bucket.types';
+import { useApiClient } from '../../utils/useApiClient';
+import { IStallionConfigJson } from '../../../types/config.types';
 
 const useBucketActions = (
   dispatch: React.Dispatch<IBucketAction>,
-  setUserRequiresLogin: (requiresLogin: boolean) => void
+  clearUserLogin: (shouldClear: boolean) => void,
+  configState: IStallionConfigJson
 ) => {
-  const dataManager = SharedDataManager.getInstance();
+  const { getData } = useApiClient(configState, clearUserLogin);
   const fetchBuckets = useCallback(() => {
     dispatch(setBucketLoading());
-    fetch(API_BASE_URL + API_PATHS.FETCH_BUCKETS, {
-      method: 'POST',
-      body: JSON.stringify({
-        projectId: dataManager?.getProjectId(),
-      }),
-      headers: getApiHeaders(),
+    getData(API_PATHS.FETCH_BUCKETS, {
+      projectId: configState.projectId,
     })
-      .then((res) => apiAuthMiddleware(res, setUserRequiresLogin))
       .then((bucketResponse) => {
         if (bucketResponse?.data) {
           if (bucketResponse.data.length) {
@@ -45,7 +41,7 @@ const useBucketActions = (
       .catch((_) => {
         dispatch(setBucketError(DEFAULT_ERROR_MESSAGE));
       });
-  }, [dispatch, dataManager, setUserRequiresLogin]);
+  }, [dispatch, configState, getData]);
 
   return {
     fetchBuckets,
