@@ -1,3 +1,26 @@
+# [3.0.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0...v3.0.0-alpha.1) (2025-03-15)
+
+
+### Bug Fixes
+
+* back merged main ([6540733](https://github.com/stallion-tech/react-native-stallion/commit/6540733a56b3bac91518cc6811cdaabe2c191e94))
+* disabled parallel download ([#31](https://github.com/stallion-tech/react-native-stallion/issues/31)) ([a742de2](https://github.com/stallion-tech/react-native-stallion/commit/a742de200870b38e8fc3201c0efa45108dddb59d))
+* modified event emitter ([365aecd](https://github.com/stallion-tech/react-native-stallion/commit/365aecdc72021f9c84cdaae2ea9f51c14b313ab5))
+* modified exception handler initialisation ([#28](https://github.com/stallion-tech/react-native-stallion/issues/28)) ([7fdea47](https://github.com/stallion-tech/react-native-stallion/commit/7fdea47e8a618c4f57802cc6d016795a6d33d88d))
+
+
+* feat!: stallion for prod ([47e095b](https://github.com/stallion-tech/react-native-stallion/commit/47e095b1954d7453b83f6fd950bf477b4df6de4a))
+
+
+### Features
+
+* stallion refactor ([4a47f10](https://github.com/stallion-tech/react-native-stallion/commit/4a47f10702f2b12357dd5ce39e67681c4721e0df))
+
+
+### BREAKING CHANGES
+
+* stallion for prod release
+
 # [2.0.0](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0) (2025-03-11)
 
 - feat!: stallion for production ([0305133](https://github.com/stallion-tech/react-native-stallion/commit/0305133eee9e8766be2532bb6f0fcb4ec6b25417))
