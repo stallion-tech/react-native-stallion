@@ -4,16 +4,15 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
 import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
+import { getStallionMetaNative } from './StallionNativeUtils';
 import {
-  getStallionMeta,
-  toggleStallionSwitchNative,
-} from './StallionNaitveUtils';
-import {
+  HEADER_TITLE,
   STALLION_EB_BTN_TXT,
   STALLION_EB_INFO,
   STD_MARGIN,
 } from '../constants/appConstants';
 import { COLORS } from '../constants/colors';
+import { SWITCH_STATES } from '../../types/meta.types';
 
 interface IErrorBoundaryProps {}
 interface IErrorBoundaryState {
@@ -31,29 +30,27 @@ class ErrorBoundary extends Component<
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
-  componentDidCatch(error: Error): void {
-    getStallionMeta((stallionMeta) => {
-      if (stallionMeta?.switchState) {
-        toggleStallionSwitchNative(false);
-        const errorString: string = [
-          error.name,
-          error.message,
-          error.cause?.toString(),
-          error.stack,
-        ].join(' ');
-        console.error(
-          'Exception occured in js layer:',
-          error,
-          ', turning off the stallion switch'
-        );
-        this.setState({
-          errorText: errorString,
-        });
-      } else {
+
+  async componentDidCatch(error: Error): Promise<void> {
+    const errorString: string = [
+      error.name,
+      error.message,
+      error.cause?.toString(),
+      error.stack,
+    ].join(' ');
+    console.error('Exception occured in js layer:', error);
+    const meta = await getStallionMetaNative();
+    if (meta.switchState === SWITCH_STATES.STAGE) {
+      this.setState({
+        errorText: errorString,
+      });
+    } else {
+      requestAnimationFrame(() => {
         throw error;
-      }
-    });
+      });
+    }
   }
+
   continueCrash() {
     throw new Error(this.state.errorText || '');
   }
@@ -61,7 +58,7 @@ class ErrorBoundary extends Component<
     if (this.state.errorText) {
       return (
         <SafeAreaView style={styles.ebContainer}>
-          <Header />
+          <Header title={HEADER_TITLE} />
           <View style={styles.ebContentContainer}>
             <View style={styles.ebInfoTextContainer}>
               <Text style={styles.ebInfoText}>{STALLION_EB_INFO}</Text>

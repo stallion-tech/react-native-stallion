@@ -1,6 +1,6 @@
 {
   "name": "react-native-stallion",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Offical React Native SDK for Stallion",
   "main": "index",
   "types": "types/index.d.ts",
@@ -33,7 +33,8 @@
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
     "dev": "bob watch",
-    "prepare-release": "bob build && node scripts/prep-release.js"
+    "prepare-release": "bob build && node scripts/prep-release.js",
+    "pack-local": "yarn run prepare-release && cd sdk-package && yarn pack && open . && cd .."
   },
   "keywords": [
     "react-native",
@@ -141,7 +142,11 @@
   },
   "release": {
     "branches": [
-      "main"
+      "main",
+      {
+        "name": "alpha",
+        "prerelease": true
+      }
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",

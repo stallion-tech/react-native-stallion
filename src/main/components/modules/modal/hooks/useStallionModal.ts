@@ -1,26 +1,21 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 
 import { GlobalContext } from '../../../../state';
-import {
-  getApiKeyNative,
-  setApiKeyNative,
-  toggleStallionSwitchNative,
-} from '../../../../utils/StallionNaitveUtils';
-import SharedDataManager from '../../../../utils/SharedDataManager';
+import { toggleStallionSwitchNative } from '../../../../utils/StallionNativeUtils';
+import { SWITCH_STATES } from '../../../../../types/meta.types';
 
 const useStallionModal = () => {
   const {
     isModalVisible,
-    userState,
+    configState,
     metaState,
-    bucketState,
     bundleState,
     downloadState,
     actions: {
       setIsModalVisible,
-      setUserRequiresLogin,
       selectBucket,
       refreshMeta,
+      setDownloadErrorMessage,
     },
   } = useContext(GlobalContext);
   const onBackPress = useCallback(() => {
@@ -29,43 +24,18 @@ const useStallionModal = () => {
   const onClosePress = useCallback(() => {
     requestAnimationFrame(() => setIsModalVisible(false));
   }, [setIsModalVisible]);
-  const loginRequired = userState?.loginRequired;
 
-  useEffect(() => {
-    getApiKeyNative((apiKey) => {
-      if (apiKey) {
-        SharedDataManager.getInstance()?.setAccessToken(apiKey);
-      } else {
-        setUserRequiresLogin(true);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const loginRequired = configState?.sdkToken ? false : true;
 
   const isBackEnabled = useMemo<boolean>(
     () => (bundleState.selectedBucketId ? true : false),
     [bundleState.selectedBucketId]
   );
 
-  const activeBucketMeta = useMemo(() => {
-    const bucketName =
-      bucketState.data?.filter(
-        (bucketData) => bucketData.id === metaState.activeBucket
-      )?.[0]?.name || '';
-    return {
-      bucketName,
-      version: metaState.activeVersion || '',
-    };
-  }, [metaState.activeBucket, metaState.activeVersion, bucketState.data]);
-
-  const toggleStallionSwitch = useCallback(() => {
-    toggleStallionSwitchNative(!metaState.switchState);
-    refreshMeta();
-  }, [metaState.switchState, refreshMeta]);
-
   const isDownloading = useMemo<boolean>(() => {
     return downloadState.isLoading;
   }, [downloadState.isLoading]);
+
   const downloadProgress = useMemo<number>(
     () => downloadState.data?.currentProgress || 0,
     [downloadState.data?.currentProgress]
@@ -75,21 +45,19 @@ const useStallionModal = () => {
     [downloadState.error]
   );
 
-  const [showProfileSection, setShowProfileSection] = useState(false);
-  const closeProfileSection = useCallback(() => {
-    setShowProfileSection(false);
-  }, []);
-
-  const presentProfileSection = useCallback(() => {
-    setShowProfileSection(true);
-  }, []);
-
-  const performLogout = useCallback(() => {
-    closeProfileSection();
-    setApiKeyNative('');
-    SharedDataManager.getInstance()?.setAccessToken('');
-    setUserRequiresLogin(true);
-  }, [setUserRequiresLogin, closeProfileSection]);
+  const handleSwitch = useCallback(
+    (newSwitchStatus) => {
+      setDownloadErrorMessage('');
+      toggleStallionSwitchNative(
+        newSwitchStatus ? SWITCH_STATES.STAGE : SWITCH_STATES.PROD
+      );
+      refreshMeta();
+      if (!newSwitchStatus) {
+        selectBucket();
+      }
+    },
+    [refreshMeta, selectBucket, setDownloadErrorMessage]
+  );
 
   return {
     isModalVisible,
@@ -98,16 +66,10 @@ const useStallionModal = () => {
     loginRequired,
     metaState,
     isBackEnabled,
-    activeBucketMeta,
-    toggleStallionSwitch,
     isDownloading,
     downloadProgress,
     downloadError,
-    userState,
-    showProfileSection,
-    closeProfileSection,
-    presentProfileSection,
-    performLogout,
+    handleSwitch,
   };
 };
 

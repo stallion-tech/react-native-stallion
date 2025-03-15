@@ -3,28 +3,25 @@ import { IBucketState } from './bucket.types';
 import { IStallionMeta } from './meta.types';
 import { IBundleState } from './bundle.types';
 import { IDownloadState } from './download.types';
+import { IUpdateMetaState } from '../main/state/reducers/updateMetaReducer';
+import { IStallionConfigJson } from './config.types';
 
 export interface ILoginActionPayload {
-  email: string;
-  password: string;
-}
-
-export interface IVerifyOtpPayload {
-  otp: string;
+  pin: string;
 }
 
 interface IGlobalContextActions {
   setIsModalVisible: (isModalVisible: boolean) => void;
   loginUser: (loginPayload: ILoginActionPayload) => void;
-  verifyOtp: (verifyOtpPayload: IVerifyOtpPayload) => void;
-  retryLogin: () => void;
   fetchBuckets: () => void;
   fetchBundles: (bucketId?: string | null, pageOffset?: string | null) => void;
-  setUserRequiresLogin: (requiresLogin: boolean) => void;
+  clearUserLogin: (shouldClear: boolean) => void;
   refreshMeta: () => void;
+  refreshConfig: () => void;
   selectBucket: (bucketId?: string | null) => void;
-  downloadBundle: (version: number, bucketId: string, url: string) => void;
-  getUserProfile: () => void;
+  downloadBundle: (url: string, hash: string) => void;
+  setProgress: (newProgress: number) => void;
+  setDownloadErrorMessage: (msg: string) => void;
 }
 
 export interface IGlobalContext {
@@ -34,5 +31,7 @@ export interface IGlobalContext {
   bucketState: IBucketState;
   bundleState: IBundleState;
   downloadState: IDownloadState;
+  updateMetaState: IUpdateMetaState;
+  configState: IStallionConfigJson;
   actions: IGlobalContextActions;
 }

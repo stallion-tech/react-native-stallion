@@ -4,8 +4,8 @@ import { View } from 'react-native';
 import BundleCardInfoSection from './BundleCardInfoSection';
 
 import styles from './styles';
-import { GlobalContext } from '../../../../state';
 import { CARD_TYPES } from '../../../../constants/appConstants';
+import { GlobalContext } from '../../../../state';
 
 export interface IBundleCard {
   type: CARD_TYPES.BUNDLE;
@@ -19,6 +19,7 @@ export interface IBundleCard {
 }
 
 const BundleCard: React.FC<IBundleCard> = ({
+  id,
   version,
   name,
   description,
@@ -26,30 +27,25 @@ const BundleCard: React.FC<IBundleCard> = ({
   author,
   downloadUrl,
 }) => {
-  const { metaState, bundleState } = useContext(GlobalContext);
+  const { metaState } = useContext(GlobalContext);
   const isApplied = useMemo<boolean>(() => {
-    if (
-      metaState.activeBucket === bundleState.selectedBucketId &&
-      metaState.activeVersion === `${version}`
-    )
-      return true;
-    return false;
-  }, [
-    metaState.activeBucket,
-    metaState.activeVersion,
-    bundleState.selectedBucketId,
-    version,
-  ]);
+    return metaState.stageSlot.newHash === id;
+  }, [metaState.stageSlot.newHash, id]);
+  const isDownloaded = useMemo<boolean>(() => {
+    return metaState.stageSlot.tempHash === id;
+  }, [metaState.stageSlot.tempHash, id]);
   return (
     <View style={styles.cardContainer}>
       <View style={styles.infoSection}>
         <BundleCardInfoSection
           name={name}
+          id={id}
           version={version}
           description={description}
           author={author}
           updatedAt={updatedAt}
           isApplied={isApplied}
+          isDownloaded={isDownloaded}
           downloadUrl={downloadUrl}
         />
       </View>

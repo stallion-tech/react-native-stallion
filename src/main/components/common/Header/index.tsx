@@ -10,20 +10,12 @@ import {
 import styles from './styles';
 
 interface IHeader {
-  userName?: string | null;
   title?: string | null;
   onBackPress?: (() => void) | null;
   onClosePress?: () => void;
-  onProfilePress?: () => void;
 }
 
-const Header: React.FC<IHeader> = ({
-  userName,
-  title,
-  onBackPress,
-  onClosePress,
-  onProfilePress,
-}) => {
+const Header: React.FC<IHeader> = ({ title, onBackPress, onClosePress }) => {
   const [errorLogoLoading, setErrorLogoLoading] = useState(false);
   const errorInLogoLoading = useCallback(() => {
     setErrorLogoLoading(true);
@@ -31,45 +23,42 @@ const Header: React.FC<IHeader> = ({
   return (
     <View style={styles.headerContainer}>
       {onBackPress ? (
-        <TouchableOpacity
-          style={[styles.headerSideSection, styles.alignStart]}
-          onPress={onBackPress}
-        >
-          <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
-        </TouchableOpacity>
-      ) : (
         <View style={[styles.headerSideSection, styles.alignStart]}>
-          {userName && onProfilePress ? (
-            <TouchableOpacity
-              style={styles.headerProfileButton}
-              onPress={onProfilePress}
-            >
-              <Text style={styles.profileInitial}>{userName?.[0] || ''}</Text>
-            </TouchableOpacity>
-          ) : null}
+          <TouchableOpacity
+            onPress={onBackPress}
+            style={styles.actionButtonClickable}
+          >
+            <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
+          </TouchableOpacity>
         </View>
+      ) : (
+        <View style={[styles.headerSideSection, styles.alignStart]} />
       )}
       <View style={styles.headerCenterSection}>
-        {errorLogoLoading ? (
-          <Text style={styles.headerText}>{title}</Text>
-        ) : (
-          <Image
-            source={{
-              uri: STALLION_LOGO_URL,
-            }}
-            style={styles.headerLogo}
-            resizeMode="contain"
-            onError={errorInLogoLoading}
-          />
-        )}
+        {title ? (
+          errorLogoLoading ? (
+            <Text style={styles.headerText}>{title}</Text>
+          ) : (
+            <Image
+              source={{
+                uri: STALLION_LOGO_URL,
+              }}
+              style={styles.headerLogo}
+              resizeMode="contain"
+              onError={errorInLogoLoading}
+            />
+          )
+        ) : null}
       </View>
       {onClosePress ? (
-        <TouchableOpacity
-          style={styles.headerSideSection}
-          onPress={onClosePress}
-        >
-          <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
-        </TouchableOpacity>
+        <View style={styles.headerSideSection}>
+          <TouchableOpacity
+            style={styles.actionButtonClickable}
+            onPress={onClosePress}
+          >
+            <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={styles.headerSideSection} />
       )}

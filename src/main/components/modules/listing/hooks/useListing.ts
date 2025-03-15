@@ -13,7 +13,8 @@ const useListing = () => {
   const {
     bucketState,
     bundleState,
-    actions: { fetchBuckets, fetchBundles, selectBucket, getUserProfile },
+    metaState,
+    actions: { fetchBuckets, fetchBundles, selectBucket },
   } = useContext(GlobalContext);
   const bundlesListingEnabled = useMemo(
     () => (bundleState.selectedBucketId ? true : false),
@@ -97,7 +98,6 @@ const useListing = () => {
 
   useEffect(() => {
     fetchListing();
-    getUserProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -105,10 +105,12 @@ const useListing = () => {
     listingData,
     listingError,
     listingLoading,
+    metaState,
     fetchListing,
     setBucketSelection,
     fetchNextPage,
     nextPageLoading,
+    isBackEnabled: bundleState?.selectedBucketId ? true : false,
   };
 };
 
