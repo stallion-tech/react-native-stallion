@@ -40,6 +40,46 @@
 
 ## [1.1.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.1...v1.1.2) (2024-04-11)
 
+- feat!: stallion for production ([0305133](https://github.com/stallion-tech/react-native-stallion/commit/0305133eee9e8766be2532bb6f0fcb4ec6b25417))
+
+### BREAKING CHANGES
+
+- stallion production version added, analytics events added, login logic modified
+
+# [2.0.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2025-02-10)
+
+### Bug Fixes
+
+- disabled parallel download ([#31](https://github.com/stallion-tech/react-native-stallion/issues/31)) ([a742de2](https://github.com/stallion-tech/react-native-stallion/commit/a742de200870b38e8fc3201c0efa45108dddb59d))
+
+# [2.0.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2025-02-09)
+
+### Bug Fixes
+
+- modified event emitter ([365aecd](https://github.com/stallion-tech/react-native-stallion/commit/365aecdc72021f9c84cdaae2ea9f51c14b313ab5))
+
+# [2.0.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2025-02-08)
+
+### Bug Fixes
+
+- modified exception handler initialisation ([#28](https://github.com/stallion-tech/react-native-stallion/issues/28)) ([7fdea47](https://github.com/stallion-tech/react-native-stallion/commit/7fdea47e8a618c4f57802cc6d016795a6d33d88d))
+
+# [2.0.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2025-02-05)
+
+### Features
+
+- stallion refactor ([4a47f10](https://github.com/stallion-tech/react-native-stallion/commit/4a47f10702f2b12357dd5ce39e67681c4721e0df))
+
+# [2.0.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0-alpha.1) (2024-11-02)
+
+- feat!: stallion for prod ([47e095b](https://github.com/stallion-tech/react-native-stallion/commit/47e095b1954d7453b83f6fd950bf477b4df6de4a))
+
+### BREAKING CHANGES
+
+- stallion for prod release
+
+## [1.1.2](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.1...v1.1.2) (2024-04-11)
+
 ### Bug Fixes
 
 - removed OTP flow and enable stallion by default ([dd86675](https://github.com/stallion-tech/react-native-stallion/commit/dd8667532743682b76ceebf9986d09b7620b7acd))
