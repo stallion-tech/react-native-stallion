@@ -39,15 +39,6 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
 
   @Override
   public void onHostResume() {
-    if (
-        StallionEventManager.getInstance().getEmitter() == null
-          && getReactApplicationContext().getCatalystInstance() != null
-    ) {
-      DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext().getJSModule(
-        DeviceEventManagerModule.RCTDeviceEventEmitter.class
-      );
-      StallionEventManager.getInstance().setEmitter(eventEmitter);
-    }
     StallionSyncHandler.sync();
   }
 
@@ -73,6 +64,10 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void onLaunch(String launchData) {
     stallionStateManager.setIsMounted(true);
+    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext().getJSModule(
+      DeviceEventManagerModule.RCTDeviceEventEmitter.class
+    );
+    StallionEventManager.getInstance().setEmitter(eventEmitter);
     checkPendingDownloads();
   }
 

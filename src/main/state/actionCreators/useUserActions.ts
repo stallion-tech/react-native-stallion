@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { DEFAULT_ERROR_MESSAGE } from '../../constants/appConstants';
 import { extractError } from '../../utils/errorUtil';
-import { setSdkToken, setUserError } from '../../state/actions/userActions';
+import { setUserError } from '../../state/actions/userActions';
 import { setUserLoading } from '../../state/actions/userActions';
 import { useApiClient } from '../../utils/useApiClient';
 
@@ -21,7 +21,9 @@ const useUserActions = (
   const { getData } = useApiClient(configState);
   const clearUserLogin = (shouldClearLogin: boolean) => {
     if (shouldClearLogin) {
-      dispatch(setSdkToken(null));
+      setSdkTokenNative('').then(() => {
+        refreshConfig();
+      });
     }
   };
 
@@ -37,7 +39,6 @@ const useUserActions = (
           if (sdkToken) {
             setSdkTokenNative(sdkToken).then(() => {
               refreshConfig();
-              dispatch(setSdkToken(sdkToken));
             });
           } else {
             dispatch(setUserError(extractError(loginResponse)));

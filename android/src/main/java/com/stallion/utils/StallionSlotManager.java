@@ -45,6 +45,12 @@ public class StallionSlotManager {
     }
   }
 
+  public static void discardNewRelease() {
+    StallionFileManager.deleteFileOrFolderSilently(new File(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.TEMP_FOLDER_SLOT));
+    stateManager.stallionMeta.setProdTempHash("");
+    stateManager.syncStallionMeta();
+  }
+
   public static void fallbackProd() {
     StallionFileManager.deleteFileOrFolderSilently(new File(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT));
     StallionFileManager.deleteFileOrFolderSilently(new File(baseFolderPath + StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.STABLE_FOLDER_SLOT));

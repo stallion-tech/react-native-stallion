@@ -17,8 +17,8 @@ export const LOGOUT_BUTTON_TEXT = 'Logout';
 export const FOOTER_INFO_TITLE = 'Active Bucket: ';
 export const FOOTER_INFO_SUBTITLE = 'Version: ';
 export enum SWITCH_TEXTS {
-  ON = 'STAGE',
-  OFF = 'PROD',
+  ON = 'Testing',
+  OFF = 'Production',
 }
 
 export const SWITCH_TITLE = 'Switch ';
