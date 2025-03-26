@@ -1,3 +1,10 @@
+## [2.0.1-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1-alpha.1...v2.0.1-alpha.2) (2025-03-26)
+
+
+### Bug Fixes
+
+* removed stallion enabled script reading logic from native, enabled by default ([ab3f0d4](https://github.com/stallion-tech/react-native-stallion/commit/ab3f0d4ba6d20f4277b0611c9a6783d49e44cb3f))
+
 ## [2.0.1-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0...v2.0.1-alpha.1) (2025-03-17)
 
 
