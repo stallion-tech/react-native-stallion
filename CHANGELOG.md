@@ -1,3 +1,10 @@
+## [2.0.1-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0...v2.0.1-alpha.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* modifed event emitter init, added fallback for mounting prod bundle ([#32](https://github.com/stallion-tech/react-native-stallion/issues/32)) ([f888820](https://github.com/stallion-tech/react-native-stallion/commit/f888820305f57bc76649673d289ff15949558ab8))
+
 # [2.0.0](https://github.com/stallion-tech/react-native-stallion/compare/v1.1.2...v2.0.0) (2025-03-11)
 
 - feat!: stallion for production ([0305133](https://github.com/stallion-tech/react-native-stallion/commit/0305133eee9e8766be2532bb6f0fcb4ec6b25417))
