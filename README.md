@@ -1,48 +1,76 @@
-[![stallionBanner](https://assets.stalliontech.io./stallion_logo.png)](https://stalliontech.io/)
+[![stallionBanner](https://assets.stalliontech.io/stallion_logo.png)](https://stalliontech.io/)
 
-#### [Sign up With Stallion](https://console.stalliontech.io/) to start using
+### 👉 [Sign up with Stallion](https://console.stalliontech.io/) to start shipping OTA updates today
 
-# react-native-stallion
+# Stallion – React Native OTA Updates Made Simple
 
-[![npm Version](https://img.shields.io/npm/v/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion) [![License](https://img.shields.io/npm/l/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)
+[![npm Version](https://img.shields.io/npm/v/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)  
+[![License](https://img.shields.io/npm/l/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)
 
-Stallion is the ultimate testing framework for React Native apps !
-It is a simplified build sharing and testing system that skips all the tedious hastle of generating a new new APK or IPA build everytime you make react native code changes.
-With stallion a developer can directly publish a react native build to Stallion servers and any tester can simply download updates through the Stallion app SDK without re-installing the app.
+**Stallion** is a **fully managed OTA update and testing framework for React Native apps**, built to streamline how developers test and deploy JavaScript bundle updates. With Stallion, you can publish updates instantly without rebuilding your native app or going through app store approvals.
 
-## SDK Installation
+---
 
-### npm
+## 🚀 Why Use Stallion?
 
-```
+- ✅ **Built-in Testing Framework** to validate updates before production  
+- 🔁 **Switch Between App Versions** without rebuilding native code  
+- 📦 **Publish Bundles Instantly** using Stallion CLI  
+- 📲 **Apply Updates In-App** using the Stallion SDK  
+- 🔄 **Manual + Automatic Rollbacks** with real-time rollback insights  
+- 📊 **Detailed Analytics** for update adoption and performance tracking  
+- 🏷️ **Extensive Free Plan** for indie devs and small teams  
+- ✅ **Production-Ready** and trusted by teams shipping millions of updates  
+
+---
+
+## 📦 SDK Installation
+
+### Using npm
+
+```bash
 npm install --save react-native-stallion
 ```
 
-### yarn
+### Using yarn
 
-```
+```bash
 yarn add react-native-stallion
 ```
 
-### Complete installation steps
+---
 
-Check complete SDK installation steps from [here](https://docs.stalliontech.io/docs/install)
+## 📚 Full Installation Guide
 
-## Documentation
+For complete setup instructions, native integration steps, and environment configurations, visit:  
+**https://learn.stalliontech.io/docs/install**
 
-Document contains installation steps, usage and how to disable stallion in production
+---
 
-https://docs.stalliontech.io
+## 📖 Documentation
 
-## Contributing
+For all usage instructions, advanced features, API references, and best practices:  
+**https://learn.stalliontech.io**
 
-Please see the [contributing](./CONTRIBUTING.md) file
-for an introduction to the codebase and what the various moving parts are.
+---
 
-## Open issues
+## 🙌 Contributing
 
-Check out [open issues](https://github.com/stallion-tech/react-native-stallion/issues) for a list of known issues, and discussions.
+Please see the [CONTRIBUTING.md](./CONTRIBUTING.md) file to get started with contributing to the codebase.
 
-## Code of Conduct
+---
 
-You can find the code of conduct [here](./CODE_OF_CONDUCT.md)
+## 🐛 Open Issues
+
+Explore [open issues](https://github.com/stallion-tech/react-native-stallion/issues) to see ongoing discussions or report bugs.
+
+---
+
+## 🤝 Code of Conduct
+
+We ask all contributors to follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+---
+
+> **Stallion is the fastest, safest way to manage React Native OTA updates—built for modern teams.**  
+> Learn more at: **https://stalliontech.io**
