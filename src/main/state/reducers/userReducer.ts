@@ -21,14 +21,6 @@ const userReducer = (state: IUserState, action: IUserAction): IUserState => {
         isLoading: false,
         error: errorPayload,
       };
-
-    case UserActionKind.SET_SDK_TOKEN:
-      const { payload: sdkToken } = action;
-      return {
-        sdkToken,
-        isLoading: false,
-        error: null,
-      };
     default:
       return state;
   }

@@ -69,7 +69,10 @@ public class Stallion {
         stallionMeta.setProdTempHash("");
         stateManager.syncStallionMeta();
         sendInstallEvent(prodTempHash);
-      } catch (Exception ignored) {}
+      } catch (Exception e) {
+        sendMountingError(prodTempHash, e.getMessage());
+        StallionSlotManager.discardNewRelease();
+      }
     }
   }
 
@@ -139,6 +142,21 @@ public class Stallion {
 
       StallionEventManager.getInstance().sendEvent(
         StallionEventConstants.NativeProdEventTypes.CORRUPTED_FILE_ERROR.toString(),
+        eventPayload
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void sendMountingError(String releaseHash, String exceptionMeta) {
+    try {
+      JSONObject eventPayload = new JSONObject();
+      eventPayload.put("releaseHash", releaseHash);
+      eventPayload.put("meta", exceptionMeta);
+
+      StallionEventManager.getInstance().sendEvent(
+        StallionEventConstants.NativeProdEventTypes.FILE_MOUNTING_ERROR.toString(),
         eventPayload
       );
     } catch (Exception e) {
