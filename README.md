@@ -43,7 +43,7 @@ yarn add react-native-stallion
 ## 📚 Full Installation Guide
 
 For complete setup instructions, native integration steps, and environment configurations, visit:  
-**https://learn.stalliontech.io/docs/install**
+**https://learn.stalliontech.io/docs/sdk/installation**
 
 ---
 
