@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.0...v2.0.1) (2025-04-06)
+
+
+### Bug Fixes
+
+* event emitter init logic, prod loading fallback, gradle script changes ([ab5c9b2](https://github.com/stallion-tech/react-native-stallion/commit/ab5c9b2efb090e80441135c7f3ce5cb8a01af541)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32)
+
 ## [2.0.1-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1-alpha.1...v2.0.1-alpha.2) (2025-03-26)
 
 
