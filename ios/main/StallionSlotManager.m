@@ -71,8 +71,8 @@
         StallionStateManager *stateManager = [StallionStateManager sharedInstance];
         NSString *baseFolderPath = stateManager.stallionConfig.filesDirectory;
 
-      NSString *newSlotPath = [NSString stringWithFormat:@"%@%@%@", baseFolderPath, StallionObjConstants.prod_directory, StallionObjConstants.new_folder_slot];
-      NSString *stableSlotPath = [NSString stringWithFormat:@"%@%@%@", baseFolderPath, StallionObjConstants.prod_directory, StallionObjConstants.stable_folder_slot];
+      NSString *newSlotPath = [NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, StallionObjConstants.prod_directory, StallionObjConstants.new_folder_slot];
+      NSString *stableSlotPath = [NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, StallionObjConstants.prod_directory, StallionObjConstants.stable_folder_slot];
 
       [StallionFileManager copyFileOrDirectoryFrom:newSlotPath to:stableSlotPath];
 

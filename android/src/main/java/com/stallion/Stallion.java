@@ -170,7 +170,7 @@ public class Stallion {
       return bundlePath;
     } else {
       if(isProd) {
-        StallionSlotManager.rollbackProd(true, "Corruped file not found" + folderPath);
+        StallionSlotManager.rollbackProd(false, "Corruped file not found" + folderPath);
         sendCorruptionEvent(releaseHash, folderPath);
       } else {
         StallionSlotManager.rollbackStage();

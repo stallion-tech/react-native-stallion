@@ -46,11 +46,7 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   public void onHostPause() {}
 
   @Override
-  public void onHostDestroy() {}
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void onHostDestroy() {
     stallionStateManager.setIsMounted(false);
     getReactApplicationContext().removeLifecycleEventListener(this);
   }

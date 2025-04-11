@@ -127,7 +127,7 @@
     } else {
         [self sendCorruptionEvent:releaseHash folderPath:folderPath];
         if(isProd) {
-            [StallionSlotManager rollbackProdWithAutoRollback:true errorString:@"Corruped File not found"];
+            [StallionSlotManager rollbackProdWithAutoRollback:false errorString:@"Corruped File not found"];
         } else {
             [StallionSlotManager rollbackStage];
         }
