@@ -14,4 +14,9 @@ export const COLORS = {
   blue: 'blue',
   text_major: '#5F5F5F',
   text_light: '#5F5F5F80',
+  dark_bg: '#0A0A0A',
+  dark_shadow_color: '#00FFFF66',
+  primary_white: '#FAFAFA',
+  dark_border_color: '#262626',
+  grey_color: '#A1A1A1',
 };

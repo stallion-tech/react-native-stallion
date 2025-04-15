@@ -9,7 +9,6 @@ import { COLORS } from '../../../../constants/colors';
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   center: {
     justifyContent: 'center',
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: HEADER_SLAB_HEIGHT / 2.5,
-    color: COLORS.black,
+    color: COLORS.primary_white,
     fontWeight: '500',
   },
   inputSection: {
@@ -40,14 +39,14 @@ const styles = StyleSheet.create({
     width: '90%',
     height: HEADER_SLAB_HEIGHT,
     borderWidth: 1,
-    borderColor: COLORS.black2,
+    borderColor: COLORS.dark_border_color,
     borderRadius: STD_MARGIN,
     marginBottom: STD_MARGIN,
     paddingHorizontal: STD_MARGIN * 2,
     color: COLORS.text_major,
   },
   buttonContainer: {
-    padding: HEADER_SLAB_HEIGHT / 2,
+    padding: 16,
   },
 });
 

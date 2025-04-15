@@ -22,10 +22,12 @@ interface IGlobalContextActions {
   downloadBundle: (url: string, hash: string) => void;
   setProgress: (newProgress: number) => void;
   setDownloadErrorMessage: (msg: string) => void;
+  setShowBucketListing: (showBucketListing: boolean) => void;
 }
 
 export interface IGlobalContext {
   isModalVisible: boolean;
+  showBucketListing: boolean;
   metaState: IStallionMeta;
   userState: IUserState;
   bucketState: IBucketState;

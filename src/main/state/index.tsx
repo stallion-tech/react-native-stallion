@@ -27,6 +27,7 @@ export const GlobalContext = createContext({} as IGlobalContext);
 
 const GlobalProvider: React.FC = ({ children }) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [showBucketListing, setShowBucketListing] = useState<boolean>(false);
   const [metaState, metaDispatch] = useReducer(
     metaReducer,
     {} as IStallionMeta
@@ -81,6 +82,7 @@ const GlobalProvider: React.FC = ({ children }) => {
 
   const value: IGlobalContext = {
     isModalVisible,
+    showBucketListing,
     metaState,
     userState,
     bucketState,
@@ -100,6 +102,7 @@ const GlobalProvider: React.FC = ({ children }) => {
       setProgress,
       setDownloadErrorMessage,
       refreshConfig,
+      setShowBucketListing,
     },
   };
 

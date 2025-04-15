@@ -9,15 +9,9 @@ import { COLORS } from '../../../../../constants/colors';
 const styles = StyleSheet.create({
   cardContainer: {
     margin: STD_MARGIN,
-    backgroundColor: COLORS.white,
     borderRadius: 8,
-    shadowColor: COLORS.black,
-    shadowOffset: { height: 4, width: 4 },
-    shadowOpacity: 0.1,
-    elevation: 2,
-    shadowRadius: 8,
-    borderWidth: 0.5,
-    borderColor: COLORS.black2,
+    borderWidth: 1,
+    borderColor: COLORS.dark_border_color,
   },
   infoSection: {
     width: '100%',
@@ -30,7 +24,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: STD_MARGIN,
+    padding: 12,
+    flexWrap: 'wrap',
   },
   colContainer: {
     flexDirection: 'column',
@@ -43,15 +38,16 @@ const styles = StyleSheet.create({
   appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
   container: {},
   metaConainer: {
-    backgroundColor: COLORS.white,
-    margin: STD_MARGIN,
-    borderRadius: STD_MARGIN,
-    padding: STD_MARGIN,
+    borderRadius: 8,
+    padding: 12,
+    paddingBottom: 4,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.dark_border_color,
   },
   divider: {
+    borderBottomColor: COLORS.dark_border_color,
     borderBottomWidth: 0.5,
-    opacity: 0.2,
-    marginBottom: STD_MARGIN,
   },
   subText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
@@ -59,29 +55,51 @@ const styles = StyleSheet.create({
     color: COLORS.text_major,
   },
   titleText: {
-    fontSize: HEADER_SLAB_HEIGHT / 2.5,
-    color: COLORS.black,
+    fontSize: 22,
+    color: COLORS.primary_white,
+  },
+  configTitleText: {
+    fontSize: 16,
+    color: COLORS.primary_white,
+    marginBottom: 8,
   },
   bold: {
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   releaseNoteText: {
     fontSize: 12,
     fontWeight: '500',
-    color: COLORS.text_major,
+    color: '#a1a1a1',
+    marginBottom: 2,
   },
   releaseNoteDescriptionText: {
     fontSize: 14,
-    width: '70%',
-    color: COLORS.black,
-    marginLeft: STD_MARGIN / 2,
+    color: COLORS.primary_white,
   },
   descContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: STD_MARGIN,
-    backgroundColor: COLORS.black1,
+    backgroundColor: '#262626',
+    marginBottom: 12,
+  },
+  buttonContainer: { marginBottom: 12, marginHorizontal: 12 },
+  marginBottom8: { marginBottom: 8 },
+  bundleInfoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    paddingTop: 4,
+    paddingBottom: 16,
+    paddingHorizontal: 4,
+  },
+  flexDirectionRow: {
+    flexDirection: 'row',
+  },
+  gap8: {
+    gap: 8,
   },
 });
+
+// Label Color: - #a1a1a1
 
 export default styles;

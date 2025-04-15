@@ -7,6 +7,7 @@ import { parseDateTime } from '../../../../utils/dateUtil';
 import { COLORS } from '../../../../constants/colors';
 import {
   BUCKET_CARD_TEXTS,
+  LABEL_SEPERATOR,
   NOT_APPLICABLE_TEXT,
   VERSION_PREFIX,
 } from '../../../../constants/appConstants';
@@ -51,21 +52,22 @@ const BucketCardInfoSection: React.FC<IBucketCardInfoSection> = ({
         </Text>
       </View>
       <View style={styles.divider} />
-      <View style={styles.rowContainer}>
+      <View style={styles.bundleInfoContainer}>
         <CardDescriptionContent
-          title={BUCKET_CARD_TEXTS.VERSION}
+          title={`${BUCKET_CARD_TEXTS.VERSION}${LABEL_SEPERATOR}`}
           subtitle={
             bundleCount && +bundleCount
-              ? `${VERSION_PREFIX}${bundleCount}`
+              ? `${VERSION_PREFIX.toLowerCase()}${bundleCount}`
               : NOT_APPLICABLE_TEXT
           }
+          bottomGap={16}
         />
         <CardDescriptionContent
-          title={BUCKET_CARD_TEXTS.BUNDLES}
+          title={`${BUCKET_CARD_TEXTS.BUNDLES}${LABEL_SEPERATOR}`}
           subtitle={bundleCount && +bundleCount ? bundleCount : 0}
         />
         <CardDescriptionContent
-          title={BUCKET_CARD_TEXTS.UPDATED}
+          title={`${BUCKET_CARD_TEXTS.UPDATED}${LABEL_SEPERATOR}`}
           subtitle={updatedAtText}
         />
       </View>

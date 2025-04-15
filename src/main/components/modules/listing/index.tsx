@@ -1,11 +1,15 @@
-import React, { memo, useEffect, useState } from 'react';
-import { RefreshControl, FlatList } from 'react-native';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { RefreshControl, FlatList, Text, View } from 'react-native';
 
 import useListing from './hooks/useListing';
 
 import ErrorView from '../../../components/common/ErrorView';
 import BucketCard, { IBucketCard } from './components/BucketCard';
 import {
+  BUCKETS_SECTION_SUB_TITLE,
+  BUCKETS_SECTION_TITLE,
+  BUNDLES_SECTION_SUB_TITLE,
+  BUNDLES_SECTION_TITLE,
   CARD_TYPES,
   END_REACH_THRESHOLD,
   IS_ANDROID,
@@ -14,7 +18,6 @@ import BundleCard, { IBundleCard } from './components/BundleCard';
 import FooterLoader from '../../common/FooterLoader';
 
 import styles from './styles';
-import SlotView from './components/SlotView';
 
 const Listing: React.FC = () => {
   const {
@@ -25,10 +28,15 @@ const Listing: React.FC = () => {
     setBucketSelection,
     fetchNextPage,
     nextPageLoading,
-    metaState,
-    isBackEnabled,
+    bundlesListingEnabled,
   } = useListing();
+
   const [isMounted, setIsMounted] = useState(false);
+
+  const ListHeaderComponent = useMemo(() => {
+    return <SectionTitle bundlesListingEnabled={bundlesListingEnabled} />;
+  }, [bundlesListingEnabled]);
+
   useEffect(() => {
     setIsMounted(true);
   }, [setIsMounted]);
@@ -39,10 +47,11 @@ const Listing: React.FC = () => {
     return <FooterLoader />;
   }
   if (!isMounted) return null;
+
   return (
     <>
-      {isBackEnabled ? null : <SlotView {...metaState.stageSlot} />}
       <FlatList
+        ListHeaderComponent={ListHeaderComponent}
         style={styles.mainContainer}
         contentContainerStyle={styles.mainListContainer}
         refreshControl={
@@ -52,11 +61,12 @@ const Listing: React.FC = () => {
           />
         }
         data={listingData}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <BucketOrBundle
             key={item.id}
             data={item}
             setBucketSelection={setBucketSelection}
+            index={index}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -73,21 +83,41 @@ export default memo(Listing);
 interface IBucketOrBundle {
   data: IBucketCard | IBundleCard;
   setBucketSelection: (bucketId?: string | null | undefined) => void;
+  index: number;
 }
 
 const BucketOrBundle: React.FC<IBucketOrBundle> = memo(
-  ({ data, setBucketSelection }) => {
+  ({ data, setBucketSelection, index }) => {
     return data?.type === CARD_TYPES.BUCKET ? (
       <BucketCard
         key={data.id}
         {...data}
-        handlePress={() => setBucketSelection(data.id)}
+        handlePress={() => {
+          setBucketSelection(data.id);
+        }}
       />
     ) : (
       (data?.type === CARD_TYPES.BUNDLE && (
-        <BundleCard key={data.id} {...data} />
+        <BundleCard key={data.id} {...data} index={index} />
       )) ||
         null
     );
   }
 );
+
+const SectionTitle: React.FC<{
+  bundlesListingEnabled: boolean;
+}> = memo(({ bundlesListingEnabled }) => {
+  return (
+    <View style={styles.sectionTitleContainer}>
+      <Text style={styles.sectionTitle}>
+        {bundlesListingEnabled ? BUNDLES_SECTION_TITLE : BUCKETS_SECTION_TITLE}
+      </Text>
+      <Text style={styles.sectionSubTitle}>
+        {bundlesListingEnabled
+          ? BUNDLES_SECTION_SUB_TITLE
+          : BUCKETS_SECTION_SUB_TITLE}
+      </Text>
+    </View>
+  );
+});

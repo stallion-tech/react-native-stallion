@@ -42,6 +42,7 @@ const useListing = () => {
           updatedAt: bundleData.updatedAt,
           author: bundleData.author.fullName,
           downloadUrl: bundleData.downloadUrl,
+          size: bundleData.size,
         })) || []
       );
     }
@@ -110,6 +111,7 @@ const useListing = () => {
     setBucketSelection,
     fetchNextPage,
     nextPageLoading,
+    bundlesListingEnabled,
     isBackEnabled: bundleState?.selectedBucketId ? true : false,
   };
 };

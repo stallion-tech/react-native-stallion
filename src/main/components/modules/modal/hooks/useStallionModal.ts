@@ -11,16 +11,28 @@ const useStallionModal = () => {
     metaState,
     bundleState,
     downloadState,
+    showBucketListing,
     actions: {
       setIsModalVisible,
       selectBucket,
       refreshMeta,
       setDownloadErrorMessage,
+      setShowBucketListing,
     },
   } = useContext(GlobalContext);
+
   const onBackPress = useCallback(() => {
-    requestAnimationFrame(() => selectBucket());
-  }, [selectBucket]);
+    if (showBucketListing && bundleState?.selectedBucketId) {
+      requestAnimationFrame(() => selectBucket());
+    } else {
+      requestAnimationFrame(() => setShowBucketListing(false));
+    }
+  }, [
+    selectBucket,
+    showBucketListing,
+    bundleState?.selectedBucketId,
+    setShowBucketListing,
+  ]);
   const onClosePress = useCallback(() => {
     requestAnimationFrame(() => setIsModalVisible(false));
   }, [setIsModalVisible]);
@@ -28,8 +40,8 @@ const useStallionModal = () => {
   const loginRequired = configState?.sdkToken ? false : true;
 
   const isBackEnabled = useMemo<boolean>(
-    () => (bundleState.selectedBucketId ? true : false),
-    [bundleState.selectedBucketId]
+    () => showBucketListing,
+    [showBucketListing]
   );
 
   const isDownloading = useMemo<boolean>(() => {
@@ -70,6 +82,7 @@ const useStallionModal = () => {
     downloadProgress,
     downloadError,
     handleSwitch,
+    showBucketListing,
   };
 };
 

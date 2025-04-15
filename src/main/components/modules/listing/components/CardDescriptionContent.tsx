@@ -1,18 +1,19 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { COLORS } from '../../../../constants/colors';
-import { STD_MARGIN } from '../../../../constants/appConstants';
 
 interface ICardDescriptionContent {
   title: string;
   subtitle: string | number;
+  bottomGap?: number;
 }
 const CardDescriptionContent: React.FC<ICardDescriptionContent> = ({
   title,
   subtitle,
+  bottomGap,
 }) => {
   return (
-    <View style={styles.centerContainer}>
+    <View style={[styles.centerContainer, { marginBottom: bottomGap }]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </View>
@@ -20,17 +21,21 @@ const CardDescriptionContent: React.FC<ICardDescriptionContent> = ({
 };
 
 const styles = StyleSheet.create({
-  centerContainer: { justifyContent: 'center', alignItems: 'center' },
+  centerContainer: {
+    width: '50%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
   title: {
-    fontSize: STD_MARGIN * 1.3,
+    fontSize: 12,
     fontWeight: '500',
-    color: COLORS.black7,
+    color: COLORS.grey_color,
   },
   subtitle: {
-    fontSize: STD_MARGIN * 1.1,
+    fontSize: 14,
     fontWeight: '600',
-    marginTop: 5,
-    color: COLORS.black,
+    color: COLORS.primary_white,
   },
 });
 

@@ -8,6 +8,7 @@ export interface IBundleData {
   };
   releaseNote: string;
   downloadUrl: string;
+  size: number;
 }
 
 export type IBundleDataList = IBundleData[];

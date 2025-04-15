@@ -3,12 +3,19 @@ import { Platform } from 'react-native';
 export const HEADER_TITLE = 'Stallion';
 export const Login_TITLE = 'Login to continue';
 export const PROFILE_TITLE = 'Profile';
-export const HEADER_SLAB_HEIGHT = 50;
+export const HEADER_SLAB_HEIGHT = 56;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
 export const END_REACH_THRESHOLD = 0;
 
-export const CLOSE_BUTTON_TEXT = 'close';
-export const BACK_BUTTON_TEXT = 'back';
+export const BUCKETS_SECTION_TITLE = 'Buckets';
+export const BUNDLES_SECTION_TITLE = 'Bundles';
+export const BUCKETS_SECTION_SUB_TITLE =
+  'Buckets help organize your project’s features';
+export const BUNDLES_SECTION_SUB_TITLE = 'All active and published bundles';
+export const LABEL_SEPERATOR = ': ';
+
+export const CLOSE_BUTTON_TEXT = 'Close';
+export const BACK_BUTTON_TEXT = 'Back';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
 export const APPLIED_TEXT = 'Applied';
@@ -21,13 +28,19 @@ export enum SWITCH_TEXTS {
   OFF = 'Production',
 }
 
+export const DIGITAL_STORAGE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+
 export const SWITCH_TITLE = 'Switch ';
 export const BUCKET_CARD_UPDATED_TEXT = 'Updated at: ';
 export const BUCKET_CARD_BUNDLE_COUNT_TEXT = 'Bundles: ';
-export const BUCKET_CARD_AUTHOR_TEXT = 'Author: ';
+export const BUCKET_CARD_AUTHOR_TEXT = 'Author';
 
-export const BUNDLE_CARD_RELEASE_NOTE = 'Release Note: ';
+export const BUNDLE_TEXT = 'Bundle';
+export const BUNDLE_CARD_RELEASE_NOTE = 'Release Note';
 export const BUNDLE_CARD_AUTHOR = 'Author';
+export const BUNDLE_CARD_PUBLISHED_ON = 'Published on: ';
+export const BUNDLE_CARD_SIZE = 'Size: ';
+export const BUNDLE_CARD_LATEST = 'Latest';
 
 export const DOWNLOAD_PROGRESS_EVENT = 'StallionDownloadProgress';
 
@@ -88,7 +101,7 @@ export enum SWITCH_STATE_KEYS {
 export const NO_RELEASE_NOTE_TEXT = 'No release note provided';
 
 export const STALLION_LOGO_URL =
-  'https://d2shjbuzwp1rpv.cloudfront.net/stallion_logo.png';
+  'https://assets.stalliontech.io/stallion-devtool-logo.png';
 
 export const STALLION_EB_INFO =
   'A crash occurred in the app. We have switched Stallion off. Check crash report below. Continue crash to invoke other exception handlers.';

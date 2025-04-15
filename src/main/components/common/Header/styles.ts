@@ -17,11 +17,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 5,
     elevation: 5,
-    shadowColor: COLORS.black,
+    shadowColor: COLORS.dark_shadow_color,
     shadowOpacity: 0.05,
     shadowOffset: { height: 20, width: 0 },
     shadowRadius: 10,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.dark_bg,
   },
   headerSideSection: {
     flex: 1,
@@ -52,15 +52,15 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: HEADER_SLAB_HEIGHT / 3.5,
-    color: COLORS.black,
+    color: COLORS.primary_white,
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
+    // textDecorationLine: 'underline',
   },
   alignStart: {
     alignItems: 'flex-start',
   },
   headerLogo: {
-    width: HEADER_SLAB_HEIGHT * 2,
+    width: HEADER_SLAB_HEIGHT * 1.5,
     flex: 1,
   },
   profileInitial: {

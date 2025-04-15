@@ -1,18 +1,15 @@
 import React, { useContext } from 'react';
-import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Modal, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 
 import Login from '../login';
 import Header from '../../../components/common/Header';
-import Footer from '../../../components/common/Footer';
 import { HEADER_TITLE } from '../../../constants/appConstants';
 
 import { COLORS } from '../../../constants/colors';
 import Listing from '../listing';
 import useStallionModal from './hooks/useStallionModal';
-import OverlayLoader from '../../../components/common/OverlayLoader';
-import { SWITCH_STATES } from '../../../../types/meta.types';
-import Prod from '../prod';
 import { GlobalContext } from '../../../state';
+import Home from '../home';
 
 const StallionModal: React.FC = () => {
   const {
@@ -41,10 +38,12 @@ const Content: React.FC = () => {
     downloadProgress,
     metaState,
     downloadError,
-    handleSwitch,
+    showBucketListing,
   } = useStallionModal();
+
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.dark_bg} />
       <Header
         title={loginRequired ? null : HEADER_TITLE}
         onClosePress={onClosePress}
@@ -53,27 +52,12 @@ const Content: React.FC = () => {
       <View style={styles.listingSection}>
         {loginRequired ? (
           <Login />
-        ) : metaState.switchState === SWITCH_STATES.STAGE ? (
-          <Listing />
+        ) : !showBucketListing ? (
+          <Home />
         ) : (
-          <Prod />
+          <Listing />
         )}
-        {isDownloading ? (
-          <OverlayLoader currentDownloadFraction={downloadProgress} />
-        ) : null}
       </View>
-      {loginRequired ? null : (
-        <Footer
-          switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
-          onSwitchToggle={handleSwitch}
-          errorMessage={downloadError}
-          isRestartRequired={
-            metaState?.prodSlot?.tempHash || metaState?.stageSlot?.tempHash
-              ? true
-              : false
-          }
-        />
-      )}
     </SafeAreaView>
   );
 };
@@ -83,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignContent: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.dark_bg,
   },
   listingSection: {
     flex: 1,

@@ -8,14 +8,15 @@ import { COLORS } from '../../../constants/colors';
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    height: HEADER_SLAB_HEIGHT,
-    borderRadius: STD_MARGIN,
-    width: '100%',
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+    width: '100%',
+    paddingVertical: 10,
   },
   primaryButton: {
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.primary_white,
     elevation: 5,
     zIndex: 5,
     shadowColor: COLORS.black7,
@@ -28,16 +29,17 @@ const styles = StyleSheet.create({
   },
   transparentButton: {
     borderWidth: 1,
-    borderColor: COLORS.black7,
+    borderColor: COLORS.dark_border_color,
   },
   buttonText: {
-    fontSize: HEADER_SLAB_HEIGHT / 3.5,
+    fontSize: 16,
   },
   primaryText: {
-    color: COLORS.white,
+    color: COLORS.dark_bg,
+    fontWeight: '500',
   },
   secondaryText: {
-    color: COLORS.black,
+    color: COLORS.primary_white,
   },
 });
 

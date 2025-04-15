@@ -12,10 +12,12 @@ const ConfigView: React.FC<IConfigView> = ({ config }) => {
   return (
     <View style={styles.metaConainer}>
       <View style={styles.colContainer}>
-        <Text style={[styles.titleText, styles.bold]}>
+        <Text style={[styles.configTitleText, styles.bold]}>
           App Version: {config.appVersion}
         </Text>
-        <Text style={[styles.titleText, styles.bold]}>UID: {config.uid}</Text>
+        <Text style={[styles.configTitleText, styles.bold]}>
+          UID: {config.uid}
+        </Text>
       </View>
     </View>
   );

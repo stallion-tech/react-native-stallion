@@ -57,7 +57,7 @@ const Login: React.FC = () => {
         <TextInput
           style={styles.textInp}
           placeholder={PIN_INPUT_KEY}
-          placeholderTextColor={COLORS.black5}
+          placeholderTextColor={COLORS.text_major}
           value={pin}
           onChange={handleNumberFormating}
           maxLength={PIN_LENGTH}
