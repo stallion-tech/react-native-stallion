@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { RefreshControl, FlatList } from 'react-native';
+import { RefreshControl, FlatList, View } from 'react-native';
 
 import useListing from './hooks/useListing';
 
@@ -14,7 +14,6 @@ import BundleCard, { IBundleCard } from './components/BundleCard';
 import FooterLoader from '../../common/FooterLoader';
 
 import styles from './styles';
-import SlotView from './components/SlotView';
 
 const Listing: React.FC = () => {
   const {
@@ -25,8 +24,6 @@ const Listing: React.FC = () => {
     setBucketSelection,
     fetchNextPage,
     nextPageLoading,
-    metaState,
-    isBackEnabled,
   } = useListing();
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -40,8 +37,7 @@ const Listing: React.FC = () => {
   }
   if (!isMounted) return null;
   return (
-    <>
-      {isBackEnabled ? null : <SlotView {...metaState.stageSlot} />}
+    <View style={styles.flex}>
       <FlatList
         style={styles.mainContainer}
         contentContainerStyle={styles.mainListContainer}
@@ -64,7 +60,7 @@ const Listing: React.FC = () => {
         onEndReached={fetchNextPage}
         onEndReachedThreshold={END_REACH_THRESHOLD}
       />
-    </>
+    </View>
   );
 };
 

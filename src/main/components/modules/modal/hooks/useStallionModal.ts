@@ -59,6 +59,15 @@ const useStallionModal = () => {
     [refreshMeta, selectBucket, setDownloadErrorMessage]
   );
 
+  const internalIsRestartRequired = useMemo<boolean>(() => {
+    return (metaState.switchState === SWITCH_STATES.PROD &&
+      metaState.prodSlot?.tempHash) ||
+      (metaState.switchState === SWITCH_STATES.STAGE &&
+        metaState.stageSlot?.tempHash)
+      ? true
+      : false;
+  }, [metaState]);
+
   return {
     isModalVisible,
     onBackPress,
@@ -70,6 +79,7 @@ const useStallionModal = () => {
     downloadProgress,
     downloadError,
     handleSwitch,
+    internalIsRestartRequired,
   };
 };
 

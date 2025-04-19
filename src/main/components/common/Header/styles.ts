@@ -51,10 +51,9 @@ const styles = StyleSheet.create({
     padding: STD_MARGIN,
   },
   actionButtonText: {
-    fontSize: HEADER_SLAB_HEIGHT / 3.5,
-    color: COLORS.black,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black7,
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
   alignStart: {
     alignItems: 'flex-start',

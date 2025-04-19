@@ -60,3 +60,5 @@ export const popEventsNative: () => Promise<string> =
 
 export const acknowledgeEventsNative: (eventIds: string) => Promise<string> =
   StallionNativeModule?.acknowledgeEvents;
+
+export const restart: () => null = StallionNativeModule?.restart;

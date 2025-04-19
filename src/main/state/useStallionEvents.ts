@@ -24,6 +24,9 @@ const REFRESH_META_EVENTS: {
   [NativeEventTypesProd.ROLLED_BACK_PROD]: true,
   [NativeEventTypesProd.AUTO_ROLLED_BACK_PROD]: true,
   [NativeEventTypesProd.STABILIZED_PROD]: true,
+  [NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE]: true,
+  [NativeEventTypesStage.DOWNLOAD_ERROR_STAGE]: true,
+  [NativeEventTypesStage.INSTALLED_STAGE]: true,
 };
 
 export interface IStallionNativeEventData {

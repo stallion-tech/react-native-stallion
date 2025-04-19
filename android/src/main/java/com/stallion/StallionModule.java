@@ -1,7 +1,13 @@
 package com.stallion;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -159,6 +165,44 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     } catch (Exception e) {
       // Reject the promise for other errors
       promise.reject("ACKNOWLEDGE_EVENTS_ERROR", "Failed to acknowledge events: " + e.getMessage(), e);
+    }
+  }
+
+  @ReactMethod
+  public void restart() {
+    try {
+      final Activity activity = getCurrentActivity();
+      if (activity == null) return;
+
+      final Application application = activity.getApplication();
+      if (!(application instanceof ReactApplication)) return;
+
+      final ReactInstanceManager instanceManager = ((ReactApplication) application)
+        .getReactNativeHost()
+        .getReactInstanceManager();
+
+      if (instanceManager != null) {
+        instanceManager.recreateReactContextInBackground();
+      } else {
+        restartAppProcess(activity);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void restartAppProcess(Activity activity) {
+    try {
+      Intent intent = activity.getPackageManager()
+        .getLaunchIntentForPackage(activity.getPackageName());
+      if (intent != null) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(intent);
+        activity.finish();
+        Runtime.getRuntime().exit(0);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }

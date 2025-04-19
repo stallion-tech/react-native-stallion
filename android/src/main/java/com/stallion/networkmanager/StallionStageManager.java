@@ -25,6 +25,7 @@ public class StallionStageManager {
         + StallionConfigConstants.STAGE_DIRECTORY
         + StallionConfigConstants.TEMP_FOLDER_SLOT;
 
+      emitDownloadStartedStage(receivedHash);
       StallionFileDownloader.downloadBundle(
         receivedDownloadUrl,
         downloadPath,
@@ -32,6 +33,7 @@ public class StallionStageManager {
           @Override
           public void onReject(String prefix, String error) {
             promise.reject(prefix, error);
+            emitDownloadErrorStage(receivedHash, error);
           }
 
           @Override
@@ -57,7 +59,7 @@ public class StallionStageManager {
     try {
       successPayload.put("releaseHash", releaseHash);
     } catch (Exception ignored) { }
-    StallionEventManager.getInstance().sendEventWithoutCaching(
+    StallionEventManager.getInstance().sendEvent(
       StallionEventConstants.NativeStageEventTypes.DOWNLOAD_COMPLETE_STAGE.toString(),
       successPayload
     );
@@ -72,6 +74,29 @@ public class StallionStageManager {
     StallionEventManager.getInstance().sendEventWithoutCaching(
       StallionEventConstants.NativeStageEventTypes.DOWNLOAD_PROGRESS_STAGE.toString(),
       successPayload
+    );
+  }
+
+  private static void emitDownloadStartedStage(String releaseHash) {
+    JSONObject startedPayload = new JSONObject();
+    try {
+      startedPayload.put("releaseHash", releaseHash);
+    } catch (Exception ignored) { }
+    StallionEventManager.getInstance().sendEvent(
+      StallionEventConstants.NativeStageEventTypes.DOWNLOAD_STARTED_STAGE.toString(),
+      startedPayload
+    );
+  }
+
+  private static void emitDownloadErrorStage(String releaseHash, String error) {
+    JSONObject errorPayload = new JSONObject();
+    try {
+      errorPayload.put("releaseHash", releaseHash);
+      errorPayload.put("mera", error);
+    } catch (Exception ignored) { }
+    StallionEventManager.getInstance().sendEvent(
+      StallionEventConstants.NativeStageEventTypes.DOWNLOAD_ERROR_STAGE.toString(),
+      errorPayload
     );
   }
 }

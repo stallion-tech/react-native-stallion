@@ -26,6 +26,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  justifyCenter: {
+    justifyContent: 'center',
+  },
+  rowFlex: {
+    flexDirection: 'row',
+  },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -39,6 +45,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black,
     padding: STD_MARGIN,
     borderRadius: STD_MARGIN,
+  },
+  configCardContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: STD_MARGIN,
+    marginVertical: STD_MARGIN / 2,
   },
   appliedText: { color: COLORS.green, fontWeight: 'bold', fontSize: 14 },
   container: {},
@@ -59,8 +73,14 @@ const styles = StyleSheet.create({
     color: COLORS.text_major,
   },
   titleText: {
+    flex: 1,
     fontSize: HEADER_SLAB_HEIGHT / 2.5,
     color: COLORS.black,
+  },
+  subTitleText: {
+    textAlign: 'right',
+    fontSize: HEADER_SLAB_HEIGHT / 3,
+    color: COLORS.black7,
   },
   bold: {
     fontWeight: 'bold',
@@ -81,6 +101,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: STD_MARGIN,
     backgroundColor: COLORS.black1,
+  },
+  rightBorder: {
+    borderRightWidth: 1,
+    borderColor: COLORS.black2,
+  },
+  flex: {
+    flex: 1,
   },
 });
 

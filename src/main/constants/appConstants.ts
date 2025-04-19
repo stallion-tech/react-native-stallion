@@ -7,8 +7,8 @@ export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
 export const END_REACH_THRESHOLD = 0;
 
-export const CLOSE_BUTTON_TEXT = 'close';
-export const BACK_BUTTON_TEXT = 'back';
+export const CLOSE_BUTTON_TEXT = '\u2716';
+export const BACK_BUTTON_TEXT = '\u2190';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
 export const APPLIED_TEXT = 'Applied';
@@ -19,6 +19,11 @@ export const FOOTER_INFO_SUBTITLE = 'Version: ';
 export enum SWITCH_TEXTS {
   ON = 'Testing',
   OFF = 'Production',
+}
+
+export enum FOOTER_SUB_TEXTS {
+  PROD = 'User facing version',
+  STAGE = 'Internal sharing version',
 }
 
 export const SWITCH_TITLE = 'Switch ';
@@ -130,8 +135,9 @@ export enum NativeEventTypesStage {
   DOWNLOAD_ERROR_STAGE = 'DOWNLOAD_ERROR_STAGE',
   DOWNLOAD_PROGRESS_STAGE = 'DOWNLOAD_PROGRESS_STAGE',
   DOWNLOAD_COMPLETE_STAGE = 'DOWNLOAD_COMPLETE_STAGE',
+  INSTALLED_STAGE = 'INSTALLED_STAGE',
 }
 
 export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
 
-export const RESTART_REQUIRED_MESSAGE = 'Restart required. Bundle has changed';
+export const RESTART_REQUIRED_MESSAGE = 'Bundle has changed. Restart Now.';

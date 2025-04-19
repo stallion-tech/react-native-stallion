@@ -18,6 +18,9 @@ public class StallionEventConstants {
   public enum NativeStageEventTypes {
     DOWNLOAD_PROGRESS_STAGE,
     DOWNLOAD_COMPLETE_STAGE,
-    EXCEPTION_STAGE
+    EXCEPTION_STAGE,
+    DOWNLOAD_STARTED_STAGE,
+    DOWNLOAD_ERROR_STAGE,
+    INSTALLED_STAGE,
   }
 }
