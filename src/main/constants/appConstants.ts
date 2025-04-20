@@ -7,8 +7,6 @@ export const HEADER_SLAB_HEIGHT = 50;
 export const STD_MARGIN = HEADER_SLAB_HEIGHT / 5;
 export const END_REACH_THRESHOLD = 0;
 
-export const CLOSE_BUTTON_TEXT = '\u2716';
-export const BACK_BUTTON_TEXT = '\u2190';
 export const DOWNLOAD_BUTTON_TEXT = 'Download';
 export const DOWNLOADED_TEXT = 'Downloaded';
 export const APPLIED_TEXT = 'Applied';
@@ -140,4 +138,5 @@ export enum NativeEventTypesStage {
 
 export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
 
-export const RESTART_REQUIRED_MESSAGE = 'Bundle has changed. Restart Now.';
+export const RESTART_REQUIRED_MESSAGE =
+  'Bundle change detected. Click to restart app.';

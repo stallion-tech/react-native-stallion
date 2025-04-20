@@ -92,7 +92,7 @@ public class StallionStageManager {
     JSONObject errorPayload = new JSONObject();
     try {
       errorPayload.put("releaseHash", releaseHash);
-      errorPayload.put("mera", error);
+      errorPayload.put("meta", error);
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       StallionEventConstants.NativeStageEventTypes.DOWNLOAD_ERROR_STAGE.toString(),

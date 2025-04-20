@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   restartInfoSection: {
-    height: STD_MARGIN * 2.5,
+    height: STD_MARGIN * 3.5,
     backgroundColor: COLORS.indigo,
     alignItems: 'center',
     justifyContent: 'center',

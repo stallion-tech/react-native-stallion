@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
+    paddingHorizontal: STD_MARGIN * 1.2,
   },
   headerProfileButton: {
     height: PROFILE_BUTTON_EDGE,
