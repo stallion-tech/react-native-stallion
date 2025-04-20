@@ -4,7 +4,7 @@ export const COLORS = {
   black: '#000000',
   background_grey: '#f2f2f4',
   error: '#FA6969',
-  green: '#10B981',
+  green: '#1E9B21',
   red: '#FA6969',
   black7: 'rgba(0,0,0,0.7)',
   black2: 'rgba(0,0,0,0.2)',
