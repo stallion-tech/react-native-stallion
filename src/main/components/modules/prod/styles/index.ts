@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    height: '100%',
+    backgroundColor: COLORS.background_grey,
+    flexDirection: 'column',
   },
 });
 

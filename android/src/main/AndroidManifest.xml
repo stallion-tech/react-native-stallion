@@ -2,7 +2,13 @@
           package="com.stallion">
   <application>
     <activity
-      android:name="com.stallion.StallionDefaultErrorActivity">
+      android:name="com.stallion.utils.StallionErrorActivity">
+    </activity>
+    <activity
+      android:name="com.stallion.utils.ProcessPhoenix"
+      android:exported="false"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+      android:noHistory="true">
     </activity>
   </application>
 </manifest>

@@ -32,6 +32,8 @@ RCT_EXTERN_METHOD(acknowledgeEvents: (NSString *)eventIdsJson
                   resolver:(RCTPromiseResolveBlock)resolver
                   rejecter:(RCTPromiseRejectBlock)rejecter)
 
+RCT_EXTERN_METHOD(restart)
+
 + (BOOL)requiresMainQueueSetup
 {
   return NO;

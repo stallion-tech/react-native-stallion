@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import { COLORS } from '../../../../constants/colors';
 import {
   IStallionSlotData,
   SLOT_STATES,
@@ -9,48 +8,44 @@ import {
   NATIVE_CONSTANTS,
   STD_MARGIN,
 } from '../../../../constants/appConstants';
+import { COLORS } from '../../../../constants/colors';
 
 interface IStallionSlot {
-  title: string;
+  slot: SlotType;
   hash: string;
   isActive: boolean;
 }
 
-const StallionSlot: React.FC<IStallionSlot> = ({ title, hash, isActive }) => {
+type SlotType =
+  | NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT
+  | NATIVE_CONSTANTS.STABLE_FOLDER_SLOT
+  | NATIVE_CONSTANTS.NEW_FOLDER_SLOT
+  | NATIVE_CONSTANTS.TEMP_FOLDER_SLOT;
+
+function getSlotColor(slot: SlotType): string {
+  switch (slot) {
+    case NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT:
+      return '#9CA3AF';
+    case NATIVE_CONSTANTS.STABLE_FOLDER_SLOT:
+      return '#F59E0B';
+    case NATIVE_CONSTANTS.NEW_FOLDER_SLOT:
+      return COLORS.indigo;
+    case NATIVE_CONSTANTS.TEMP_FOLDER_SLOT:
+      return COLORS.green;
+  }
+}
+
+const StallionSlot: React.FC<IStallionSlot> = ({ slot, isActive }) => {
   return (
     <View
       style={[
-        styles.centerContainer,
         styles.slotItem,
         {
-          backgroundColor: isActive ? COLORS.green : undefined,
+          backgroundColor: getSlotColor(slot),
+          borderWidth: isActive ? 1 : 0,
         },
       ]}
-    >
-      <Text
-        style={[
-          styles.title,
-          {
-            color: isActive ? COLORS.white : COLORS.text_major,
-          },
-        ]}
-      >
-        {title}
-      </Text>
-      {hash ? (
-        <Text
-          numberOfLines={1}
-          style={[
-            styles.subtitle,
-            {
-              color: isActive ? COLORS.white : COLORS.text_major,
-            },
-          ]}
-        >
-          {hash}
-        </Text>
-      ) : null}
-    </View>
+    ></View>
   );
 };
 
@@ -58,59 +53,59 @@ const SlotView: React.FC<IStallionSlotData> = (props) => {
   const { currentSlot, tempHash, stableHash, newHash } = props;
   const activeSlot = currentSlot as unknown as string;
   return (
-    <View style={[styles.centerContainer, styles.colContainer]}>
-      {tempHash ? (
-        <StallionSlot
-          title={NATIVE_CONSTANTS.TEMP_FOLDER_SLOT}
-          hash={tempHash}
-          isActive={false}
-        />
-      ) : null}
-      {newHash ? (
-        <StallionSlot
-          title={NATIVE_CONSTANTS.NEW_FOLDER_SLOT}
-          hash={newHash}
-          isActive={activeSlot === SLOT_STATES.NEW}
-        />
-      ) : null}
-      {stableHash ? (
-        <StallionSlot
-          title={NATIVE_CONSTANTS.STABLE_FOLDER_SLOT}
-          hash={stableHash}
-          isActive={activeSlot === SLOT_STATES.STABLE}
-        />
-      ) : null}
+    <View style={[styles.parentContainer, styles.rowContainer]}>
       <StallionSlot
-        title={NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT}
+        slot={NATIVE_CONSTANTS.DEFAULT_FOLDER_SLOT}
         hash={''}
         isActive={activeSlot === SLOT_STATES.DEFAULT}
       />
+
+      {stableHash ? (
+        <StallionSlot
+          slot={NATIVE_CONSTANTS.STABLE_FOLDER_SLOT}
+          hash={stableHash || ''}
+          isActive={activeSlot === SLOT_STATES.STABLE}
+        />
+      ) : null}
+
+      {newHash ? (
+        <StallionSlot
+          slot={NATIVE_CONSTANTS.NEW_FOLDER_SLOT}
+          hash={newHash || ''}
+          isActive={activeSlot === SLOT_STATES.NEW}
+        />
+      ) : null}
+
+      {tempHash ? (
+        <StallionSlot
+          slot={NATIVE_CONSTANTS.TEMP_FOLDER_SLOT}
+          hash={tempHash || ''}
+          isActive={false}
+        />
+      ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  centerContainer: {
-    justifyContent: 'space-between',
+  parentContainer: {
+    justifyContent: 'flex-start',
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
+    paddingRight: STD_MARGIN,
+    paddingVertical: STD_MARGIN,
+    backgroundColor: COLORS.white,
   },
-  colContainer: {
-    flexDirection: 'column',
+  rowContainer: {
+    flexDirection: 'row',
   },
   slotItem: {
+    flex: 1,
     width: '100%',
-    padding: STD_MARGIN,
-    borderBottomColor: COLORS.black2,
-    borderBottomWidth: 0.5,
-  },
-  title: { fontSize: 14, fontWeight: '500', color: COLORS.white },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.white,
-    width: '70%',
+    height: STD_MARGIN,
+    marginLeft: STD_MARGIN,
+    borderRadius: STD_MARGIN / 2,
   },
 });
 

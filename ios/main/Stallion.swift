@@ -145,6 +145,12 @@ class Stallion: RCTEventEmitter {
           }
       } catch {};
     }
-    }
+  }
+  
+  @objc func restart() {
+      DispatchQueue.main.async {
+          RCTTriggerReloadCommandListeners("Stallion: Restart")
+      }
+  }
 }
 

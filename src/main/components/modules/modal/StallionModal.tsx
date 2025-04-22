@@ -42,6 +42,7 @@ const Content: React.FC = () => {
     metaState,
     downloadError,
     handleSwitch,
+    internalIsRestartRequired,
   } = useStallionModal();
   return (
     <SafeAreaView style={styles.container}>
@@ -67,11 +68,7 @@ const Content: React.FC = () => {
           switchIsOn={metaState.switchState === SWITCH_STATES.STAGE}
           onSwitchToggle={handleSwitch}
           errorMessage={downloadError}
-          isRestartRequired={
-            metaState?.prodSlot?.tempHash || metaState?.stageSlot?.tempHash
-              ? true
-              : false
-          }
+          isRestartRequired={internalIsRestartRequired}
         />
       )}
     </SafeAreaView>

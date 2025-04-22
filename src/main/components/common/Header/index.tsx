@@ -1,13 +1,11 @@
 import React, { memo, useCallback, useState } from 'react';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
-import {
-  BACK_BUTTON_TEXT,
-  CLOSE_BUTTON_TEXT,
-  STALLION_LOGO_URL,
-} from '../../../constants/appConstants';
+import { STALLION_LOGO_URL } from '../../../constants/appConstants';
 
 import styles from './styles';
+import BackButton from '../BackButton';
+import CrossButton from '../CrossButton';
 
 interface IHeader {
   title?: string | null;
@@ -24,12 +22,7 @@ const Header: React.FC<IHeader> = ({ title, onBackPress, onClosePress }) => {
     <View style={styles.headerContainer}>
       {onBackPress ? (
         <View style={[styles.headerSideSection, styles.alignStart]}>
-          <TouchableOpacity
-            onPress={onBackPress}
-            style={styles.actionButtonClickable}
-          >
-            <Text style={styles.actionButtonText}>{BACK_BUTTON_TEXT}</Text>
-          </TouchableOpacity>
+          <BackButton onPress={onBackPress} />
         </View>
       ) : (
         <View style={[styles.headerSideSection, styles.alignStart]} />
@@ -52,12 +45,7 @@ const Header: React.FC<IHeader> = ({ title, onBackPress, onClosePress }) => {
       </View>
       {onClosePress ? (
         <View style={styles.headerSideSection}>
-          <TouchableOpacity
-            style={styles.actionButtonClickable}
-            onPress={onClosePress}
-          >
-            <Text style={styles.actionButtonText}>{CLOSE_BUTTON_TEXT}</Text>
-          </TouchableOpacity>
+          <CrossButton onPress={onClosePress} />
         </View>
       ) : (
         <View style={styles.headerSideSection} />

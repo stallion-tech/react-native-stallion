@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   restartInfoSection: {
-    height: STD_MARGIN * 2.5,
+    height: STD_MARGIN * 3.5,
     backgroundColor: COLORS.indigo,
     alignItems: 'center',
     justifyContent: 'center',
@@ -58,20 +58,31 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
-    padding: STD_MARGIN * 1.3,
+    padding: STD_MARGIN,
     borderRadius: STD_MARGIN,
+    opacity: 0.5,
   },
   tabSelected: {
     backgroundColor: COLORS.black,
+    opacity: 1,
   },
   titleSelected: {
-    fontSize: STD_MARGIN * 1.2,
     color: COLORS.white,
+  },
+  subTitleSelected: {
+    color: COLORS.white7,
   },
   titleBasic: {
     textAlign: 'center',
     fontSize: STD_MARGIN * 1.5,
     color: COLORS.black,
+    fontWeight: 'bold',
+  },
+  subTitleBasic: {
+    textAlign: 'center',
+    fontSize: STD_MARGIN * 1.1,
+    marginTop: STD_MARGIN / 4,
+    color: COLORS.black7,
     fontWeight: 'bold',
   },
 });

@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
+    paddingHorizontal: STD_MARGIN * 1.2,
   },
   headerProfileButton: {
     height: PROFILE_BUTTON_EDGE,
@@ -51,10 +52,9 @@ const styles = StyleSheet.create({
     padding: STD_MARGIN,
   },
   actionButtonText: {
-    fontSize: HEADER_SLAB_HEIGHT / 3.5,
-    color: COLORS.black,
+    fontSize: HEADER_SLAB_HEIGHT / 2.5,
+    color: COLORS.black7,
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
   alignStart: {
     alignItems: 'flex-start',
