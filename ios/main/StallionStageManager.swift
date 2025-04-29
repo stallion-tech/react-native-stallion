@@ -73,7 +73,7 @@ class StallionStageManager: NSObject {
           "releaseHash": releaseHash,
           "meta": error
       ]
-    Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNOAD_ERROR_STAGE,
+    Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE,
                            eventBody: errorPayload,
                            shouldCache: true
     )
