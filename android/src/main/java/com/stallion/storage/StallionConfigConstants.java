@@ -9,6 +9,7 @@ public class StallionConfigConstants {
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
   public static final String UNIQUE_ID_IDENTIFIER = "stallionDeviceId";
   public static final String API_KEY_IDENTIFIER = "x-sdk-access-token";
+  public static final String LAST_DOWNLOADING_URL_IDENTIFIER = "StallionLastDownloadingUrl";
 
   public static final String PROD_DIRECTORY = "/StallionProd";
   public static final String STAGE_DIRECTORY = "/StallionStage";

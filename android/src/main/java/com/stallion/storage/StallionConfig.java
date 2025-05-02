@@ -19,6 +19,7 @@ public class StallionConfig {
   private final String appVersion;
   private final SharedPreferences sharedPreferences;
   private final String filesDirectory;
+  private String lastDownloadingUrl;
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -63,6 +64,7 @@ public class StallionConfig {
 
     this.appVersion = fetchAppVersion(context);
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
+    this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
   }
 
   private String fetchAppVersion(Context context) {
@@ -80,6 +82,17 @@ public class StallionConfig {
 
   public String getProjectId() {
     return this.projectId;
+  }
+
+  public String getLastDownloadingUrl() {
+    return this.lastDownloadingUrl;
+  }
+
+  public void setLastDownloadingUrl(String newUrl) {
+    this.lastDownloadingUrl = newUrl;
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, newUrl);
+    editor.apply();
   }
 
   public void updateSdkToken(String newApiKey) {
