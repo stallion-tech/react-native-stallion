@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1...v2.1.0) (2025-05-05)
+
+
+### Features
+
+* stallion alpha - 2.1.0 ([#40](https://github.com/stallion-tech/react-native-stallion/issues/40)) ([76d90ae](https://github.com/stallion-tech/react-native-stallion/commit/76d90aef8f8c0d64bc7dcff8bf17f211e75e162d)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32) [#38](https://github.com/stallion-tech/react-native-stallion/issues/38) [#41](https://github.com/stallion-tech/react-native-stallion/issues/41)
+
 # [2.1.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-04-29)
 
 
