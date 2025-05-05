@@ -88,6 +88,7 @@ public class Stallion {
         stallionMeta.setStageNewHash(stageTempHash);
         stallionMeta.setStageTempHash("");
         stateManager.syncStallionMeta();
+        sendInstallEventStage(stageTempHash);
       } catch (Exception ignored) {}
     }
   }
@@ -134,6 +135,20 @@ public class Stallion {
     }
   }
 
+  private static void sendInstallEventStage(String releaseHash) {
+    try {
+      JSONObject eventPayload = new JSONObject();
+      eventPayload.put("releaseHash", releaseHash);
+
+      StallionEventManager.getInstance().sendEvent(
+        StallionEventConstants.NativeStageEventTypes.INSTALLED_STAGE.toString(),
+        eventPayload
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   private static void sendCorruptionEvent(String releaseHash, String folderPath) {
     try {
       JSONObject eventPayload = new JSONObject();
@@ -170,7 +185,7 @@ public class Stallion {
       return bundlePath;
     } else {
       if(isProd) {
-        StallionSlotManager.rollbackProd(true, "Corruped file not found" + folderPath);
+        StallionSlotManager.rollbackProd(false, "Corruped file not found" + folderPath);
         sendCorruptionEvent(releaseHash, folderPath);
       } else {
         StallionSlotManager.rollbackStage();

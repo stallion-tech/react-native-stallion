@@ -6,6 +6,7 @@ import { parseDateTime } from '../../../../utils/dateUtil';
 
 import styles from './styles';
 import { IUpdateMeta } from '../../../../../types/updateMeta.types';
+import { getDigitalStorageSize } from '../../../../utils/getSize';
 
 interface IMetaCard {
   meta: IUpdateMeta;
@@ -20,15 +21,21 @@ const MetaCard: React.FC<IMetaCard> = ({ meta }) => {
     <View style={styles.metaConainer}>
       <View style={styles.colContainer}>
         <Text style={[styles.titleText, styles.bold]}>
-          {meta.sha256Checksum?.substring(0, 24)}
+          {`v${meta.version}`}
         </Text>
         <Text style={[styles.subText]}>{meta.releaseNote}</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.rowContainer}>
-        <CardDescriptionContent title={'Version'} subtitle={meta.version} />
+        <CardDescriptionContent
+          title={'ID'}
+          subtitle={meta.sha256Checksum?.substring(0, 12)}
+        />
         <CardDescriptionContent title={'Updated At'} subtitle={updatedAtText} />
-        <CardDescriptionContent title={'Size'} subtitle={meta.size} />
+        <CardDescriptionContent
+          title={'Size'}
+          subtitle={getDigitalStorageSize(meta.size || 0)}
+        />
       </View>
     </View>
   );

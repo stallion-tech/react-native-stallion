@@ -33,6 +33,8 @@
 @property (class, nonatomic, readonly) NSString *exception_stage_event;
 @property (class, nonatomic, readonly) NSString *stabilized_prod_event;
 
+@property (class, nonatomic, readonly) NSString *installed_stage_event;
+
 @property (class, nonatomic, readonly) NSString *release_hash_key;
 
 @property (class, nonatomic, readonly) NSString *app_version_cache_key;

@@ -114,6 +114,7 @@
             stallionMeta.stageNewHash = stageTempHash;
             stallionMeta.stageTempHash = @"";
             [stateManager syncStallionMeta];
+            [self sendInstallEventStage:stageTempHash];
         } @catch (NSException *exception) {
             NSLog(@"Error mounting new stage bundle: %@", exception.reason);
         }
@@ -127,7 +128,7 @@
     } else {
         [self sendCorruptionEvent:releaseHash folderPath:folderPath];
         if(isProd) {
-            [StallionSlotManager rollbackProdWithAutoRollback:true errorString:@"Corruped File not found"];
+            [StallionSlotManager rollbackProdWithAutoRollback:false errorString:@"Corruped File not found"];
         } else {
             [StallionSlotManager rollbackStage];
         }
@@ -138,6 +139,11 @@
 + (void)sendInstallEvent:(NSString *)releaseHash {
     NSDictionary *eventPayload = @{[StallionObjConstants release_hash_key]: releaseHash};
   [[StallionEventHandler sharedInstance] cacheEvent:[StallionObjConstants installed_prod_event] eventPayload:eventPayload];
+}
+
++ (void)sendInstallEventStage:(NSString *)releaseHash {
+    NSDictionary *eventPayload = @{[StallionObjConstants release_hash_key]: releaseHash};
+  [[StallionEventHandler sharedInstance] cacheEvent:[StallionObjConstants installed_stage_event] eventPayload:eventPayload];
 }
 
 + (void)sendCorruptionEvent:(NSString *)releaseHash folderPath:(NSString *)folderPath {

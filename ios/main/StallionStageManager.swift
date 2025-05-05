@@ -42,6 +42,8 @@ class StallionStageManager: NSObject {
             }
         }
         
+        emitDownloadStartedStage(releaseHash: receivedHash)
+      
         // Start bundle download
         StallionFileDownloader().downloadBundle(
             url: URL(string: receivedDownloadUrl)!,
@@ -58,17 +60,29 @@ class StallionStageManager: NSObject {
             },
             reject: { code, prefix, error in
                 let errorMessage = "\(prefix ?? "") \(error?.localizedDescription ?? "Unknown error")"
+                emitDownloadErrorStage(releaseHash: receivedHash, error: errorMessage)
                 rejectClosure(code, errorMessage, error)
             }
         )
     }
     
     // MARK: - Event Emitters
+  
+  private static func emitDownloadErrorStage(releaseHash: String, error: String) {
+      let errorPayload: NSDictionary = [
+          "releaseHash": releaseHash,
+          "meta": error
+      ]
+    Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_ERROR_STAGE,
+                           eventBody: errorPayload,
+                           shouldCache: true
+    )
+  }
     
     private static func emitDownloadSuccessStage(releaseHash: String) {
       let successPayload: NSDictionary = ["releaseHash": releaseHash]
       Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE,eventBody: successPayload,
-                             shouldCache: false
+                             shouldCache: true
       )
     }
     
@@ -81,4 +95,11 @@ class StallionStageManager: NSObject {
                              shouldCache: false
       )
     }
+  private static func emitDownloadStartedStage(releaseHash: String) {
+      let startedPayload: NSDictionary = ["releaseHash": releaseHash]
+    Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_STARTED_STAGE,
+                           eventBody: startedPayload,
+                           shouldCache: true
+    )
+  }
 }

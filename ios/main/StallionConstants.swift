@@ -80,8 +80,11 @@ class StallionConstants {
       static let EXCEPTION_PROD = "EXCEPTION_PROD"
     }
     public struct NativeEventTypesStage {
+      static let DOWNLOAD_STARTED_STAGE = "DOWNLOAD_STARTED_STAGE"
       static let DOWNLOAD_ERROR_STAGE = "DOWNLOAD_ERROR_STAGE"
       static let DOWNLOAD_PROGRESS_STAGE = "DOWNLOAD_PROGRESS_STAGE"
       static let DOWNLOAD_COMPLETE_STAGE = "DOWNLOAD_COMPLETE_STAGE"
+      static let INSTALLED_STAGE = "INSTALLED_STAGE"
+      static let EXCEPTION_STAGE = "EXCEPTION_STAGE"
     }
 }

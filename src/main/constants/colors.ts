@@ -10,6 +10,7 @@ export const COLORS = {
   black2: 'rgba(0,0,0,0.2)',
   black5: 'rgba(0,0,0,0.5)',
   black1: 'rgba(0,0,0,0.05)',
+  white7: 'rgba(255,255,255,0.7)',
   orange: '#ff6303',
   blue: 'blue',
   text_major: '#5F5F5F',

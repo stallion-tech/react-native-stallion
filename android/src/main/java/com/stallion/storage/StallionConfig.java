@@ -24,18 +24,19 @@ public class StallionConfig {
     this.sharedPreferences = sharedPreferences;
     Resources res = context.getResources();
     String parentPackageName= context.getPackageName();
+
     int stallionProjectIdRes = res.getIdentifier(
       StallionConfigConstants.STALLION_PROJECT_ID_IDENTIFIER,
       "string",
       parentPackageName
     );
-    this.projectId = context.getString(stallionProjectIdRes);
+    this.projectId = stallionProjectIdRes != 0 ?context.getString(stallionProjectIdRes) : "";
     int stallionAppTokenRes = res.getIdentifier(
       StallionConfigConstants.STALLION_APP_TOKEN_IDENTIFIER,
       "string",
       parentPackageName
     );
-    this.appToken = context.getString(stallionAppTokenRes);
+    this.appToken = stallionAppTokenRes != 0 ? context.getString(stallionAppTokenRes) : "";
 
     // get or generate UID
     String cachedUniqueId = sharedPreferences.getString(

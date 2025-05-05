@@ -1,7 +1,7 @@
 package com.stallion;
 
-import androidx.annotation.NonNull;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -17,6 +17,7 @@ import com.stallion.storage.StallionConfigConstants;
 
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
+import com.stallion.utils.ProcessPhoenix;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,11 +47,7 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   public void onHostPause() {}
 
   @Override
-  public void onHostDestroy() {}
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void onHostDestroy() {
     stallionStateManager.setIsMounted(false);
     getReactApplicationContext().removeLifecycleEventListener(this);
   }
@@ -164,5 +161,10 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
       // Reject the promise for other errors
       promise.reject("ACKNOWLEDGE_EVENTS_ERROR", "Failed to acknowledge events: " + e.getMessage(), e);
     }
+  }
+
+  @ReactMethod
+  public void restart() {
+    ProcessPhoenix.triggerRebirth(getReactApplicationContext());
   }
 }

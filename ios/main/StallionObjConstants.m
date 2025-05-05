@@ -85,6 +85,10 @@
     return @"INSTALLED_PROD";
 }
 
++ (NSString *)installed_stage_event {
+    return @"INSTALLED_STAGE";
+}
+
 + (NSString *)exception_prod_event {
     return @"EXCEPTION_PROD";
 }

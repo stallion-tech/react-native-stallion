@@ -9,12 +9,16 @@ const styles = StyleSheet.create({
   },
   mainListContainer: {
     flexGrow: 1,
+    backgroundColor: COLORS.background_grey,
   },
   initalLoaderContainer: {
     width: '100%',
     paddingTop: STD_MARGIN * 3,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flex: {
+    flex: 1,
   },
 });
 
