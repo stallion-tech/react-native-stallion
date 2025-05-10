@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
+import com.stallion.storage.StallionConfig;
 import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
@@ -21,14 +22,18 @@ public class StallionStageManager {
         && receivedHash != null
         && !receivedHash.isEmpty()
     ) {
-      String downloadPath = stallionStateManager.getStallionConfig().getFilesDirectory()
+      StallionConfig config = stallionStateManager.getStallionConfig();
+      String downloadPath = config.getFilesDirectory()
         + StallionConfigConstants.STAGE_DIRECTORY
         + StallionConfigConstants.TEMP_FOLDER_SLOT;
+      long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, receivedDownloadUrl, downloadPath);
 
-      emitDownloadStartedStage(receivedHash);
+      emitDownloadStartedStage(receivedHash, alreadyDownloaded > 0);
+
       StallionFileDownloader.downloadBundle(
         receivedDownloadUrl,
         downloadPath,
+        alreadyDownloaded,
         new StallionDownloadCallback() {
           @Override
           public void onReject(String prefix, String error) {
@@ -77,13 +82,15 @@ public class StallionStageManager {
     );
   }
 
-  private static void emitDownloadStartedStage(String releaseHash) {
+  private static void emitDownloadStartedStage(String releaseHash, Boolean isResume) {
     JSONObject startedPayload = new JSONObject();
     try {
       startedPayload.put("releaseHash", releaseHash);
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
-      StallionEventConstants.NativeStageEventTypes.DOWNLOAD_STARTED_STAGE.toString(),
+      isResume ?
+        StallionEventConstants.NativeStageEventTypes.DOWNLOAD_RESUME_STAGE.toString()
+        : StallionEventConstants.NativeStageEventTypes.DOWNLOAD_STARTED_STAGE.toString(),
       startedPayload
     );
   }

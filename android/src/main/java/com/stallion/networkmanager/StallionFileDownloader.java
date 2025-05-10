@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -28,6 +29,7 @@ public class StallionFileDownloader {
   public static void downloadBundle(
     String downloadUrl,
     String downloadDirectory,
+    long alreadyDownloaded,
     StallionDownloadCallback stallionDownloadCallback
   ) {
     executor.execute(() -> {
@@ -61,7 +63,7 @@ public class StallionFileDownloader {
         }
 
         // Download file
-        downloadFile(downloadUrl, downloadedZip, appToken, sdkToken, stallionDownloadCallback);
+        downloadFile(downloadUrl, downloadedZip, appToken, sdkToken, stallionDownloadCallback, alreadyDownloaded, downloadDirectory);
 
         // Validate and unzip the downloaded file
         validateAndUnzip(downloadedZip, downloadDirectory, stallionDownloadCallback);
@@ -75,7 +77,7 @@ public class StallionFileDownloader {
   private static long getFileSize(String downloadUrl, String appToken, String apiKey) throws IOException {
     HttpURLConnection connection = null;
     try {
-      connection = setupConnection(downloadUrl, appToken, apiKey);
+      connection = setupConnection(downloadUrl, appToken, apiKey, 0);
       return connection.getContentLength();
     } finally {
       if (connection != null) {
@@ -96,11 +98,10 @@ public class StallionFileDownloader {
 
   private static File prepareForDownload(String downloadDirectory) throws IOException {
     File downloadFolder = new File(downloadDirectory);
-    if (downloadFolder.exists()) {
-      StallionFileManager.deleteFileOrFolderSilently(downloadFolder);
-    }
-    if (!downloadFolder.mkdirs()) {
-      throw new IOException("Failed to create download directory: " + downloadDirectory);
+    if (!downloadFolder.exists()) {
+      if (!downloadFolder.mkdirs()) {
+        throw new IOException("Failed to create download directory: " + downloadDirectory);
+      }
     }
     return new File(downloadFolder, StallionApiConstants.ZIP_FILE_NAME);
   }
@@ -110,21 +111,21 @@ public class StallionFileDownloader {
     File destinationFile,
     String appToken,
     String sdkToken,
-    StallionDownloadCallback callback
+    StallionDownloadCallback callback,
+    long alreadyDownloaded,
+    String downloadDirectory
   ) throws IOException {
-    HttpURLConnection connection = null;
+    HttpURLConnection connection = setupConnection(downloadUrl, appToken, sdkToken, alreadyDownloaded);
     try (
-      BufferedInputStream inputStream = new BufferedInputStream(setupConnection(downloadUrl, appToken, sdkToken).getInputStream());
-      FileOutputStream fout = new FileOutputStream(destinationFile);
-      BufferedOutputStream bout = new BufferedOutputStream(fout, StallionApiConstants.DOWNLOAD_BUFFER_SIZE)
+      BufferedInputStream inputStream = new BufferedInputStream(connection.getInputStream());
+      RandomAccessFile raf = new RandomAccessFile(destinationFile, "rw")
     ) {
-      connection = setupConnection(downloadUrl, appToken, sdkToken);
-
+      raf.seek(alreadyDownloaded);
       byte[] buffer = new byte[StallionApiConstants.DOWNLOAD_BUFFER_SIZE];
-      long totalBytes = connection.getContentLength();
-      long receivedBytes = 0;
+      long totalBytes = connection.getContentLength() + alreadyDownloaded;
+      long receivedBytes = alreadyDownloaded;
       int bytesRead;
-      double lastProgress = 0;
+      double lastProgress = (double) receivedBytes / totalBytes;
 
       // Ensure totalBytes is valid
       if (totalBytes <= 0) {
@@ -133,8 +134,10 @@ public class StallionFileDownloader {
       }
 
       while ((bytesRead = inputStream.read(buffer)) != -1) {
-        bout.write(buffer, 0, bytesRead);
+        raf.write(buffer, 0, bytesRead);
         receivedBytes += bytesRead;
+
+        StallionDownloadCacheManager.saveDownloadCache(downloadDirectory, receivedBytes);
 
         double progress = (double) receivedBytes / totalBytes;
         if (Double.isNaN(progress) || Double.isInfinite(progress)) {
@@ -148,8 +151,7 @@ public class StallionFileDownloader {
         }
       }
 
-      bout.close();
-      fout.close();
+      raf.close();
       inputStream.close();
 
       // Check for incomplete download
@@ -161,17 +163,24 @@ public class StallionFileDownloader {
       callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "IOException occurred: ");
       throw e;
     } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
+      connection.disconnect();
     }
   }
 
 
-  private static HttpURLConnection setupConnection(String downloadUrl, String appToken, String sdkToken) throws IOException {
+  private static HttpURLConnection setupConnection(
+    String downloadUrl,
+    String appToken,
+    String sdkToken,
+    long offset
+  ) throws IOException {
     URL url = new URL(downloadUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
+
+    if (offset > 0) {
+      connection.setRequestProperty("Range", "bytes=" + offset + "-");
+    }
 
     if(!appToken.isEmpty()) {
       connection.setRequestProperty(StallionApiConstants.STALLION_APP_TOKEN_KEY, appToken);
