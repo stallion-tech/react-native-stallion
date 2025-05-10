@@ -1,3 +1,10 @@
+# [2.1.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* ios stage event typo ([c0c9bdb](https://github.com/stallion-tech/react-native-stallion/commit/c0c9bdbc4d15cad7934559fbef6a397dde4a6c50))
+
 # [2.1.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1...v2.1.0-alpha.1) (2025-04-22)
 
 
