@@ -29,4 +29,6 @@ extern NSString *const UNZIP_FOLDER_NAME;
 
 extern NSString *const STALLION_META_IDENTIFIER;
 
+extern NSString *const STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER;
+
 @end

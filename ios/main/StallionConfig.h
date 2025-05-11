@@ -15,6 +15,7 @@
 @property (nonatomic, copy) NSString *sdkToken;
 @property (nonatomic, copy, readonly) NSString *appVersion;
 @property (nonatomic, copy, readonly) NSString *filesDirectory;
+@property (nonatomic, copy, readonly) NSString *publicSigningKey;
 
 - (instancetype)initWithDefaults:(NSUserDefaults *)defaults;
 

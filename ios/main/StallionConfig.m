@@ -17,8 +17,8 @@
         _appToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_APP_TOKEN_IDENTIFIER] ?: @"";
         _sdkToken = [defaults stringForKey:API_KEY_IDENTIFIER] ?: @"";
         _appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_APP_VERSION_IDENTIFIER] ?: @"";
-      
         _filesDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject ?: @"";
+        _publicSigningKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER] ?: @"";
 
         NSString *cachedUid = [defaults stringForKey:UNIQUE_ID_IDENTIFIER];
         if (cachedUid && ![cachedUid isEqualToString:@""]) {
