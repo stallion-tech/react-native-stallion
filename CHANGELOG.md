@@ -1,29 +1,28 @@
 # [2.1.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.2...v2.1.0-alpha.3) (2025-05-11)
 
+# [2.1.0](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1...v2.1.0) (2025-05-05)
 
 ### Features
 
-* added stream downloading for android ([#42](https://github.com/stallion-tech/react-native-stallion/issues/42)) ([3636acd](https://github.com/stallion-tech/react-native-stallion/commit/3636acd4d48c4ae2e5f5659e4f0a31239f745d4b))
+- added stream downloading for android ([#42](https://github.com/stallion-tech/react-native-stallion/issues/42)) ([3636acd](https://github.com/stallion-tech/react-native-stallion/commit/3636acd4d48c4ae2e5f5659e4f0a31239f745d4b))
+- stallion alpha - 2.1.0 ([#40](https://github.com/stallion-tech/react-native-stallion/issues/40)) ([76d90ae](https://github.com/stallion-tech/react-native-stallion/commit/76d90aef8f8c0d64bc7dcff8bf17f211e75e162d)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32) [#38](https://github.com/stallion-tech/react-native-stallion/issues/38) [#41](https://github.com/stallion-tech/react-native-stallion/issues/41)
 
 # [2.1.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-04-29)
 
-
 ### Bug Fixes
 
-* ios stage event typo ([c0c9bdb](https://github.com/stallion-tech/react-native-stallion/commit/c0c9bdbc4d15cad7934559fbef6a397dde4a6c50))
+- ios stage event typo ([c0c9bdb](https://github.com/stallion-tech/react-native-stallion/commit/c0c9bdbc4d15cad7934559fbef6a397dde4a6c50))
 
 # [2.1.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1...v2.1.0-alpha.1) (2025-04-22)
 
-
 ### Bug Fixes
 
-* modifed event emitter init, added fallback for mounting prod bundle ([#32](https://github.com/stallion-tech/react-native-stallion/issues/32)) ([f888820](https://github.com/stallion-tech/react-native-stallion/commit/f888820305f57bc76649673d289ff15949558ab8))
-* removed stallion enabled script reading logic from native, enabled by default ([ab3f0d4](https://github.com/stallion-tech/react-native-stallion/commit/ab3f0d4ba6d20f4277b0611c9a6783d49e44cb3f))
-
+- modifed event emitter init, added fallback for mounting prod bundle ([#32](https://github.com/stallion-tech/react-native-stallion/issues/32)) ([f888820](https://github.com/stallion-tech/react-native-stallion/commit/f888820305f57bc76649673d289ff15949558ab8))
+- removed stallion enabled script reading logic from native, enabled by default ([ab3f0d4](https://github.com/stallion-tech/react-native-stallion/commit/ab3f0d4ba6d20f4277b0611c9a6783d49e44cb3f))
 
 ### Features
 
-* restart logic, ui revamp v0, ios sync and other bugfixes ([70b8067](https://github.com/stallion-tech/react-native-stallion/commit/70b806753d2a3784686b93ebe15eef802d2665e8))
+- restart logic, ui revamp v0, ios sync and other bugfixes ([70b8067](https://github.com/stallion-tech/react-native-stallion/commit/70b806753d2a3784686b93ebe15eef802d2665e8))
 
 ## [2.0.1-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.0.1-alpha.1...v2.0.1-alpha.2) (2025-03-26)
 
