@@ -106,16 +106,21 @@ public class StallionSyncHandler {
     }
     try {
       StallionStateManager stateManager = StallionStateManager.getInstance();
-      String downloadPath = stateManager.getStallionConfig().getFilesDirectory()
+      StallionConfig config = stateManager.getStallionConfig();
+      String downloadPath = config.getFilesDirectory()
         + StallionConfigConstants.PROD_DIRECTORY
         + StallionConfigConstants.TEMP_FOLDER_SLOT;
-      String projectId = stateManager.getStallionConfig().getProjectId();
+      String projectId = config.getProjectId();
+      String downloadUrl = newReleaseUrl + "?projectId=" + projectId;
 
-      emitDownloadStarted(newReleaseHash);
+      long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, downloadUrl, downloadPath);
+
+      emitDownloadStarted(newReleaseHash, alreadyDownloaded > 0);
 
       StallionFileDownloader.downloadBundle(
-        newReleaseUrl + "?projectId=" + projectId,
+        downloadUrl,
         downloadPath,
+        alreadyDownloaded,
         new StallionDownloadCallback() {
           @Override
           public void onReject(String prefix, String error) {
@@ -133,6 +138,7 @@ public class StallionSyncHandler {
               StallionSlotManager.stabilizeProd();
             }
             stateManager.syncStallionMeta();
+            StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
             emitDownloadSuccess(newReleaseHash);
           }
 
@@ -182,13 +188,13 @@ public class StallionSyncHandler {
     );
   }
 
-  private static void emitDownloadStarted(String releaseHash) {
+  private static void emitDownloadStarted(String releaseHash, Boolean isResume) {
     JSONObject successPayload = new JSONObject();
     try {
       successPayload.put("releaseHash", releaseHash);
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
-      NativeProdEventTypes.DOWNLOAD_STARTED_PROD.toString(),
+      isResume ? NativeProdEventTypes.DOWNLOAD_RESUME_PROD.toString(): NativeProdEventTypes.DOWNLOAD_STARTED_PROD.toString(),
       successPayload
     );
   }

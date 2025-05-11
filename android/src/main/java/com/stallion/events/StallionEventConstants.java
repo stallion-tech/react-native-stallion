@@ -3,6 +3,7 @@ package com.stallion.events;
 public class StallionEventConstants {
   public enum NativeProdEventTypes {
     DOWNLOAD_STARTED_PROD,
+    DOWNLOAD_RESUME_PROD,
     DOWNLOAD_ERROR_PROD,
     DOWNLOAD_COMPLETE_PROD,
     SYNC_ERROR_PROD,
@@ -20,6 +21,7 @@ public class StallionEventConstants {
     DOWNLOAD_COMPLETE_STAGE,
     EXCEPTION_STAGE,
     DOWNLOAD_STARTED_STAGE,
+    DOWNLOAD_RESUME_STAGE,
     DOWNLOAD_ERROR_STAGE,
     INSTALLED_STAGE,
   }
