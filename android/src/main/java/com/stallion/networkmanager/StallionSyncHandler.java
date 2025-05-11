@@ -138,6 +138,7 @@ public class StallionSyncHandler {
               StallionSlotManager.stabilizeProd();
             }
             stateManager.syncStallionMeta();
+            StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
             emitDownloadSuccess(newReleaseHash);
           }
 

@@ -47,6 +47,7 @@ public class StallionStageManager {
             stallionStateManager.stallionMeta.setStageTempHash(receivedHash);
             stallionStateManager.syncStallionMeta();
             emitDownloadSuccessStage(receivedHash);
+            StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
             promise.resolve(successPayload);
           }
 

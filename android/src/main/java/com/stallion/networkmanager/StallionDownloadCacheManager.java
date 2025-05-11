@@ -41,7 +41,7 @@ public class StallionDownloadCacheManager {
     }
   }
 
-  private static void deleteDownloadCache(String path) {
+  public static void deleteDownloadCache(String path) {
     File meta = new File(path + metaFilePath);
     if (meta.exists()) meta.delete();
   }
