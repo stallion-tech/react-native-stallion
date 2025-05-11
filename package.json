@@ -1,6 +1,6 @@
 {
   "name": "react-native-stallion",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "Offical React Native SDK for Stallion",
   "main": "index",
   "types": "types/index.d.ts",

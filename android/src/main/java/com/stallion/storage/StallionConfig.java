@@ -20,6 +20,7 @@ public class StallionConfig {
   private final SharedPreferences sharedPreferences;
   private final String filesDirectory;
   private String lastDownloadingUrl;
+  private String publicSigningKey;
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -32,12 +33,20 @@ public class StallionConfig {
       parentPackageName
     );
     this.projectId = stallionProjectIdRes != 0 ?context.getString(stallionProjectIdRes) : "";
+
     int stallionAppTokenRes = res.getIdentifier(
       StallionConfigConstants.STALLION_APP_TOKEN_IDENTIFIER,
       "string",
       parentPackageName
     );
     this.appToken = stallionAppTokenRes != 0 ? context.getString(stallionAppTokenRes) : "";
+
+    int stallionPublicKeyRes = res.getIdentifier(
+      StallionConfigConstants.STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER,
+      "string",
+      parentPackageName
+    );
+    this.publicSigningKey = stallionPublicKeyRes != 0 ? context.getString(stallionPublicKeyRes) : "";
 
     // get or generate UID
     String cachedUniqueId = sharedPreferences.getString(
@@ -117,6 +126,10 @@ public class StallionConfig {
   }
 
   public String getFilesDirectory() { return this.filesDirectory; }
+
+  public String getPublicSigningKey() {
+    return this.publicSigningKey;
+  }
 
   public JSONObject toJSON() {
     JSONObject configJson = new JSONObject();
