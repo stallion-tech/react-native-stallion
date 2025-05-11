@@ -1,3 +1,10 @@
+# [2.1.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.2...v2.1.0-alpha.3) (2025-05-11)
+
+
+### Features
+
+* added stream downloading for android ([#42](https://github.com/stallion-tech/react-native-stallion/issues/42)) ([3636acd](https://github.com/stallion-tech/react-native-stallion/commit/3636acd4d48c4ae2e5f5659e4f0a31239f745d4b))
+
 # [2.1.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-04-29)
 
 
