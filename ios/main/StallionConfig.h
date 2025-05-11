@@ -15,10 +15,11 @@
 @property (nonatomic, copy) NSString *sdkToken;
 @property (nonatomic, copy, readonly) NSString *appVersion;
 @property (nonatomic, copy, readonly) NSString *filesDirectory;
+@property (nonatomic, strong) NSString *lastDownloadingUrl;
 
 - (instancetype)initWithDefaults:(NSUserDefaults *)defaults;
-
 - (void)updateSdkToken:(NSString *)newSdkToken;
+- (void)updatePrevDownloadUrl:(NSString *)downloadUrl;
 - (NSDictionary *)toDictionary;
 
 @end

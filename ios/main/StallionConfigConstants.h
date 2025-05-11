@@ -29,4 +29,6 @@ extern NSString *const UNZIP_FOLDER_NAME;
 
 extern NSString *const STALLION_META_IDENTIFIER;
 
+extern NSString *const LAST_DOWNLOADING_URL_IDENTIFIER;
+
 @end

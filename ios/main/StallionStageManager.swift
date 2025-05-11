@@ -41,13 +41,20 @@ class StallionStageManager: NSObject {
                 rejecter(code, message, error)
             }
         }
+      
+        let alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(
+          config: stallionStateManager.stallionConfig,
+          downloadUrl: receivedDownloadUrl,
+          downloadPath: downloadPath
+        )
         
-        emitDownloadStartedStage(releaseHash: receivedHash)
+        emitDownloadStartedStage(releaseHash: receivedHash, isResume: alreadyDownloaded > 0)
       
         // Start bundle download
         StallionFileDownloader().downloadBundle(
             url: URL(string: receivedDownloadUrl)!,
             downloadDirectory: downloadPath,
+            alreadyDownloaded: alreadyDownloaded,
             onProgress: { progress in
                 emitDownloadProgressStage(releaseHash: receivedHash, progress: progress)
             },
@@ -95,9 +102,9 @@ class StallionStageManager: NSObject {
                              shouldCache: false
       )
     }
-  private static func emitDownloadStartedStage(releaseHash: String) {
+  private static func emitDownloadStartedStage(releaseHash: String, isResume: Bool) {
       let startedPayload: NSDictionary = ["releaseHash": releaseHash]
-    Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_STARTED_STAGE,
+    Stallion.sendEventToRn(eventName: isResume ? StallionConstants.NativeEventTypesStage.DOWNLOAD_RESUME_STAGE : StallionConstants.NativeEventTypesStage.DOWNLOAD_STARTED_STAGE,
                            eventBody: startedPayload,
                            shouldCache: true
     )

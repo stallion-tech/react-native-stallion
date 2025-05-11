@@ -180,28 +180,40 @@ class StallionSyncHandler {
       let projectId = config.projectId ?? ""
       
       guard let fromUrl = URL(string: newReleaseUrl + "?projectId=" + projectId) else { return }
-
-      emitDownloadStarted(releaseHash: newReleaseHash)
-
-      StallionFileDownloader().downloadBundle(url: fromUrl, downloadDirectory: downloadPath, onProgress: { progress in
-        // Handle progress updates if necessary
-    }, resolve: { _ in
-        completeDownload()
-      stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
-      stateManager.stallionMeta?.prodTempHash =  newReleaseHash
-      if let currentProdNewHash = stateManager.stallionMeta?.prodNewHash,
-         !currentProdNewHash.isEmpty {
-          StallionSlotManager.stabilizeProd()
-      }
-      stateManager.syncStallionMeta()
-      emitDownloadSuccess(releaseHash: newReleaseHash)
-    }, reject: { code, prefix, error  in
-        completeDownload()
-      emitDownloadError(
-        releaseHash: newReleaseHash,
-        error: "\(String(describing: prefix))\(String(describing: error))"
+      
+      let alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(
+        config: config,
+        downloadUrl: fromUrl.absoluteString,
+        downloadPath: downloadPath
       )
-    })
+
+      emitDownloadStarted(releaseHash: newReleaseHash, isResume: alreadyDownloaded > 0)
+
+      StallionFileDownloader().downloadBundle(
+        url: fromUrl,
+        downloadDirectory: downloadPath,
+        alreadyDownloaded: alreadyDownloaded,
+        onProgress: { progress in
+        // Handle progress updates if necessary
+        },
+        resolve: { _ in
+          completeDownload()
+          stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
+          stateManager.stallionMeta?.prodTempHash =  newReleaseHash
+          if let currentProdNewHash = stateManager.stallionMeta?.prodNewHash,
+             !currentProdNewHash.isEmpty {
+              StallionSlotManager.stabilizeProd()
+          }
+          stateManager.syncStallionMeta()
+          emitDownloadSuccess(releaseHash: newReleaseHash)
+        },
+        reject: { code, prefix, error  in
+          completeDownload()
+          emitDownloadError(
+            releaseHash: newReleaseHash,
+            error: "\(String(describing: prefix))\(String(describing: error))"
+          )
+        })
   }
     
     private static func completeDownload() {
@@ -233,17 +245,20 @@ class StallionSyncHandler {
 
     private static func emitDownloadSuccess(releaseHash: String) {
       let successPayload: NSDictionary = ["releaseHash": releaseHash]
-      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
-                             eventBody: successPayload,
-                             shouldCache: true
+      Stallion.sendEventToRn(
+        eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
+        eventBody: successPayload,
+        shouldCache: true
       )
     }
 
-    private static func emitDownloadStarted(releaseHash: String) {
+    private static func emitDownloadStarted(releaseHash: String, isResume: Bool) {
         let startedPayload: NSDictionary = ["releaseHash": releaseHash]
-        Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_STARTED_PROD,
-                             eventBody: startedPayload,
-                             shouldCache: true
+      Stallion.sendEventToRn(
+        eventName: isResume ? StallionConstants.NativeEventTypesProd.DOWNLOAD_RESUME_PROD
+        : StallionConstants.NativeEventTypesProd.DOWNLOAD_STARTED_PROD,
+         eventBody: startedPayload,
+         shouldCache: true
       )
     }
 }

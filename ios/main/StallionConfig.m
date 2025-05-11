@@ -34,6 +34,7 @@
             [defaults synchronize];
             _uid = newUid;
         }
+      _lastDownloadingUrl = [defaults stringForKey:LAST_DOWNLOADING_URL_IDENTIFIER] ?: @"";
     }
     return self;
 }
@@ -41,6 +42,12 @@
 - (void)updateSdkToken:(NSString *)newSdkToken {
     _sdkToken = newSdkToken ?: @"";
     [[NSUserDefaults standardUserDefaults] setObject:_sdkToken forKey:API_KEY_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)updatePrevDownloadUrl:(NSString *)newUrl {
+    _lastDownloadingUrl = newUrl ?: @"";
+    [[NSUserDefaults standardUserDefaults] setObject:_lastDownloadingUrl forKey:LAST_DOWNLOADING_URL_IDENTIFIER];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

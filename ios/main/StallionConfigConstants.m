@@ -29,4 +29,6 @@ NSString *const ANDROID_BUNDLE_FILE_NAME = @"/index.android.bundle";
 NSString *const DEFAULT_JS_BUNDLE_LOCATION_BASE = @"assets:/";
 NSString *const UNZIP_FOLDER_NAME = @"/build";
 
+NSString *const LAST_DOWNLOADING_URL_IDENTIFIER = @"/STALLION_LAST_DOWNLOADING_URL";
+
 @end

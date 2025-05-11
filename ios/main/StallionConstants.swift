@@ -70,6 +70,7 @@ class StallionConstants {
     static let STALLION_NATIVE_EVENT_NAME = "STALLION_NATIVE_EVENT"
     public struct NativeEventTypesProd {
       static let DOWNLOAD_STARTED_PROD = "DOWNLOAD_STARTED_PROD"
+      static let DOWNLOAD_RESUME_PROD = "DOWNLOAD_RESUME_PROD"
       static let DOWNLOAD_ERROR_PROD = "DOWNLOAD_ERROR_PROD"
       static let DOWNLOAD_PROGRESS_PROD = "DOWNLOAD_PROGRESS_PROD"
       static let DOWNLOAD_COMPLETE_PROD = "DOWNLOAD_COMPLETE_PROD"
@@ -81,6 +82,7 @@ class StallionConstants {
     }
     public struct NativeEventTypesStage {
       static let DOWNLOAD_STARTED_STAGE = "DOWNLOAD_STARTED_STAGE"
+      static let DOWNLOAD_RESUME_STAGE = "DOWNLOAD_RESUME_STAGE"
       static let DOWNLOAD_ERROR_STAGE = "DOWNLOAD_ERROR_STAGE"
       static let DOWNLOAD_PROGRESS_STAGE = "DOWNLOAD_PROGRESS_STAGE"
       static let DOWNLOAD_COMPLETE_STAGE = "DOWNLOAD_COMPLETE_STAGE"
