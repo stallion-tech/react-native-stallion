@@ -1,26 +1,32 @@
 package com.stallion.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.DigestInputStream;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
-import java.security.KeyFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class StallionSignatureVerification {
 
-  public static final String SIGNATURE_FILE_NAME = "bundle.stallionsign";
+  public static final String SIGNATURE_FILE_NAME = ".stallionsigned";
 
   public static boolean verifyReleaseSignature(String downloadedBundlePath, String publicKeyPem) {
     try {
-      // Load the signature file
-      File signatureFile = new File(downloadedBundlePath, SIGNATURE_FILE_NAME);
+      File folderPath = new File(downloadedBundlePath);
+      File signatureFile = new File(folderPath, SIGNATURE_FILE_NAME);
       if (!signatureFile.exists()) return false;
 
       String jwt = readFileLegacy(signatureFile);
@@ -34,7 +40,6 @@ public class StallionSignatureVerification {
       byte[] signatureBytes = base64UrlDecode(signature);
       byte[] signedContent = (header + "." + payload).getBytes(StandardCharsets.UTF_8);
 
-      // Convert PEM public key to Java PublicKey
       String cleanedPem = publicKeyPem
         .replace("-----BEGIN PUBLIC KEY-----", "")
         .replace("-----END PUBLIC KEY-----", "")
@@ -45,19 +50,16 @@ public class StallionSignatureVerification {
       KeyFactory keyFactory = KeyFactory.getInstance("RSA");
       PublicKey pubKey = keyFactory.generatePublic(keySpec);
 
-      // Verify the JWT signature
       Signature sig = Signature.getInstance("SHA256withRSA");
       sig.initVerify(pubKey);
       sig.update(signedContent);
       if (!sig.verify(signatureBytes)) return false;
 
-      // Decode payload and get the hash
       String jsonPayload = new String(base64UrlDecode(payload), StandardCharsets.UTF_8);
       JSONObject payloadObj = new JSONObject(jsonPayload);
-      String expectedHash = payloadObj.getString("hash");
+      String expectedHash = payloadObj.optString("packageHash", "");
 
-      // Compute hash of folder contents
-      String actualHash = computeHashOfFolder(downloadedBundlePath);
+      String actualHash = computeFolderHash(folderPath);
       return expectedHash.equals(actualHash);
 
     } catch (Exception e) {
@@ -66,19 +68,44 @@ public class StallionSignatureVerification {
     }
   }
 
-  private static String computeHashOfFolder(String folderPath) throws Exception {
-    MessageDigest digest = MessageDigest.getInstance("SHA-256");
-    File folder = new File(folderPath);
+  private static String computeFolderHash(File folder) throws Exception {
+    ArrayList<String> manifest = new ArrayList<>();
+    addFolderContentsToManifest(folder, "", manifest);
+    Collections.sort(manifest);
+    JSONArray jsonArray = new JSONArray();
+    for (String entry : manifest) {
+      jsonArray.put(entry);
+    }
+    String jsonString = jsonArray.toString().replace("\\/", "/");
+    return computeHash(new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)));
+  }
 
-    for (File file : folder.listFiles()) {
-      if (file.isFile() && !file.getName().equals(SIGNATURE_FILE_NAME)) {
-        byte[] fileBytes = readFileBytesLegacy(file);
-        digest.update(fileBytes);
+  private static void addFolderContentsToManifest(File folder, String pathPrefix, ArrayList<String> manifest) throws Exception {
+    File[] files = folder.listFiles();
+    for (File file : files) {
+      String fileName = file.getName();
+      String relativePath = pathPrefix.isEmpty() ? fileName : pathPrefix + "/" + fileName;
+      if (isIgnored(relativePath)) continue;
+      if (file.isDirectory()) {
+        addFolderContentsToManifest(file, relativePath, manifest);
+      } else {
+        manifest.add(relativePath + ":" + computeHash(new FileInputStream(file)));
       }
     }
+  }
 
-    byte[] hashBytes = digest.digest();
-    return android.util.Base64.encodeToString(hashBytes, android.util.Base64.NO_WRAP);
+  private static boolean isIgnored(String path) {
+    return path.equals(".DS_Store") || path.equals(SIGNATURE_FILE_NAME) || path.startsWith("__MACOSX/");
+  }
+
+  private static String computeHash(InputStream stream) throws Exception {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    DigestInputStream dis = new DigestInputStream(stream, digest);
+    byte[] buffer = new byte[8192];
+    while (dis.read(buffer) != -1);
+    dis.close();
+    byte[] hash = digest.digest();
+    return String.format("%064x", new java.math.BigInteger(1, hash));
   }
 
   private static String readFileLegacy(File file) throws IOException {
@@ -89,15 +116,6 @@ public class StallionSignatureVerification {
     }
     scanner.close();
     return sb.toString();
-  }
-
-  private static byte[] readFileBytesLegacy(File file) throws IOException {
-    FileInputStream fis = new FileInputStream(file);
-    byte[] data = new byte[(int) file.length()];
-    int bytesRead = fis.read(data);
-    fis.close();
-    if (bytesRead != file.length()) throw new IOException("Incomplete read of file: " + file.getName());
-    return data;
   }
 
   private static byte[] base64UrlDecode(String input) {

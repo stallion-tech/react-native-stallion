@@ -152,8 +152,9 @@ class StallionSyncHandler {
 
         let stateManager = StallionStateManager.sharedInstance()
         let lastRolledBackHash = stateManager?.stallionMeta?.lastRolledBackHash ?? ""
+        let lastUnverifiedHash = stateManager?.stallionConfig?.lastUnverifiedHash ?? ""
 
-        if newReleaseHash != lastRolledBackHash {
+        if newReleaseHash != lastRolledBackHash && newReleaseHash != lastUnverifiedHash {
             if stateManager?.isMounted == true {
                 downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl)
             } else {
@@ -197,11 +198,12 @@ class StallionSyncHandler {
           if(publicSigningKey != nil && !publicSigningKey.isEmpty) {
             if(
               !StallionSignatureVerification.verifyReleaseSignature(
-                downloadedBundlePath: downloadPath,
+                downloadedBundlePath: downloadPath + "/" + StallionConstants.FilePaths.ZipFolderName,
                 publicKeyPem: publicSigningKey
               )
             ) {
               // discard downloaded release
+              config.updateLastUnverifiedHash(newReleaseHash)
               emitSignatureVerificationFailed(releaseHash: newReleaseHash)
               StallionFileManager.deleteFileOrFolderSilently(downloadPath)
               return;

@@ -20,7 +20,9 @@ public class StallionConfig {
   private final SharedPreferences sharedPreferences;
   private final String filesDirectory;
   private String lastDownloadingUrl;
-  private String publicSigningKey;
+  private String lastUnverifiedHash;
+  private final String publicSigningKey;
+
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -74,6 +76,7 @@ public class StallionConfig {
     this.appVersion = fetchAppVersion(context);
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
     this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
+    this.lastUnverifiedHash = sharedPreferences.getString(StallionConfigConstants.LAST_UNVERIFIED_HASH, "");
   }
 
   public String getLastDownloadingUrl() {
@@ -84,6 +87,17 @@ public class StallionConfig {
     this.lastDownloadingUrl = newUrl;
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, newUrl);
+    editor.apply();
+  }
+
+  public String getLastUnverifiedHash() {
+    return this.lastUnverifiedHash;
+  }
+
+  public void setLastUnverifiedHash(String newUnverifiedHash) {
+    this.lastDownloadingUrl = newUnverifiedHash;
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putString(StallionConfigConstants.LAST_UNVERIFIED_HASH, newUnverifiedHash);
     editor.apply();
   }
 

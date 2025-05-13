@@ -89,11 +89,13 @@ public class StallionSyncHandler {
 
     StallionStateManager stateManager = StallionStateManager.getInstance();
     String lastRolledBackHash = stateManager.stallionMeta.getLastRolledBackHash();
+    String lastUnverifiedHash = stateManager.getStallionConfig().getLastUnverifiedHash();
 
     if (
-        !newReleaseHash.isEmpty()
-        && !newReleaseUrl.isEmpty()
-        && !newReleaseHash.equals(lastRolledBackHash)
+          !newReleaseHash.isEmpty()
+          && !newReleaseUrl.isEmpty()
+          && !newReleaseHash.equals(lastRolledBackHash)
+          && !newReleaseHash.equals(lastUnverifiedHash)
     ) {
       if(stateManager.getIsMounted()) {
         downloadNewRelease(newReleaseHash, newReleaseUrl);
@@ -138,9 +140,14 @@ public class StallionSyncHandler {
             isDownloadInProgress.set(false);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
 
-            if(publicSigningKey != null && publicSigningKey.isEmpty()) {
-              if(!StallionSignatureVerification.verifyReleaseSignature(downloadPath, publicSigningKey)) {
+            if(publicSigningKey != null && !publicSigningKey.isEmpty()) {
+              if(
+                !StallionSignatureVerification.verifyReleaseSignature(
+                downloadPath + StallionConfigConstants.UNZIP_FOLDER_NAME,
+                publicSigningKey)
+              ) {
                 // discard the downloaded release
+                config.setLastUnverifiedHash(newReleaseHash);
                 emitSignatureVerificationFailed(newReleaseHash);
                 StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
                 return;

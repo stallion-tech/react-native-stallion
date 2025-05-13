@@ -19,6 +19,7 @@
         _appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_APP_VERSION_IDENTIFIER] ?: @"";
         _filesDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject ?: @"";
         _publicSigningKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER] ?: @"";
+        _lastUnverifiedHash = [defaults stringForKey:LAST_UNVERIFIED_KEY_IDENTIFIER] ?: @"";
 
         NSString *cachedUid = [defaults stringForKey:UNIQUE_ID_IDENTIFIER];
         if (cachedUid && ![cachedUid isEqualToString:@""]) {
@@ -41,6 +42,12 @@
 - (void)updateSdkToken:(NSString *)newSdkToken {
     _sdkToken = newSdkToken ?: @"";
     [[NSUserDefaults standardUserDefaults] setObject:_sdkToken forKey:API_KEY_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)updateLastUnverifiedHash:(NSString *)newUnverifiedHash {
+    _lastUnverifiedHash = newUnverifiedHash ?: @"";
+    [[NSUserDefaults standardUserDefaults] setObject:_lastUnverifiedHash forKey:LAST_UNVERIFIED_KEY_IDENTIFIER];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

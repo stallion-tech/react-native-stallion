@@ -31,4 +31,6 @@ NSString *const UNZIP_FOLDER_NAME = @"/build";
 
 NSString *const STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER = @"StallionPublicSigningKey";
 
+NSString *const LAST_UNVERIFIED_KEY_IDENTIFIER = @"LastUnverifiedHash";
+
 @end

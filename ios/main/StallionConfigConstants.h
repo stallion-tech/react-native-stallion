@@ -31,4 +31,6 @@ extern NSString *const STALLION_META_IDENTIFIER;
 
 extern NSString *const STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER;
 
+extern NSString *const LAST_UNVERIFIED_KEY_IDENTIFIER;
+
 @end

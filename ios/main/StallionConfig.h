@@ -16,10 +16,12 @@
 @property (nonatomic, copy, readonly) NSString *appVersion;
 @property (nonatomic, copy, readonly) NSString *filesDirectory;
 @property (nonatomic, copy, readonly) NSString *publicSigningKey;
+@property (nonatomic, copy) NSString *lastUnverifiedHash;
 
 - (instancetype)initWithDefaults:(NSUserDefaults *)defaults;
 
 - (void)updateSdkToken:(NSString *)newSdkToken;
+- (void)updateLastUnverifiedHash:(NSString *)newUnverifiedHash;
 - (NSDictionary *)toDictionary;
 
 @end
