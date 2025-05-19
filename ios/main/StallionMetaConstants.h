@@ -2,7 +2,7 @@
 //  StallionMetaConstants.h
 //  DoubleConversion
 //
-//  Created by Jasbir Singh Shergill on 28/01/25.
+//  Created by Thor963 on 28/01/25.
 //
 
 #import <Foundation/Foundation.h>
