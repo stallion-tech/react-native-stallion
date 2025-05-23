@@ -18,6 +18,7 @@ public class StallionEventManager {
   public  static final String STALLION_NATIVE_EVENT_NAME = "STALLION_NATIVE_EVENT";
   private static final String EVENTS_KEY = "stored_events";
   private static final int MAX_BATCH_COUNT_SIZE = 9;
+  private static final int MAX_EVENT_STORAGE_LIMIT = 20;
 
   private static StallionEventManager instance;
   private final StallionStateManager stallionStateManager;
@@ -105,6 +106,12 @@ public class StallionEventManager {
     try {
       String eventsString = stallionStateManager.getString(EVENTS_KEY, "{}");
       JSONObject eventsObject = new JSONObject(eventsString);
+
+      // Flush all if limit reached
+      if (eventsObject.length() >= MAX_EVENT_STORAGE_LIMIT) {
+        eventsObject = new JSONObject(); // reset
+      }
+
       eventsObject.put(uniqueId, eventPayload.toString());
       stallionStateManager.setString(EVENTS_KEY, eventsObject.toString());
     } catch (JSONException e) {
