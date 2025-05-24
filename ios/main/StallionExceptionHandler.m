@@ -51,7 +51,10 @@ void handleException(NSException *exception) {
         }
 
   } else if (meta.switchState == SwitchStateStage) {
-        [StallionSlotManager rollbackStage];
+    
+    if(isAutoRollback) {
+      [StallionSlotManager rollbackStage];
+    }
     
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_stage_event
           eventPayload:@{
@@ -60,6 +63,7 @@ void handleException(NSException *exception) {
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];
 
+      if(!exceptionAlertDismissed) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Stallion Exception Handler"
            message:[NSString stringWithFormat:@"%@\n%@",
                     @"A crash occurred in the app. Build was rolled back. Check crash report below. Continue crash to invoke other exception handlers. \n \n",
@@ -82,6 +86,7 @@ void handleException(NSException *exception) {
         while (exceptionAlertDismissed == FALSE) {
             [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         }
+      }
     }
 
     // Call default exception handler if available
