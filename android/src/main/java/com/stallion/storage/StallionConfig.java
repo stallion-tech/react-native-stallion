@@ -95,7 +95,7 @@ public class StallionConfig {
   }
 
   public void setLastUnverifiedHash(String newUnverifiedHash) {
-    this.lastDownloadingUrl = newUnverifiedHash;
+    this.lastUnverifiedHash = newUnverifiedHash;
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putString(StallionConfigConstants.LAST_UNVERIFIED_HASH, newUnverifiedHash);
     editor.apply();
