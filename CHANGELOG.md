@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0...v2.2.0) (2025-06-06)
+
+
+### Features
+
+* resume download Android (v2.2.0) ([647a69f](https://github.com/stallion-tech/react-native-stallion/commit/647a69fdc70b913e7838a6c995c8d103e15b1c92)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32) [#38](https://github.com/stallion-tech/react-native-stallion/issues/38) [#41](https://github.com/stallion-tech/react-native-stallion/issues/41) [#42](https://github.com/stallion-tech/react-native-stallion/issues/42)
+
 # [2.2.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0...v2.2.0-alpha.1) (2025-05-11)
 
 
