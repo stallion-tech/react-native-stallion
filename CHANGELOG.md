@@ -1,3 +1,10 @@
+# [2.2.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.2.0-alpha.1...v2.2.0-alpha.2) (2025-06-06)
+
+
+### Features
+
+* bundle signing ([#44](https://github.com/stallion-tech/react-native-stallion/issues/44)) ([d4d8433](https://github.com/stallion-tech/react-native-stallion/commit/d4d84335409ef9b8b4eb5c223ef5217f4d0cd54f)), closes [#49](https://github.com/stallion-tech/react-native-stallion/issues/49)
+
 # [2.2.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.1.0...v2.2.0-alpha.1) (2025-05-11)
 
 
