@@ -149,6 +149,7 @@ class Stallion: RCTEventEmitter {
   
   @objc func restart() {
       DispatchQueue.main.async {
+          self.stallionStateManager.isMounted = false
           RCTTriggerReloadCommandListeners("Stallion: Restart")
       }
   }

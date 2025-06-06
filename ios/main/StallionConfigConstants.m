@@ -2,7 +2,7 @@
 //  StallionConfigConstants.m
 //  DoubleConversion
 //
-//  Created by Jasbir Singh Shergill on 28/01/25.
+//  Created by Thor963 on 28/01/25.
 //
 
 #import "StallionConfigConstants.h"
@@ -28,5 +28,9 @@ NSString *const STABLE_FOLDER_SLOT = @"/StallionStable";
 NSString *const ANDROID_BUNDLE_FILE_NAME = @"/index.android.bundle";
 NSString *const DEFAULT_JS_BUNDLE_LOCATION_BASE = @"assets:/";
 NSString *const UNZIP_FOLDER_NAME = @"/build";
+
+NSString *const STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER = @"StallionPublicSigningKey";
+
+NSString *const LAST_UNVERIFIED_KEY_IDENTIFIER = @"LastUnverifiedHash";
 
 @end

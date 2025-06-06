@@ -13,7 +13,8 @@ public class StallionEventConstants {
     EXCEPTION_PROD,
     AUTO_ROLLED_BACK_PROD,
     CORRUPTED_FILE_ERROR,
-    FILE_MOUNTING_ERROR
+    FILE_MOUNTING_ERROR,
+    SIGNATURE_VERIFICATION_FAILED
   }
 
   public enum NativeStageEventTypes {

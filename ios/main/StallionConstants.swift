@@ -78,6 +78,7 @@ class StallionConstants {
       static let INSTALLED_PROD = "INSTALLED_PROD"
       static let STABILIZED_PROD = "STABILIZED_PROD"
       static let EXCEPTION_PROD = "EXCEPTION_PROD"
+      static let SIGNATURE_VERIFICATION_FAILED = "SIGNATURE_VERIFICATION_FAILED"
     }
     public struct NativeEventTypesStage {
       static let DOWNLOAD_STARTED_STAGE = "DOWNLOAD_STARTED_STAGE"

@@ -2,7 +2,7 @@
 //  StallionEventHandler.m
 //  DoubleConversion
 //
-//  Created by Jasbir Singh Shergill on 28/01/25.
+//  Created by Thor963 on 28/01/25.
 //
 
 #import "StallionEventHandler.h"
@@ -15,6 +15,7 @@
 static NSString *const STALLION_NATIVE_EVENT_NAME = @"STALLION_NATIVE_EVENT";
 static NSString *const EVENTS_KEY = @"stored_events";
 static NSInteger const MAX_BATCH_COUNT_SIZE = 9;
+static NSInteger const MAX_EVENT_STORAGE_LIMIT = 20;
 
 @implementation StallionEventHandler
 
@@ -30,11 +31,11 @@ static NSInteger const MAX_BATCH_COUNT_SIZE = 9;
 // Emit event to React Native and store locally
 - (void)cacheEvent:(NSString *)eventName eventPayload:(NSDictionary *)eventPayload {
     StallionStateManager *stallionStateManager = [StallionStateManager sharedInstance];
-    
+
     NSString *projectId = stallionStateManager.stallionConfig.projectId ?: @"";
     NSString *appVersion = stallionStateManager.stallionConfig.appVersion ?: @"";
     NSString *uid = stallionStateManager.stallionConfig.uid ?: @"";
-  
+
     NSMutableDictionary *mutablePayload = [eventPayload mutableCopy];
     NSString *uniqueId = [[NSUUID UUID] UUIDString];
     mutablePayload[@"eventId"] = uniqueId;
@@ -59,6 +60,11 @@ static NSInteger const MAX_BATCH_COUNT_SIZE = 9;
                                                                               error:nil];
 
         if (!eventsObject) {
+            eventsObject = [NSMutableDictionary dictionary];
+        }
+
+        // Enforce max size
+        if (eventsObject.count >= MAX_EVENT_STORAGE_LIMIT) {
             eventsObject = [NSMutableDictionary dictionary];
         }
 
