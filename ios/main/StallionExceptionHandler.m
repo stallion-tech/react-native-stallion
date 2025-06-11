@@ -46,8 +46,62 @@ static void performStallionRollback(NSString *errorString) {
     StallionMeta *meta = stateManager.stallionMeta;
     BOOL isAutoRollback = !stateManager.isMounted;
 
-    if (errorString.length > 900) {
-        errorString = [errorString substringToIndex:900];
+    NSString *readableError = [exception reason];
+  
+  if (readableError.length > 900) {
+      readableError = [readableError substringToIndex:900];
+  }
+
+  if (meta.switchState == SwitchStateProd) {
+    NSString *currentHash = [meta getActiveReleaseHash] ?: @"";
+
+    [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_prod_event
+          eventPayload:@{
+              @"meta": readableError,
+              StallionObjConstants.release_hash_key: currentHash,
+              StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
+          }];
+        if (isAutoRollback) {
+            [StallionSlotManager rollbackProdWithAutoRollback:YES errorString:readableError];
+        }
+
+  } else if (meta.switchState == SwitchStateStage) {
+    
+    if(isAutoRollback) {
+      [StallionSlotManager rollbackStage];
+    }
+    
+    [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_stage_event
+          eventPayload:@{
+              @"meta": readableError,
+              StallionObjConstants.release_hash_key: meta.stageNewHash,
+              StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
+          }];
+
+      if(!exceptionAlertDismissed) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Stallion Exception Handler"
+           message:[NSString stringWithFormat:@"%@\n%@",
+                    @"A crash occurred in the app. Build was rolled back. Check crash report below. Continue crash to invoke other exception handlers. \n \n",
+                    readableError]
+          preferredStyle:UIAlertControllerStyleAlert];
+
+        [alert addAction:[UIAlertAction actionWithTitle:@"Continue Crash"
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    exceptionAlertDismissed = TRUE;
+                                                }]];
+
+        UIApplication *app = [UIApplication sharedApplication];
+        UIViewController *rootViewController = app.delegate.window.rootViewController;
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [rootViewController presentViewController:alert animated:YES completion:nil];
+        });
+
+        while (exceptionAlertDismissed == FALSE) {
+            [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        }
+      }
     }
 
     if (meta.switchState == SwitchStateProd) {
