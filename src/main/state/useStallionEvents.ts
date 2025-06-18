@@ -136,9 +136,9 @@ export const useStallionEvents = (
   }, [refreshMeta, setProgress, popEventsDebounced]);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       onLaunchNative('Success');
-    });
+    }, 100);
   }, []);
 
   useEffect(() => {

@@ -45,11 +45,9 @@ static void performStallionRollback(NSString *errorString) {
     StallionStateManager *stateManager = [StallionStateManager sharedInstance];
     StallionMeta *meta = stateManager.stallionMeta;
     BOOL isAutoRollback = !stateManager.isMounted;
-
-    NSString *readableError = [exception reason];
   
-  if (readableError.length > 900) {
-      readableError = [readableError substringToIndex:900];
+  if (errorString.length > 900) {
+    errorString = [errorString substringToIndex:900];
   }
 
   if (meta.switchState == SwitchStateProd) {
@@ -57,12 +55,12 @@ static void performStallionRollback(NSString *errorString) {
 
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_prod_event
           eventPayload:@{
-              @"meta": readableError,
+              @"meta": errorString,
               StallionObjConstants.release_hash_key: currentHash,
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];
         if (isAutoRollback) {
-            [StallionSlotManager rollbackProdWithAutoRollback:YES errorString:readableError];
+            [StallionSlotManager rollbackProdWithAutoRollback:YES errorString:errorString];
         }
 
   } else if (meta.switchState == SwitchStateStage) {
@@ -73,7 +71,7 @@ static void performStallionRollback(NSString *errorString) {
     
     [[StallionEventHandler sharedInstance] cacheEvent:StallionObjConstants.exception_stage_event
           eventPayload:@{
-              @"meta": readableError,
+              @"meta": errorString,
               StallionObjConstants.release_hash_key: meta.stageNewHash,
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];
@@ -82,7 +80,7 @@ static void performStallionRollback(NSString *errorString) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Stallion Exception Handler"
            message:[NSString stringWithFormat:@"%@\n%@",
                     @"A crash occurred in the app. Build was rolled back. Check crash report below. Continue crash to invoke other exception handlers. \n \n",
-                    readableError]
+                    errorString]
           preferredStyle:UIAlertControllerStyleAlert];
 
         [alert addAction:[UIAlertAction actionWithTitle:@"Continue Crash"
@@ -172,7 +170,7 @@ void handleSignal(int signalVal) {
     int frames = backtrace(callstack, 128);
     char **symbols = backtrace_symbols(callstack, frames);
 
-    NSMutableString *stackTrace = [NSMutableString stringWithFormat:@"Signal %d was raised.\n", signal];
+    NSMutableString *stackTrace = [NSMutableString stringWithFormat:@"Signal %d was raised.\n", signalVal];
     for (int i = 0; i < frames; ++i) {
         [stackTrace appendFormat:@"%s\n", symbols[i]];
     }
@@ -182,5 +180,5 @@ void handleSignal(int signalVal) {
 
     // Restore default and raise to proceed with crash
     signal(signalVal, SIG_DFL);
-    raise(signal);
+    raise(signalVal);
 }
