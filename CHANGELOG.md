@@ -1,3 +1,10 @@
+# [2.3.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.1...v2.3.0-alpha.2) (2025-06-18)
+
+
+### Bug Fixes
+
+* exception handling ios newarch ([#53](https://github.com/stallion-tech/react-native-stallion/issues/53)) ([f0d454f](https://github.com/stallion-tech/react-native-stallion/commit/f0d454fe9ebf83bcbc2b09fd96bb17dd5b2a8a82)), closes [#49](https://github.com/stallion-tech/react-native-stallion/issues/49)
+
 # [2.3.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.2.0...v2.3.0-alpha.1) (2025-06-06)
 
 
