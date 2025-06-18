@@ -1,3 +1,10 @@
+# [2.3.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.2...v2.3.0-alpha.3) (2025-06-18)
+
+
+### Bug Fixes
+
+* removeEventListener exported ([979640a](https://github.com/stallion-tech/react-native-stallion/commit/979640a8b485d8ab0bb03b5799fc176289429228))
+
 # [2.3.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.1...v2.3.0-alpha.2) (2025-06-18)
 
 
