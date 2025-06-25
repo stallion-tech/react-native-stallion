@@ -119,12 +119,10 @@ public class StallionConfig {
   }
 
   public void updateSdkToken(String newApiKey) {
-    if(!newApiKey.isEmpty()) {
       this.sdkToken = newApiKey;
       SharedPreferences.Editor editor = sharedPreferences.edit();
       editor.putString(StallionConfigConstants.API_KEY_IDENTIFIER, this.sdkToken);
       editor.apply();
-    }
   }
 
   public String getAppToken() {
