@@ -1,3 +1,10 @@
+# [2.3.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.3...v2.3.0-alpha.4) (2025-06-25)
+
+
+### Bug Fixes
+
+* android sdk token expriy logic fixed ([#66](https://github.com/stallion-tech/react-native-stallion/issues/66)) ([6c8202f](https://github.com/stallion-tech/react-native-stallion/commit/6c8202fff4a46c9eaf066d793b402e9d9084bed3))
+
 # [2.3.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.2...v2.3.0-alpha.3) (2025-06-18)
 
 
