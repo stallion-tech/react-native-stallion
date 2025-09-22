@@ -4,6 +4,7 @@ import {
   NativeEventTypesProd,
   STALLION_NATIVE_EVENT,
   NativeEventTypesStage,
+  DEFAULT_STALLION_PARAMS,
 } from '../constants/appConstants';
 import { stallionEventEmitter } from '../utils/StallionEventEmitter';
 import {
@@ -16,6 +17,7 @@ import { IStallionConfigJson } from '../../types/config.types';
 import { useApiClient } from '../utils/useApiClient';
 import { API_PATHS } from '../constants/apiConstants';
 import debounce from '../utils/debounce';
+import { IStallionInitParams } from '../../types/utils.types';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -53,7 +55,8 @@ const processStallionEvent = (
 export const useStallionEvents = (
   refreshMeta: () => Promise<void>,
   setProgress: (newProgress: number) => void,
-  configState: IStallionConfigJson
+  configState: IStallionConfigJson,
+  stallionInitParams?: IStallionInitParams
 ) => {
   const { getData } = useApiClient(configState);
 
@@ -79,6 +82,7 @@ export const useStallionEvents = (
 
   const popEvents = useCallback(() => {
     popEventsNative().then((eventsString: string) => {
+      console.log(eventsString, 'popped evenbts');
       try {
         const eventsArr: IStallionNativeEventData[] = JSON.parse(eventsString);
         if (eventsArr?.length) {
@@ -109,6 +113,7 @@ export const useStallionEvents = (
         }
         switch (eventType) {
           case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
+          case NativeEventTypesProd.DOWNLOAD_PROGRESS_PROD:
           case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
           case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
           case NativeEventTypesProd.INSTALLED_PROD:
@@ -137,7 +142,15 @@ export const useStallionEvents = (
 
   useEffect(() => {
     setTimeout(() => {
-      onLaunchNative('Success');
+      if (stallionInitParams) {
+        try {
+          onLaunchNative(JSON.stringify(stallionInitParams));
+        } catch (_) {
+          throw new Error('React Native Stallion: Invalid init params');
+        }
+      } else {
+        onLaunchNative(JSON.stringify(DEFAULT_STALLION_PARAMS));
+      }
     }, 100);
   }, []);
 

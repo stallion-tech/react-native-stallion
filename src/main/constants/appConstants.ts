@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { IStallionInitParams } from '../../types/utils.types';
 
 export const HEADER_TITLE = 'Stallion';
 export const Login_TITLE = 'Login to continue';
@@ -140,3 +141,9 @@ export const STALLION_NATIVE_EVENT = 'STALLION_NATIVE_EVENT';
 
 export const RESTART_REQUIRED_MESSAGE =
   'Bundle change detected. Click to restart app.';
+
+export const DEFAULT_STALLION_PARAMS: IStallionInitParams = {
+  autoRollbackConfig: {
+    maxRetries: 3,
+  },
+};

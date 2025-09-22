@@ -20,7 +20,8 @@ public class StallionStateManager {
   private boolean isMounted;
   private String pendingReleaseUrl;
   private String pendingReleaseHash;
-
+  private boolean isFirstLaunch;
+  private boolean isSyncSuccessful;
 
   private StallionStateManager(Context context) {
     this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -110,4 +111,12 @@ public class StallionStateManager {
   public String getPendingReleaseHash() {
     return this.pendingReleaseHash;
   }
+
+  public boolean getIsFirstLaunch() { return this.isFirstLaunch; }
+
+  public void setIsFirstLaunch(boolean isFirstLaunch) { this.isFirstLaunch = isFirstLaunch; }
+
+  public boolean getIsSyncSuccessful() { return this.isSyncSuccessful; }
+
+  public void setIsSyncSuccessful(boolean isSyncSuccessful) { this.isSyncSuccessful = isSyncSuccessful; }
 }

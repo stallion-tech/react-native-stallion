@@ -83,7 +83,9 @@ public class StallionExceptionHandler {
     // Emit exception event
     emitException(stackTraceString, currentStageHash, isAutoRollback, false);
 
-    StallionSlotManager.rollbackStage();
+    if(isAutoRollback) {
+      StallionSlotManager.rollbackStage();
+    }
 
     continueExceptionFlow();
   }

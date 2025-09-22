@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
   repositories {
     google()
@@ -30,6 +32,22 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["Stallion_" + name]).toInteger()
 }
 
+def getSdkVersionFromPackageJson() {
+  try {
+    def pkgFile = new File("../package.json")
+    if (!pkgFile.exists()) {
+      logger.lifecycle("Stallion: package.json not found at ${pkgFile.absolutePath}, defaulting to 0.0.0")
+      return "0.0.0"
+    }
+    def json = new JsonSlurper().parseText(pkgFile.text)
+    def version = (json?.version ?: "0.0.0").toString()
+    logger.lifecycle("Stallion: Resolved SDK version ${version} from ${pkgFile.absolutePath}")
+    return version
+  } catch (Throwable ignored) {
+    return "0.0.0"
+  }
+}
+
 def stallionEnabled = true
 
 android {
@@ -48,6 +66,7 @@ android {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+    buildConfigField "String", "STALLION_SDK_VERSION", "\"${getSdkVersionFromPackageJson()}\""
   }
   buildTypes {
     release {

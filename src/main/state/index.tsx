@@ -22,10 +22,13 @@ import configReducer from './reducers/configReducer';
 import { IStallionConfigJson } from '../../types/config.types';
 import useConfigActions from './actionCreators/useConfigActions';
 import { useStallionEvents } from './useStallionEvents';
+import { IStallionInitParams } from '../../types/utils.types';
 
 export const GlobalContext = createContext({} as IGlobalContext);
 
-const GlobalProvider: React.FC = ({ children }) => {
+const GlobalProvider: React.FC<{
+  stallionInitParams?: IStallionInitParams;
+}> = ({ children, stallionInitParams }) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [metaState, metaDispatch] = useReducer(
     metaReducer,
@@ -77,7 +80,7 @@ const GlobalProvider: React.FC = ({ children }) => {
   const { downloadBundle, setProgress, setDownloadErrorMessage } =
     useDownloadActions(downloadDispatch, refreshMeta, configState);
 
-  useStallionEvents(refreshMeta, setProgress, configState);
+  useStallionEvents(refreshMeta, setProgress, configState, stallionInitParams);
 
   const value: IGlobalContext = {
     isModalVisible,

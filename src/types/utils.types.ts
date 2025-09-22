@@ -8,7 +8,11 @@ interface IBundleInfo {
   hash: string;
 }
 
-export interface IStallionInitParams {}
+export interface IStallionInitParams {
+  autoRollbackConfig: {
+    maxRetries: number;
+  };
+}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,
@@ -41,7 +45,7 @@ export type TDownloadBundleNative = (
   bundleInfo: IBundleInfo
 ) => Promise<string>;
 
-export type TOnLaunchBundleNative = (launchMessage: string) => void;
+export type TOnLaunchBundleNative = (stallionInitParams: string) => void;
 
 export interface IUseStallionUpdate {
   isRestartRequired: boolean;
