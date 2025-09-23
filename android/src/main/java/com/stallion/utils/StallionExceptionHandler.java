@@ -61,8 +61,18 @@ public class StallionExceptionHandler {
     );
   }
 
+  private static boolean getIsAutoRollback() {
+    StallionStateManager stateManager = StallionStateManager.getInstance();
+    String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
+    if(stateManager.stallionMeta.isCurrentReleaseStable(currentHash)) {
+      return false;
+    } else {
+      return !stateManager.getIsMounted();
+    }
+  }
+
   private static void handleProdState(String stackTraceString, StallionStateManager stateManager) {
-    boolean isAutoRollback = !stateManager.getIsMounted();
+    boolean isAutoRollback = getIsAutoRollback();
     String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
 
     // Emit exception event

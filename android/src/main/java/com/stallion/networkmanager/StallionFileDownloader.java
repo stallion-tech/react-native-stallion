@@ -3,10 +3,8 @@ package com.stallion.networkmanager;
 import android.os.StatFs;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -25,6 +23,7 @@ public class StallionFileDownloader {
 
   private static final String TAG = "StallionFileDownloader";
   private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+  private static final long DEFAULT_PROGRESS_THROTTLE_INTERVAL_MS = 300L;
 
   public static void downloadBundle(
     String downloadUrl,
@@ -125,7 +124,7 @@ public class StallionFileDownloader {
       long totalBytes = connection.getContentLength() + alreadyDownloaded;
       long receivedBytes = alreadyDownloaded;
       int bytesRead;
-      double lastProgress = (double) receivedBytes / totalBytes;
+      long lastProgressEmitTimeMs = 0L;
 
       // Ensure totalBytes is valid
       if (totalBytes <= 0) {
@@ -145,8 +144,8 @@ public class StallionFileDownloader {
           return;
         }
 
-        if (progress - lastProgress >= 0.1) {
-          lastProgress = progress;
+        if (shouldEmitProgress(lastProgressEmitTimeMs, DEFAULT_PROGRESS_THROTTLE_INTERVAL_MS)) {
+          lastProgressEmitTimeMs = System.currentTimeMillis();
           callback.onProgress(progress);
         }
       }
@@ -192,6 +191,10 @@ public class StallionFileDownloader {
     connection.setDoInput(true);
     connection.connect();
     return connection;
+  }
+
+  private static boolean shouldEmitProgress(long lastEmitTimeMs, long intervalMs) {
+    return System.currentTimeMillis() - lastEmitTimeMs >= intervalMs;
   }
 
   private static void validateAndUnzip(

@@ -20,7 +20,6 @@ public class StallionStateManager {
   private boolean isMounted;
   private String pendingReleaseUrl;
   private String pendingReleaseHash;
-  private boolean isFirstLaunch;
   private boolean isSyncSuccessful;
 
   private StallionStateManager(Context context) {
@@ -111,10 +110,6 @@ public class StallionStateManager {
   public String getPendingReleaseHash() {
     return this.pendingReleaseHash;
   }
-
-  public boolean getIsFirstLaunch() { return this.isFirstLaunch; }
-
-  public void setIsFirstLaunch(boolean isFirstLaunch) { this.isFirstLaunch = isFirstLaunch; }
 
   public boolean getIsSyncSuccessful() { return this.isSyncSuccessful; }
 

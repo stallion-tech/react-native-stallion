@@ -6,6 +6,7 @@ import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
 import com.stallion.storage.StallionConfig;
+import com.stallion.utils.StallionDeviceInfo;
 import com.stallion.utils.StallionFileManager;
 import com.stallion.utils.StallionSignatureVerification;
 import com.stallion.utils.StallionSlotManager;
@@ -44,6 +45,8 @@ public class StallionSyncHandler {
         requestPayload.put("platform", "android");
         requestPayload.put("projectId", projectId);
         requestPayload.put("appliedBundleHash", appliedBundleHash);
+        // Attach device metadata for analytics
+        requestPayload.put("deviceMeta", StallionDeviceInfo.getDeviceMetaJson(config));
 
         // Make API call using StallionApiManager
         JSONObject releaseMeta = StallionApiManager.post(
