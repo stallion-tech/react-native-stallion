@@ -69,7 +69,6 @@ public class Stallion {
         stallionMeta.setProdTempHash("");
         stateManager.syncStallionMeta();
         sendInstallEvent(prodTempHash);
-        stateManager.setIsFirstLaunch(true);
       } catch (Exception e) {
         sendMountingError(prodTempHash, e.getMessage());
         StallionSlotManager.discardNewRelease();

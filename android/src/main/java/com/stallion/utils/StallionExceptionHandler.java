@@ -15,6 +15,8 @@ public class StallionExceptionHandler {
   private static Thread _exceptionThread;
   private static Throwable _exceptionThrowable;
   private static boolean isErrorBoundaryInitialized = false;
+  private static boolean isNativeSignalsInitialized = false;
+  private static boolean hasProcessedNativeCrashMarker = false;
 
   public static void initErrorBoundary() {
     if (isErrorBoundaryInitialized) {
@@ -44,6 +46,17 @@ public class StallionExceptionHandler {
         continueExceptionFlow();
       }
     });
+
+    // Initialize native signal handler once and process any prior crash marker
+    try {
+      if (!isNativeSignalsInitialized) {
+        System.loadLibrary("stallion-crash");
+        String filesDir = StallionStateManager.getInstance().getStallionConfig().getFilesDirectory();
+        initNativeSignalHandler(filesDir);
+        isNativeSignalsInitialized = true;
+      }
+      processNativeCrashMarkerIfPresent();
+    } catch (Throwable ignored) {}
   }
 
   private static void emitException(String stackTraceString, String releaseHash, boolean isAutoRollback, boolean isProd) {
@@ -52,27 +65,17 @@ public class StallionExceptionHandler {
       syncErrorPayload.put("meta", stackTraceString);
       syncErrorPayload.put("releaseHash", releaseHash);
       syncErrorPayload.put("isAutoRollback", Boolean.toString(isAutoRollback));
+      StallionEventManager.getInstance().sendEvent(
+        isProd ?
+          StallionEventConstants.NativeProdEventTypes.EXCEPTION_PROD.toString()
+          : StallionEventConstants.NativeStageEventTypes.EXCEPTION_STAGE.toString(),
+        syncErrorPayload
+      );
     } catch (Exception ignored) { }
-    StallionEventManager.getInstance().sendEvent(
-      isProd ?
-        StallionEventConstants.NativeProdEventTypes.EXCEPTION_PROD.toString()
-        : StallionEventConstants.NativeStageEventTypes.EXCEPTION_STAGE.toString(),
-      syncErrorPayload
-    );
-  }
-
-  private static boolean getIsAutoRollback() {
-    StallionStateManager stateManager = StallionStateManager.getInstance();
-    String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
-    if(stateManager.stallionMeta.isCurrentReleaseStable(currentHash)) {
-      return false;
-    } else {
-      return !stateManager.getIsMounted();
-    }
   }
 
   private static void handleProdState(String stackTraceString, StallionStateManager stateManager) {
-    boolean isAutoRollback = getIsAutoRollback();
+    boolean isAutoRollback = !stateManager.getIsMounted();
     String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
 
     // Emit exception event
@@ -105,4 +108,49 @@ public class StallionExceptionHandler {
       _androidUncaughtExceptionHandler.uncaughtException(_exceptionThread, _exceptionThrowable);
     }
   }
+
+  private static void processNativeCrashMarkerIfPresent() {
+    try {
+      if (hasProcessedNativeCrashMarker) { return; }
+      String filesDir = StallionStateManager.getInstance().getStallionConfig().getFilesDirectory();
+      java.io.File marker = new java.io.File(filesDir + "/stallion_crash.marker");
+      if (marker.exists()) {
+        StringBuilder sb = new StringBuilder();
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(marker))) {
+          String line;
+          while ((line = br.readLine()) != null) {
+            sb.append(line).append('\n');
+          }
+        }
+        String stackTraceString = sb.toString();
+        if (stackTraceString.length() > 900) {
+          stackTraceString = stackTraceString.substring(0, 900) + "...";
+        }
+
+        StallionStateManager stateManager = StallionStateManager.getInstance();
+        StallionMetaConstants.SwitchState switchState = stateManager.stallionMeta.getSwitchState();
+        if (switchState == StallionMetaConstants.SwitchState.PROD) {
+          boolean isAutoRollback = !stateManager.getIsMounted();
+          String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
+          emitException(stackTraceString, currentHash, isAutoRollback, true);
+          if (isAutoRollback) {
+            StallionSlotManager.rollbackProd(true, stackTraceString);
+          }
+        } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
+          boolean isAutoRollback = !stateManager.getIsMounted();
+          String currentStageHash = stateManager.stallionMeta.getStageNewHash();
+          emitException(stackTraceString, currentStageHash, isAutoRollback, false);
+          if (isAutoRollback) {
+            StallionSlotManager.rollbackStage();
+          }
+        }
+
+        // delete marker
+        StallionFileManager.deleteFileOrFolderSilently(marker);
+        hasProcessedNativeCrashMarker = true;
+      }
+    } catch (Exception ignored) {}
+  }
+
+  private static native void initNativeSignalHandler(String filesDir);
 }
