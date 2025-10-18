@@ -7,6 +7,7 @@
 
 #import "StallionEventHandler.h"
 #import "StallionStateManager.h"
+#import "StallionVersion.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -45,6 +46,7 @@ static NSInteger const MAX_EVENT_STORAGE_LIMIT = 20;
     mutablePayload[@"platform"] = @"ios";
     mutablePayload[@"appVersion"] = appVersion;
     mutablePayload[@"uid"] = uid;
+    mutablePayload[@"sdkVersion"] = STALLION_SDK_VERSION;
     // Store event locally
     [self storeEventLocally:uniqueId eventPayload:mutablePayload];
 }

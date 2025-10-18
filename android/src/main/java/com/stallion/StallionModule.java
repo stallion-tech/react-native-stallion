@@ -74,7 +74,7 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     StallionEventManager.getInstance().setEmitter(eventEmitter);
     checkPendingDownloads();
     String currentReleaseHash = stallionStateManager.stallionMeta.getHashAtCurrentProdSlot();
-    if(stallionStateManager.stallionMeta.getSuccessfulLaunchCount(currentReleaseHash) == 0) {
+    if(!currentReleaseHash.isEmpty() && stallionStateManager.stallionMeta.getSuccessfulLaunchCount(currentReleaseHash) == 0) {
       emitInstallEvent(currentReleaseHash);
     }
     stallionStateManager.stallionMeta.markSuccessfulLaunch(currentReleaseHash);

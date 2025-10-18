@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5E555C0D2413F4C50049A1A2 /* Stallion.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Stallion.m */; };
 		F4FF95D7245B92E800C19C63 /*  Stallion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /*  Stallion.swift */; };
+		F4FF95DA245B92EB00C19C63 /* StallionDeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		B3E7B5891CC2AC0600A0062D /* Stallion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stallion.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* Stallion-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stallion-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* Stallion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stallion.swift; sourceTree = "<group>"; };
+		F4FF95D7245B92E900C19C63 /* StallionVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StallionVersion.h"; sourceTree = "<group>"; };
+		F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StallionDeviceInfo.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +56,10 @@
 			isa = PBXGroup;
 			children = (
 				F4FF95D6245B92E800C19C63 /* Stallion.swift */,
+				F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */,
 				B3E7B5891CC2AC0600A0062D /* Stallion.m */,
 				F4FF95D5245B92E700C19C63 /* Stallion-Bridging-Header.h */,
+				F4FF95D7245B92E900C19C63 /* StallionVersion.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -117,6 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4FF95D7245B92E800C19C63 /* Stallion.swift in Sources */,
+				F4FF95DA245B92EB00C19C63 /* StallionDeviceInfo.swift in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* Stallion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

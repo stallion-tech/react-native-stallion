@@ -30,6 +30,14 @@ class Stallion: RCTEventEmitter {
     @objc func onLaunch(_ launchData: String) {
         stallionStateManager.isMounted = true
         checkPendingDownloads()
+        let currentReleaseHash = stallionStateManager.stallionMeta.getHashAtCurrentProdSlot()
+        if let currentReleaseHash = currentReleaseHash {
+            if !currentReleaseHash.isEmpty && stallionStateManager.stallionMeta.getSuccessfulLaunchCount(currentReleaseHash) == 0 {
+                emitInstallEvent(currentReleaseHash)
+            }
+            stallionStateManager.stallionMeta.markSuccessfulLaunch(currentReleaseHash)
+            stallionStateManager.syncStallionMeta()
+        }
     }
 
     private func checkPendingDownloads() {
@@ -152,6 +160,18 @@ class Stallion: RCTEventEmitter {
           self.stallionStateManager.isMounted = false
           RCTTriggerReloadCommandListeners("Stallion: Restart")
       }
+  }
+  
+  private func emitInstallEvent(_ releaseHash: String) {
+      let eventPayload: [String: Any] = [
+          "releaseHash": releaseHash
+      ]
+      
+      Stallion.sendEventToRn(
+          eventName: StallionConstants.NativeEventTypesProd.INSTALLED_PROD,
+          eventBody: eventPayload as NSDictionary,
+          shouldCache: false
+      )
   }
 }
 

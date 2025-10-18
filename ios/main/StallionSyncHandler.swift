@@ -46,6 +46,7 @@ class StallionSyncHandler {
                       "platform": StallionConstants.PlatformValue,
                       "projectId": projectId,
                       "appliedBundleHash": appliedBundleHash,
+                      "deviceMeta": StallionDeviceInfo.getDeviceMetaJson(config)
                   ]
 
                   // Make API call using URLSession

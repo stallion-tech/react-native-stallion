@@ -96,7 +96,7 @@
 
     if (isAutoRollback) {
         StallionStateManager *stateManager = [StallionStateManager sharedInstance];
-        [stateManager.stallionMeta setLastRolledBackHash:rolledBackReleaseHash];
+        [stateManager.stallionMeta setLastRolledBackHashWithTimestamp:rolledBackReleaseHash];
         [stateManager syncStallionMeta];
     }
 

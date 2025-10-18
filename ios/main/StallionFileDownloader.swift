@@ -17,6 +17,7 @@ class StallionFileDownloader: NSObject {
     private var _reject: RCTPromiseRejectBlock?
     private var _onProgress: ((Float) -> Void)?
     private var lastSentProgress: Float = 0
+    private var lastProgressEmitTime: TimeInterval = 0
     private var _downloadDirectory: String?
     
     private let queue = DispatchQueue(label: "com.stallion.networkmanager", qos: .background)
@@ -116,13 +117,20 @@ class StallionFileDownloader: NSObject {
         guard bytesRead == headerSize else { return false }
         return header == [0x50, 0x4B, 0x03, 0x04] // PKZIP magic number
     }
+    
+    private func shouldEmitProgress(currentTime: TimeInterval) -> Bool {
+        return currentTime - self.lastProgressEmitTime >= StallionConstants.PROGRESS_THROTTLE_INTERVAL_MS
+    }
 }
 
 extension StallionFileDownloader: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-      if progress - self.lastSentProgress > StallionConstants.PROGRESS_EVENT_THRESHOLD {
+        let currentTime = Date().timeIntervalSince1970
+        
+        if shouldEmitProgress(currentTime: currentTime) {
             self.lastSentProgress = progress
+            self.lastProgressEmitTime = currentTime
             self._onProgress?(progress)
         }
     }

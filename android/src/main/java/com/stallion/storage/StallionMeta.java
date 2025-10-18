@@ -222,22 +222,16 @@ public class StallionMeta {
   }
 
   public void markSuccessfulLaunch(String releaseHash) {
-    String currentHash = releaseHash == null ? "" : releaseHash;
-    if (!currentHash.equals(this.lastSuccessfulLaunchHash)) {
+    if(releaseHash == null || releaseHash.isEmpty()) {
+      return;
+    }
+    if (!releaseHash.equals(this.lastSuccessfulLaunchHash)) {
       this.successfulLaunchCount = 0;
-      this.lastSuccessfulLaunchHash = currentHash;
+      this.lastSuccessfulLaunchHash = releaseHash;
     }
     if (this.successfulLaunchCount < MAX_SUCCESS_LAUNCH_THRESHOLD) {
       this.successfulLaunchCount += 1;
     }
-  }
-
-  public boolean isCurrentReleaseStable(String releaseHash) {
-    String currentHash = releaseHash == null ? "" : releaseHash;
-    if (!currentHash.equals(this.lastSuccessfulLaunchHash)) {
-      return false;
-    }
-    return this.successfulLaunchCount >= MAX_SUCCESS_LAUNCH_THRESHOLD;
   }
 
   public int getSuccessfulLaunchCount(String releaseHash) {
