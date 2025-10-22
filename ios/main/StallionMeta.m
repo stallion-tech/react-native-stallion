@@ -142,7 +142,7 @@
          return;
      }
      NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
-     if (now - self.lastRolledBackAt >= 6 * 60 * 60) { // 6 hours in seconds
+     if (now - self.lastRolledBackAt >= [StallionMeta lastRolledBackTTL]) {
          self.lastRolledBackHash = @"";
          self.lastRolledBackAt = 0.0;
      }

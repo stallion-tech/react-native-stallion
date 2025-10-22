@@ -152,7 +152,7 @@ class StallionSyncHandler {
               !newReleaseHash.isEmpty else { return }
 
         let stateManager = StallionStateManager.sharedInstance()
-        let lastRolledBackHash = stateManager?.stallionMeta?.lastRolledBackHash ?? ""
+        let lastRolledBackHash = stateManager?.stallionMeta?.getLastRolledBackHash() ?? ""
         let lastUnverifiedHash = stateManager?.stallionConfig?.lastUnverifiedHash ?? ""
 
         if newReleaseHash != lastRolledBackHash && newReleaseHash != lastUnverifiedHash {
@@ -191,7 +191,7 @@ class StallionSyncHandler {
         url: fromUrl,
         downloadDirectory: downloadPath,
         onProgress: { progress in
-          // Handle progress updates if necessary
+          emitDownloadProgress(releaseHash: newReleaseHash, progress: progress)
         },
         resolve: { _ in
           completeDownload()
@@ -278,6 +278,17 @@ class StallionSyncHandler {
                              eventBody: verificationFailurePayload,
                              shouldCache: true
       )
+    }
+
+    private static func emitDownloadProgress(releaseHash: String, progress: Float) {
+        let progressPayload: NSDictionary = [
+            "releaseHash": releaseHash,
+            "progress": "\(progress)"
+        ]
+        Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_PROGRESS_PROD,
+                               eventBody: progressPayload,
+                               shouldCache: false
+        )
     }
 }
 
