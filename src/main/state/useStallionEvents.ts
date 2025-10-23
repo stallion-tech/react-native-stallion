@@ -18,6 +18,10 @@ import { useApiClient } from '../utils/useApiClient';
 import { API_PATHS } from '../constants/apiConstants';
 import debounce from '../utils/debounce';
 import { IStallionInitParams } from '../../types/utils.types';
+import {
+  IUpdateMetaAction,
+  UpdateMetaActionKind,
+} from '../../types/updateMeta.types';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -35,7 +39,7 @@ export interface IStallionNativeEventData {
   type: NativeEventTypesProd | NativeEventTypesStage;
   eventId: string;
   eventTimestamp: number;
-  releasehash?: string;
+  releaseHash?: string;
   error?: string;
   progress?: string;
 }
@@ -56,6 +60,7 @@ export const useStallionEvents = (
   refreshMeta: () => Promise<void>,
   setProgress: (newProgress: number) => void,
   configState: IStallionConfigJson,
+  updateMetaDispatch: React.Dispatch<IUpdateMetaAction>,
   stallionInitParams?: IStallionInitParams
 ) => {
   const { getData } = useApiClient(configState);
@@ -113,6 +118,12 @@ export const useStallionEvents = (
         }
         switch (eventType) {
           case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
+            updateMetaDispatch({
+              type: UpdateMetaActionKind.SET_PENDING_RELEASE_HASH,
+              payload: eventData?.releaseHash || '',
+            });
+            stallionEventEmitter.emit(eventData);
+            break;
           case NativeEventTypesProd.DOWNLOAD_PROGRESS_PROD:
           case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
           case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
@@ -138,7 +149,7 @@ export const useStallionEvents = (
     return () => {
       eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
     };
-  }, [refreshMeta, setProgress, popEventsDebounced]);
+  }, [refreshMeta, setProgress, popEventsDebounced, updateMetaDispatch]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -152,6 +163,7 @@ export const useStallionEvents = (
         onLaunchNative(JSON.stringify(DEFAULT_STALLION_PARAMS));
       }
     }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -49,6 +49,7 @@ const GlobalProvider: React.FC<{
     currentlyRunningBundle: null,
     newBundle: null,
     initialProdSlot: null,
+    pendingReleaseHash: null,
   });
 
   useUpdateMetaActions(
@@ -80,7 +81,13 @@ const GlobalProvider: React.FC<{
   const { downloadBundle, setProgress, setDownloadErrorMessage } =
     useDownloadActions(downloadDispatch, refreshMeta, configState);
 
-  useStallionEvents(refreshMeta, setProgress, configState, stallionInitParams);
+  useStallionEvents(
+    refreshMeta,
+    setProgress,
+    configState,
+    updateMetaDispatch,
+    stallionInitParams
+  );
 
   const value: IGlobalContext = {
     isModalVisible,

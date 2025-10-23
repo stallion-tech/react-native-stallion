@@ -8,11 +8,7 @@ interface IBundleInfo {
   hash: string;
 }
 
-export interface IStallionInitParams {
-  autoRollbackConfig: {
-    maxRetries: number;
-  };
-}
+export interface IStallionInitParams {}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,

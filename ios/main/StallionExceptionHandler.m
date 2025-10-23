@@ -48,11 +48,11 @@ static BOOL rollbackPerformed = FALSE;
 }
 
 + (void)initJavaScriptExceptionHandler {
-    // Handle all JavaScript errors (including runtime errors like ReferenceError)
+    // Handle fatal JavaScript errors that cause app crashes
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
-        // Rollback for both fatal errors AND regular errors (like ReferenceError)
-        if (level >= RCTLogLevelError) {
-            NSString *errorString = [NSString stringWithFormat:@"JS Error in %@:%@ - %@", fileName, lineNumber, message];
+        // Rollback only for fatal errors that crash the app
+        if (level >= RCTLogLevelFatal) {
+            NSString *errorString = [NSString stringWithFormat:@"Fatal JS Error in %@:%@ - %@", fileName, lineNumber, message];
             performStallionRollback(errorString);
         }
     });
@@ -67,15 +67,23 @@ static BOOL rollbackPerformed = FALSE;
 #pragma mark - Shared Rollback Logic
 
 static void performStallionRollback(NSString *errorString) {
-    if (rollbackPerformed) {
-        NSLog(@"Rollback already performed, skipping duplicate rollback attempt");
-        return;
-    }
-    rollbackPerformed = TRUE;
     
     StallionStateManager *stateManager = [StallionStateManager sharedInstance];
     StallionMeta *meta = stateManager.stallionMeta;
     BOOL isAutoRollback = !stateManager.isMounted;
+  
+  
+  // Only prevent multiple executions for auto rollback cases
+  // Launch crashes (when mounted) can continue to be registered
+  if (rollbackPerformed && isAutoRollback) {
+      NSLog(@"Auto rollback already performed, skipping duplicate rollback attempt");
+      return;
+  }
+  
+  // Set rollback flag only for auto rollback cases
+  if (isAutoRollback) {
+    rollbackPerformed = TRUE;
+  }
   
   if (errorString.length > 900) {
     errorString = [errorString substringToIndex:900];
