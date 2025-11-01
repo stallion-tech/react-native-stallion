@@ -22,18 +22,17 @@ public class StallionEventManager {
   private static final int MAX_EVENT_STORAGE_LIMIT = 60;
 
   private static StallionEventManager instance;
-  private final StallionStateManager stallionStateManager;
   private final AtomicReference<DeviceEventManagerModule.RCTDeviceEventEmitter> eventEmitterRef = new AtomicReference<>();
 
   // Private constructor for Singleton
-  private StallionEventManager(StallionStateManager stateManager) {
-    this.stallionStateManager = stateManager;
+  private StallionEventManager() {
+
   }
 
   // Singleton initialization method
-  public static synchronized void init(StallionStateManager stateManager) {
+  public static synchronized void init() {
     if (instance == null) {
-      instance = new StallionEventManager(stateManager);
+      instance = new StallionEventManager();
     }
   }
 
@@ -58,7 +57,8 @@ public class StallionEventManager {
       eventPayload.put("type", eventName);
       DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = eventEmitterRef.get();
       // Emit the event to React Native
-      if (eventEmitter != null && stallionStateManager.getIsMounted()) {
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      if (eventEmitter != null && stateManager.getIsMounted()) {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
 
@@ -70,7 +70,8 @@ public class StallionEventManager {
   // Method to send an event
   public void sendEvent(String eventName, JSONObject eventPayload) {
     try {
-      StallionConfig stallionConfig = this.stallionStateManager.getStallionConfig();
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      StallionConfig stallionConfig = stateManager.getStallionConfig();
       // Generate a unique ID for the event
       String uniqueId = UUID.randomUUID().toString();
 
@@ -78,9 +79,10 @@ public class StallionEventManager {
 
       DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = eventEmitterRef.get();
       // Emit the event to React Native
-      if (eventEmitter != null && stallionStateManager.getIsMounted()) {
+      if (eventEmitter != null && stateManager.getIsMounted()) {
         eventEmitter.emit(STALLION_NATIVE_EVENT_NAME, eventPayload.toString());
       }
+
 
       // change type for sending to server
       eventPayload.remove("type");
@@ -106,7 +108,8 @@ public class StallionEventManager {
   // Store the event locally in SharedPreferences
   private void storeEventLocally(String uniqueId, JSONObject eventPayload) {
     try {
-      String eventsString = stallionStateManager.getString(EVENTS_KEY, "{}");
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      String eventsString = stateManager.getString(EVENTS_KEY, "{}");
       JSONObject eventsObject = new JSONObject(eventsString);
 
       // Flush all if limit reached
@@ -115,7 +118,7 @@ public class StallionEventManager {
       }
 
       eventsObject.put(uniqueId, eventPayload.toString());
-      stallionStateManager.setString(EVENTS_KEY, eventsObject.toString());
+      stateManager.setString(EVENTS_KEY, eventsObject.toString());
     } catch (JSONException e) {
       cleanupEventStorage();
       e.printStackTrace();
@@ -123,13 +126,15 @@ public class StallionEventManager {
   }
 
   private void cleanupEventStorage() {
-    stallionStateManager.setString(EVENTS_KEY, "{}");
+    StallionStateManager stateManager = StallionStateManager.getInstance();
+    stateManager.setString(EVENTS_KEY, "{}");
   }
 
   // Method to pop events as a batch
   public String popEvents() {
     try {
-      String eventsString = stallionStateManager.getString(EVENTS_KEY, "{}");
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      String eventsString = stateManager.getString(EVENTS_KEY, "{}");
       JSONObject eventsObject = new JSONObject(eventsString);
 
       JSONArray batch = new JSONArray();
@@ -155,7 +160,8 @@ public class StallionEventManager {
   // Acknowledge events by deleting them from local storage
   public void acknowledgeEvents(List<String> eventIds) {
     try {
-      String eventsString = stallionStateManager.getString(EVENTS_KEY, "{}");
+      StallionStateManager stateManager = StallionStateManager.getInstance();
+      String eventsString = stateManager.getString(EVENTS_KEY, "{}");
       JSONObject eventsObject = new JSONObject(eventsString);
 
       // Remove each event by its unique ID
@@ -166,7 +172,7 @@ public class StallionEventManager {
       }
 
       // Update the SharedPreferences with the modified events
-      stallionStateManager.setString(EVENTS_KEY, eventsObject.toString());
+      stateManager.setString(EVENTS_KEY, eventsObject.toString());
 
     } catch (JSONException e) {
       e.printStackTrace();

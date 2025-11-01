@@ -36,7 +36,6 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     super(reactContext);
     StallionStateManager.init(reactContext);
     this.stallionStateManager = StallionStateManager.getInstance();
-    StallionEventManager.init(this.stallionStateManager);
     reactContext.addLifecycleEventListener(this);
   }
 

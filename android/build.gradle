@@ -34,7 +34,7 @@ def getExtOrIntegerDefault(name) {
 
 def getSdkVersionFromPackageJson() {
   try {
-    def pkgFile = new File("../package.json")
+    def pkgFile = new File(projectDir.parentFile, "package.json")
     if (!pkgFile.exists()) {
       logger.lifecycle("Stallion: package.json not found at ${pkgFile.absolutePath}, defaulting to 0.0.0")
       return "0.0.0"
