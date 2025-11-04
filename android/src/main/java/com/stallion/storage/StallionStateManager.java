@@ -30,6 +30,9 @@ public class StallionStateManager {
     this.isMounted = false;
     this.pendingReleaseUrl = "";
     this.pendingReleaseHash = "";
+    
+    // Reset mount state on initialization (ensures mount marker file is deleted for new session)
+    setIsMounted(false);
   }
 
   public static synchronized void init(Context context) {
@@ -80,6 +83,18 @@ public class StallionStateManager {
 
   public void setIsMounted(Boolean isMounted) {
     this.isMounted = isMounted;
+    // Write mount state to a simple file that C++ can read
+    String filesDir = getStallionConfig().getFilesDirectory();
+    java.io.File mountMarker = new java.io.File(filesDir + "/stallion_mount.marker");
+    if (isMounted) {
+      try {
+        // Create file to indicate mounted (file existence = mounted)
+        mountMarker.createNewFile();
+      } catch (Exception ignored) {}
+    } else {
+      // Delete file to indicate not mounted (no file = not mounted)
+      mountMarker.delete();
+    }
   }
 
   public boolean getIsMounted() {

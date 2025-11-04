@@ -119,10 +119,27 @@ public class StallionExceptionHandler {
         try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(marker))) {
           String line;
           while ((line = br.readLine()) != null) {
-            sb.append(line).append('\n');
+            sb.append(line);
           }
         }
-        String stackTraceString = sb.toString();
+        
+        String jsonContent = sb.toString();
+        String stackTraceString = "";
+        boolean isAutoRollback = false;
+        
+        try {
+          // Parse JSON from previous crash
+          JSONObject crashMarker = new JSONObject(jsonContent);
+          stackTraceString = crashMarker.optString("crashLog", "");
+          // Use the autoRollback flag that was determined at crash time (previous session)
+          isAutoRollback = crashMarker.optBoolean("isAutoRollback", false);
+        } catch (org.json.JSONException e) {
+          // Fallback for old format (non-JSON)
+          stackTraceString = jsonContent;
+          // Default to true for old format (conservative approach)
+          isAutoRollback = true;
+        }
+        
         if (stackTraceString.length() > 900) {
           stackTraceString = stackTraceString.substring(0, 900) + "...";
         }
@@ -130,15 +147,15 @@ public class StallionExceptionHandler {
         StallionStateManager stateManager = StallionStateManager.getInstance();
         StallionMetaConstants.SwitchState switchState = stateManager.stallionMeta.getSwitchState();
         if (switchState == StallionMetaConstants.SwitchState.PROD) {
-          boolean isAutoRollback = !stateManager.getIsMounted();
           String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
+          // Use isAutoRollback from previous crash, not current session state
           emitException(stackTraceString, currentHash, isAutoRollback, true);
           if (isAutoRollback) {
             StallionSlotManager.rollbackProd(true, stackTraceString);
           }
         } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
-          boolean isAutoRollback = !stateManager.getIsMounted();
           String currentStageHash = stateManager.stallionMeta.getStageNewHash();
+          // Use isAutoRollback from previous crash, not current session state
           emitException(stackTraceString, currentStageHash, isAutoRollback, false);
           if (isAutoRollback) {
             StallionSlotManager.rollbackStage();
