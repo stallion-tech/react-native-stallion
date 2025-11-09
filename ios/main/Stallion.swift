@@ -38,6 +38,9 @@ class Stallion: RCTEventEmitter {
             stallionStateManager.stallionMeta.markSuccessfulLaunch(currentReleaseHash)
             stallionStateManager.syncStallionMeta()
         }
+        
+        // Test patch update on launch (for testing only)
+        StallionPatchTester.testPatchUpdate()
     }
 
     private func checkPendingDownloads() {

@@ -8,3 +8,4 @@
 #import <StallionMetaConstants.h>
 #import <StallionSlotManager.h>
 #import <StallionExceptionHandler.h>
+#import "bspatch_bridge.h"

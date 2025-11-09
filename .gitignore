@@ -74,3 +74,6 @@ lib/
 sdk-package
 
 ios/main/StallionVersion.h
+
+# Test artifacts
+.test-temp/

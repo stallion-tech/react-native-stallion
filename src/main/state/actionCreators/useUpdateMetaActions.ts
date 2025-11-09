@@ -72,6 +72,7 @@ const useUpdateMetaActions = (
   useEffect(() => {
     if (currentlyRunningHash && !updateMetaState.currentlyRunningBundle) {
       getUpdateMetaData(currentlyRunningHash).then((res) => {
+        console.log(res, 'currentlyRunningHash');
         if (res.data) {
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_CURRENTLY_RUNNING_META,

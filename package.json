@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:patch:c-code": "node scripts/test-patch-c-code.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "example": "yarn --cwd example",

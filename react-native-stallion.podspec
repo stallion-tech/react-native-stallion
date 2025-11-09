@@ -48,6 +48,8 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   if isStallionEnabled then 
     s.dependency "ZIPFoundation"
+    # Link libbz2 for bspatch (bsdiff/bspatch uses bzip2 compression)
+    s.libraries = "bz2"
   end
 
   # Don't install the dependencies when we run `pod install` in the old architecture.

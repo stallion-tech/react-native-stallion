@@ -13,11 +13,7 @@ const App: React.FC = () => {
   const { showModal } = useStallionModal();
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
 
-  // console.log(
-  //   isRestartRequired,
-  //   'isRestartRequired',
-  //   newReleaseBundle
-  // );
+  // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
     if (isRestartRequired) {
@@ -39,7 +35,10 @@ const App: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Hello world</Text>
+      <Text>
+        yarn test:patch:c-code stallion-temp-7Pp0rWuvdzNa
+        stallion-temp-UEGc06ssiS7U
+      </Text>
       <Button title="OpenModal" onPress={showModal} />
       {isRestartRequired ? <Text>Restart the app</Text> : null}
     </View>
@@ -53,6 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'red',
   },
   box: {
     width: 60,
