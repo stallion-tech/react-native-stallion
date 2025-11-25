@@ -1,5 +1,5 @@
 //
-//  StallionExceptionHandler.m
+//  StallionExceptionHandler.mm
 //  react-native-stallion
 //
 //  Created by Thor963 on 29/01/25.
@@ -16,32 +16,50 @@
 #import <execinfo.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#include <exception>
+#include <cxxabi.h>
+#include <string>
 
 // Forward declarations
 void handleException(NSException *exception);
-void handleSignal(int signal);
+void handleSignal(int signal, siginfo_t *info, void *context);
 static void performStallionRollback(NSString *errorString);
+static void setupSignalHandlers(void);
+void handleCppTerminate(void);
 
 @implementation StallionExceptionHandler
 
 NSUncaughtExceptionHandler *_defaultExceptionHandler;
+std::terminate_handler _defaultTerminateHandler;
 BOOL exceptionAlertDismissed = FALSE;
 static BOOL rollbackPerformed = FALSE;
+static BOOL isInitialized = FALSE;
+static struct sigaction _previousHandlers[32]; // Store previous handlers for chaining
 
 + (void)initExceptionHandler {
+    // Prevent multiple initializations
+    if (isInitialized) {
+        return;
+    }
+    isInitialized = TRUE;
+    
     // Reset rollback flag when initializing exception handler
     [self resetRollbackFlag];
     
+    // Store and set Objective-C exception handler
     if (!_defaultExceptionHandler) {
         _defaultExceptionHandler = NSGetUncaughtExceptionHandler();
     }
     NSSetUncaughtExceptionHandler(&handleException);
 
-    signal(SIGABRT, handleSignal);
-    signal(SIGILL, handleSignal);
-    signal(SIGSEGV, handleSignal);
-    signal(SIGFPE, handleSignal);
-    signal(SIGBUS, handleSignal);
+    // Store and set C++ terminate handler
+    if (!_defaultTerminateHandler) {
+        _defaultTerminateHandler = std::get_terminate();
+    }
+    std::set_terminate(handleCppTerminate);
+    
+    // Setup signal handlers using sigaction with chaining
+    setupSignalHandlers();
     
     // Initialize JavaScript exception handler
     [self initJavaScriptExceptionHandler];
@@ -142,22 +160,67 @@ static void performStallionRollback(NSString *errorString) {
     }
 }
 
+#pragma mark - Signal Handler Setup
+
+static void setupSignalHandlers(void) {
+    struct sigaction action;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+    action.sa_sigaction = handleSignal;
+    
+    // List of signals to catch - comprehensive coverage
+    int signals[] = {
+        SIGABRT,   // Abort signal
+        SIGILL,    // Illegal instruction
+        SIGSEGV,   // Segmentation violation
+        SIGFPE,    // Floating point exception
+        SIGBUS,    // Bus error
+        SIGTRAP,   // Trace/breakpoint trap
+        SIGPIPE,   // Broken pipe
+        SIGSYS,    // Bad system call
+    };
+    
+    int signalCount = sizeof(signals) / sizeof(signals[0]);
+    
+    for (int i = 0; i < signalCount; i++) {
+        int sig = signals[i];
+        // Store previous handler before installing ours (for chaining)
+        sigaction(sig, NULL, &_previousHandlers[sig]);
+        // Now install our handler
+        sigaction(sig, &action, NULL);
+    }
+}
+
 void handleException(NSException *exception) {
     NSString *readableError = [exception reason] ?: @"Unknown exception";
-    performStallionRollback(readableError);
+    NSString *name = [exception name] ?: @"Unknown";
+    NSString *callStack = [[exception callStackSymbols] componentsJoinedByString:@"\n"];
+    NSString *fullError = [NSString stringWithFormat:@"Exception: %@\nReason: %@\nStack:\n%@", name, readableError, callStack];
+    
+    performStallionRollback(fullError);
 
-// Call default exception handler if available
+    // Chain to default exception handler if available
     if (_defaultExceptionHandler) {
         _defaultExceptionHandler(exception);
     }
 }
 
-void handleSignal(int signalVal) {
+void handleSignal(int signalVal, siginfo_t *info, void *context) {
     void *callstack[128];
     int frames = backtrace(callstack, 128);
     char **symbols = backtrace_symbols(callstack, frames);
 
     NSMutableString *stackTrace = [NSMutableString stringWithFormat:@"Signal %d was raised.\n", signalVal];
+    
+    // Add signal info if available
+    if (info) {
+        [stackTrace appendFormat:@"Signal Code: %d\n", info->si_code];
+        if (info->si_addr) {
+            [stackTrace appendFormat:@"Fault Address: %p\n", info->si_addr];
+        }
+    }
+    
+    [stackTrace appendString:@"Stack trace:\n"];
     for (int i = 0; i < frames; ++i) {
         [stackTrace appendFormat:@"%s\n", symbols[i]];
     }
@@ -165,7 +228,66 @@ void handleSignal(int signalVal) {
 
     performStallionRollback(stackTrace);
 
+    // Chain to previous handler if it exists and is valid (bubble up)
+    if (signalVal >= 0 && signalVal < 32) {
+        struct sigaction *prev = &_previousHandlers[signalVal];
+        if (prev->sa_handler != SIG_DFL && prev->sa_handler != SIG_IGN && prev->sa_handler != NULL) {
+            // Prevent infinite loop - don't call ourselves
+            if (prev->sa_sigaction != handleSignal) {
+                if (prev->sa_flags & SA_SIGINFO) {
+                    prev->sa_sigaction(signalVal, info, context);
+                } else if (prev->sa_handler != SIG_DFL && prev->sa_handler != SIG_IGN) {
+                    prev->sa_handler(signalVal);
+                }
+            }
+        }
+    }
+    
     // Restore default and raise to proceed with crash
     signal(signalVal, SIG_DFL);
     raise(signalVal);
 }
+
+void handleCppTerminate(void) {
+    std::exception_ptr ex = std::current_exception();
+    NSString *errorString = @"C++ terminate() called";
+    
+    if (ex) {
+        try {
+            std::rethrow_exception(ex);
+        } catch (const std::exception &e) {
+            const char *name = abi::__cxa_demangle(typeid(e).name(), 0, 0, 0);
+            errorString = [NSString stringWithFormat:@"C++ Exception: %s - %s", 
+                          name ? name : typeid(e).name(), e.what()];
+            if (name) free((void*)name);
+        } catch (const std::string &s) {
+            errorString = [NSString stringWithFormat:@"C++ Exception (string): %s", s.c_str()];
+        } catch (const char *s) {
+            errorString = [NSString stringWithFormat:@"C++ Exception (char*): %s", s];
+        } catch (...) {
+            errorString = @"C++ Exception: Unknown type";
+        }
+    }
+    
+    // Get stack trace
+    void *callstack[128];
+    int frames = backtrace(callstack, 128);
+    char **symbols = backtrace_symbols(callstack, frames);
+    
+    NSMutableString *fullError = [NSMutableString stringWithString:errorString];
+    [fullError appendString:@"\nStack trace:\n"];
+    for (int i = 0; i < frames; ++i) {
+        [fullError appendFormat:@"%s\n", symbols[i]];
+    }
+    free(symbols);
+    
+    performStallionRollback(fullError);
+    
+    // Chain to default terminate handler
+    if (_defaultTerminateHandler) {
+        _defaultTerminateHandler();
+    } else {
+        abort();
+    }
+}
+
