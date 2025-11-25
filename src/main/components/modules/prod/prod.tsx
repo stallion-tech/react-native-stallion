@@ -9,20 +9,23 @@ const Prod: React.FC = () => {
   const { updateMetaState, configState } = useContext(GlobalContext);
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.pageContainer}>
+      <ScrollView
+        contentContainerStyle={styles.pageContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <ConfigView config={configState} />
-        {updateMetaState.currentlyRunningBundle ? (
+        {updateMetaState.currentlyRunningBundle && (
           <>
             <Text style={styles.cardTitle}>Currently Active Bundle</Text>
             <MetaCard meta={updateMetaState.currentlyRunningBundle} />
           </>
-        ) : null}
-        {updateMetaState.newBundle ? (
+        )}
+        {updateMetaState.newBundle && (
           <>
             <Text style={styles.cardTitle}>New Bundle</Text>
             <MetaCard meta={updateMetaState.newBundle} />
           </>
-        ) : null}
+        )}
       </ScrollView>
     </View>
   );

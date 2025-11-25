@@ -47,12 +47,12 @@ const Login: React.FC = () => {
   }, [loginUser, pin]);
   return (
     <View style={styles.pageContainer}>
-      <View style={[styles.logoContainer]}>
+      <View style={styles.logoContainer}>
         <Text style={styles.logoText}>{Login_TITLE}</Text>
       </View>
       <KeyboardAvoidingView
         behavior={KEYBOARD_AVOIDING_BEHAVIOUR}
-        style={[styles.center, styles.inputSection]}
+        style={styles.inputSection}
       >
         <TextInput
           style={styles.textInp}
@@ -61,7 +61,8 @@ const Login: React.FC = () => {
           value={pin}
           onChange={handleNumberFormating}
           maxLength={PIN_LENGTH}
-          keyboardType={'numeric'}
+          keyboardType="numeric"
+          autoFocus={false}
         />
       </KeyboardAvoidingView>
       <View style={styles.buttonContainer}>
@@ -71,10 +72,14 @@ const Login: React.FC = () => {
           enabled={!userState.isLoading && pin?.length === PIN_LENGTH}
         />
       </View>
-      {userState.isLoading ? <Spinner /> : null}
-      {userState.error ? (
+      {userState.isLoading && (
+        <View style={styles.spinnerContainer}>
+          <Spinner />
+        </View>
+      )}
+      {userState.error && (
         <Text style={styles.errorText}>{userState.error}</Text>
-      ) : null}
+      )}
     </View>
   );
 };

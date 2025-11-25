@@ -88,7 +88,6 @@ export const useStallionEvents = (
 
   const popEvents = useCallback(() => {
     popEventsNative().then((eventsString: string) => {
-      console.log(eventsString, 'popped evenbts');
       try {
         const eventsArr: IStallionNativeEventData[] = JSON.parse(eventsString);
         if (eventsArr?.length) {
