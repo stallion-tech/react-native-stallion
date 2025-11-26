@@ -33,7 +33,7 @@ export interface IStallionNativeEventData {
   type: NativeEventTypesProd | NativeEventTypesStage;
   eventId: string;
   eventTimestamp: number;
-  releasehash?: string;
+  releaseHash?: string;
   error?: string;
   progress?: string;
 }
