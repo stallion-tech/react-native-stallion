@@ -20,10 +20,21 @@
 @property (nonatomic, copy) NSString *prodNewHash;
 @property (nonatomic, copy) NSString *prodStableHash;
 @property (nonatomic, copy) NSString *lastRolledBackHash;
+@property (nonatomic, assign) NSTimeInterval lastRolledBackAt;
+@property (nonatomic, assign) NSInteger successfulLaunchCount;
+@property (nonatomic, copy) NSString *lastSuccessfulLaunchHash;
+
++ (NSInteger)maxSuccessLaunchThreshold;
++ (NSTimeInterval)lastRolledBackTTL;
 
 - (void)reset;
 - (NSDictionary *)toDictionary;
+- (NSString *)getHashAtCurrentProdSlot;
 - (NSString *)getActiveReleaseHash;
+- (NSString *)getLastRolledBackHash;
+- (void)setLastRolledBackHashWithTimestamp:(NSString *)lastRolledBackHash;
+- (void)markSuccessfulLaunch:(NSString *)releaseHash;
+- (NSInteger)getSuccessfulLaunchCount:(NSString *)releaseHash;
 + (instancetype)fromDictionary:(NSDictionary *)dict;
 
 @end

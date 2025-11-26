@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.networkmanager.StallionStageManager;
 import com.stallion.networkmanager.StallionSyncHandler;
@@ -21,6 +22,7 @@ import com.stallion.utils.ProcessPhoenix;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,6 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     super(reactContext);
     StallionStateManager.init(reactContext);
     this.stallionStateManager = StallionStateManager.getInstance();
-    StallionEventManager.init(this.stallionStateManager);
     reactContext.addLifecycleEventListener(this);
   }
 
@@ -60,12 +61,23 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
 
   @ReactMethod
   public void onLaunch(String launchData) {
+    // try {
+    //  JSONObject launchDataJson = new JSONObject(launchData);
+    // } catch (Exception e) {
+    //   e.printStackTrace();
+    // }
     stallionStateManager.setIsMounted(true);
     DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext().getJSModule(
       DeviceEventManagerModule.RCTDeviceEventEmitter.class
     );
     StallionEventManager.getInstance().setEmitter(eventEmitter);
     checkPendingDownloads();
+    String currentReleaseHash = stallionStateManager.stallionMeta.getHashAtCurrentProdSlot();
+    if(!currentReleaseHash.isEmpty() && stallionStateManager.stallionMeta.getSuccessfulLaunchCount(currentReleaseHash) == 0) {
+      emitInstallEvent(currentReleaseHash);
+    }
+    stallionStateManager.stallionMeta.markSuccessfulLaunch(currentReleaseHash);
+    stallionStateManager.syncStallionMeta();
   }
 
   private void checkPendingDownloads() {
@@ -166,5 +178,29 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void restart() {
     ProcessPhoenix.triggerRebirth(getReactApplicationContext());
+  }
+
+  @ReactMethod
+  public void addListener(String eventName) {
+    // No-op: required for RN event emitter contract
+  }
+
+  @ReactMethod
+  public void removeListeners(double count) {
+    // No-op: required for RN event emitter contract
+  }
+
+  private void emitInstallEvent(String releaseHash) {
+    try {
+      JSONObject eventPayload = new JSONObject();
+      eventPayload.put("releaseHash", releaseHash);
+
+      StallionEventManager.getInstance().sendEventWithoutCaching(
+        StallionEventConstants.NativeProdEventTypes.INSTALLED_PROD.toString(),
+        eventPayload
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

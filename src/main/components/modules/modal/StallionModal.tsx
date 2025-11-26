@@ -59,9 +59,9 @@ const Content: React.FC = () => {
         ) : (
           <Prod />
         )}
-        {isDownloading ? (
+        {isDownloading && (
           <OverlayLoader currentDownloadFraction={downloadProgress} />
-        ) : null}
+        )}
       </View>
       {loginRequired ? null : (
         <Footer

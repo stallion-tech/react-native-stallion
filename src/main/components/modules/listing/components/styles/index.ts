@@ -9,13 +9,14 @@ import { COLORS } from '../../../../../constants/colors';
 const styles = StyleSheet.create({
   cardContainer: {
     margin: STD_MARGIN,
+    marginBottom: STD_MARGIN * 1.5,
     backgroundColor: COLORS.white,
-    borderRadius: 8,
+    borderRadius: STD_MARGIN,
     shadowColor: COLORS.black,
-    shadowOffset: { height: 4, width: 4 },
-    shadowOpacity: 0.1,
-    elevation: 2,
-    shadowRadius: 8,
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.08,
+    elevation: 3,
+    shadowRadius: 6,
     borderWidth: 0.5,
     borderColor: COLORS.black2,
   },
@@ -64,8 +65,9 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 0.5,
-    opacity: 0.2,
-    marginBottom: STD_MARGIN,
+    borderColor: COLORS.black2,
+    marginVertical: STD_MARGIN,
+    marginHorizontal: STD_MARGIN,
   },
   subText: {
     fontSize: HEADER_SLAB_HEIGHT / 3,
@@ -86,9 +88,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   releaseNoteText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: COLORS.text_major,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.black7,
   },
   releaseNoteDescriptionText: {
     fontSize: 14,
@@ -98,9 +100,12 @@ const styles = StyleSheet.create({
   },
   descContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     padding: STD_MARGIN,
+    marginHorizontal: STD_MARGIN,
+    marginBottom: STD_MARGIN / 2,
     backgroundColor: COLORS.black1,
+    borderRadius: STD_MARGIN / 2,
   },
   rightBorder: {
     borderRightWidth: 1,

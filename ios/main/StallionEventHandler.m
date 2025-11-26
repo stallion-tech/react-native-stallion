@@ -7,6 +7,7 @@
 
 #import "StallionEventHandler.h"
 #import "StallionStateManager.h"
+#import "StallionVersion.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -15,7 +16,7 @@
 static NSString *const STALLION_NATIVE_EVENT_NAME = @"STALLION_NATIVE_EVENT";
 static NSString *const EVENTS_KEY = @"stored_events";
 static NSInteger const MAX_BATCH_COUNT_SIZE = 9;
-static NSInteger const MAX_EVENT_STORAGE_LIMIT = 20;
+static NSInteger const MAX_EVENT_STORAGE_LIMIT = 60;
 
 @implementation StallionEventHandler
 
@@ -45,6 +46,7 @@ static NSInteger const MAX_EVENT_STORAGE_LIMIT = 20;
     mutablePayload[@"platform"] = @"ios";
     mutablePayload[@"appVersion"] = appVersion;
     mutablePayload[@"uid"] = uid;
+    mutablePayload[@"sdkVersion"] = STALLION_SDK_VERSION;
     // Store event locally
     [self storeEventLocally:uniqueId eventPayload:mutablePayload];
 }

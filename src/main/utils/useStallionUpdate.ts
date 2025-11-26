@@ -9,9 +9,8 @@ export const useStallionUpdate = (): IUseStallionUpdate => {
   return {
     isRestartRequired:
       metaState.switchState === SWITCH_STATES.PROD &&
-      updateMetaState?.newBundle?.id
-        ? true
-        : false,
+      Boolean(metaState.prodSlot?.tempHash) &&
+      Boolean(updateMetaState?.newBundle?.id),
     currentlyRunningBundle: updateMetaState?.currentlyRunningBundle,
     newReleaseBundle: updateMetaState?.newBundle,
   };

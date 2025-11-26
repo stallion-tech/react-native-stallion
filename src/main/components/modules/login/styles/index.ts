@@ -27,11 +27,16 @@ const styles = StyleSheet.create({
   },
   inputSection: {
     justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: STD_MARGIN,
   },
   errorText: {
     fontSize: HEADER_SLAB_HEIGHT / 4,
     color: COLORS.red,
-    padding: HEADER_SLAB_HEIGHT / 2,
+    padding: STD_MARGIN,
+    paddingHorizontal: STD_MARGIN * 2,
+    textAlign: 'center',
   },
   spinnerContainer: {
     margin: HEADER_SLAB_HEIGHT / 2,
@@ -42,9 +47,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.black2,
     borderRadius: STD_MARGIN,
-    marginBottom: STD_MARGIN,
+    marginBottom: STD_MARGIN * 1.5,
     paddingHorizontal: STD_MARGIN * 2,
     color: COLORS.text_major,
+    fontSize: HEADER_SLAB_HEIGHT / 3,
   },
   buttonContainer: {
     padding: HEADER_SLAB_HEIGHT / 2,

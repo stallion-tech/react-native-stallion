@@ -4,6 +4,7 @@ import {
   NativeEventTypesProd,
   STALLION_NATIVE_EVENT,
   NativeEventTypesStage,
+  DEFAULT_STALLION_PARAMS,
 } from '../constants/appConstants';
 import { stallionEventEmitter } from '../utils/StallionEventEmitter';
 import {
@@ -11,11 +12,17 @@ import {
   onLaunchNative,
   popEventsNative,
 } from '../utils/StallionNativeUtils';
+import { hasCrashOccurredCheck } from '../utils/crashState';
 import StallionNativeModule from '../../StallionNativeModule';
 import { IStallionConfigJson } from '../../types/config.types';
 import { useApiClient } from '../utils/useApiClient';
 import { API_PATHS } from '../constants/apiConstants';
 import debounce from '../utils/debounce';
+import { IStallionInitParams } from '../../types/utils.types';
+import {
+  IUpdateMetaAction,
+  UpdateMetaActionKind,
+} from '../../types/updateMeta.types';
 
 const REFRESH_META_EVENTS: {
   [key: string]: boolean;
@@ -33,7 +40,7 @@ export interface IStallionNativeEventData {
   type: NativeEventTypesProd | NativeEventTypesStage;
   eventId: string;
   eventTimestamp: number;
-  releasehash?: string;
+  releaseHash?: string;
   error?: string;
   progress?: string;
 }
@@ -53,7 +60,9 @@ const processStallionEvent = (
 export const useStallionEvents = (
   refreshMeta: () => Promise<void>,
   setProgress: (newProgress: number) => void,
-  configState: IStallionConfigJson
+  configState: IStallionConfigJson,
+  updateMetaDispatch: React.Dispatch<IUpdateMetaAction>,
+  stallionInitParams?: IStallionInitParams
 ) => {
   const { getData } = useApiClient(configState);
 
@@ -109,6 +118,13 @@ export const useStallionEvents = (
         }
         switch (eventType) {
           case NativeEventTypesProd.DOWNLOAD_STARTED_PROD:
+            updateMetaDispatch({
+              type: UpdateMetaActionKind.SET_PENDING_RELEASE_HASH,
+              payload: eventData?.releaseHash || '',
+            });
+            stallionEventEmitter.emit(eventData);
+            break;
+          case NativeEventTypesProd.DOWNLOAD_PROGRESS_PROD:
           case NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD:
           case NativeEventTypesProd.DOWNLOAD_ERROR_PROD:
           case NativeEventTypesProd.INSTALLED_PROD:
@@ -133,12 +149,28 @@ export const useStallionEvents = (
     return () => {
       eventEmitter.removeAllListeners(STALLION_NATIVE_EVENT);
     };
-  }, [refreshMeta, setProgress, popEventsDebounced]);
+  }, [refreshMeta, setProgress, popEventsDebounced, updateMetaDispatch]);
 
   useEffect(() => {
     setTimeout(() => {
-      onLaunchNative('Success');
+      // Don't send onLaunchNative if a JS crash has occurred
+      if (hasCrashOccurredCheck()) {
+        console.warn(
+          'React Native Stallion: Skipping onLaunchNative due to JS crash'
+        );
+        return;
+      }
+      if (stallionInitParams) {
+        try {
+          onLaunchNative(JSON.stringify(stallionInitParams));
+        } catch (_) {
+          throw new Error('React Native Stallion: Invalid init params');
+        }
+      } else {
+        onLaunchNative(JSON.stringify(DEFAULT_STALLION_PARAMS));
+      }
     }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

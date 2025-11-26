@@ -29,8 +29,6 @@ public class Stallion {
 
     validateAppVersion(stateManager.getStallionConfig().getAppVersion());
 
-    StallionEventManager.init(stateManager);
-
     String baseFolderPath = stateManager.getStallionConfig().getFilesDirectory();
     StallionMeta stallionMeta = stateManager.stallionMeta;
     StallionMetaConstants.SwitchState switchState = stallionMeta.getSwitchState();

@@ -9,6 +9,14 @@
 
 @implementation StallionMeta
 
++ (NSInteger)maxSuccessLaunchThreshold {
+    return 3;
+}
+
++ (NSTimeInterval)lastRolledBackTTL {
+    return 6 * 60 * 60; // 6 hours in seconds
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) [self reset];
@@ -26,6 +34,9 @@
     self.prodNewHash = @"";
     self.prodStableHash = @"";
     self.lastRolledBackHash = @"";
+     self.lastRolledBackAt = 0.0;
+     self.successfulLaunchCount = 0;
+     self.lastSuccessfulLaunchHash = @"";
 }
 
 - (NSDictionary *)toDictionary {
@@ -43,7 +54,10 @@
                     @"stableHash": self.prodStableHash ?: @"",
                     @"currentSlot": [StallionMetaConstants stringFromSlotState:self.currentProdSlot] ?: @""
             },
-            @"lastRolledBackHash": self.lastRolledBackHash ?: @""
+             @"lastRolledBackHash": self.lastRolledBackHash ?: @"",
+             @"lastRolledBackAt": @(self.lastRolledBackAt),
+             @"successfulLaunchCount": @(self.successfulLaunchCount),
+             @"lastSuccessfulLaunchHash": self.lastSuccessfulLaunchHash ?: @""
         };
     } @catch (NSException *exception) {
         NSLog(@"Error in toDictionary: %@", exception.reason);
@@ -87,6 +101,9 @@
         meta.currentProdSlot = [StallionMetaConstants slotStateFromString:prodSlot[@"currentSlot"] ?: @"default_slot"];
 
         meta.lastRolledBackHash = dict[@"lastRolledBackHash"] ?: @"";
+         meta.lastRolledBackAt = [dict[@"lastRolledBackAt"] doubleValue];
+         meta.successfulLaunchCount = [dict[@"successfulLaunchCount"] integerValue];
+         meta.lastSuccessfulLaunchHash = dict[@"lastSuccessfulLaunchHash"] ?: @"";
 
         return meta;
     } @catch (NSException *exception) {
@@ -94,5 +111,63 @@
         return [[StallionMeta alloc] init];
     }
 }
+
+ - (NSString *)getHashAtCurrentProdSlot {
+     switch (self.currentProdSlot) {
+         case SlotStateNewSlot:
+             return self.prodNewHash;
+         case SlotStateStableSlot:
+             return self.prodStableHash;
+         default:
+             return @"";
+     }
+ }
+
+ - (NSString *)getLastRolledBackHash {
+     [self enforceLastRolledBackExpiry];
+     return self.lastRolledBackHash;
+ }
+
+- (void)setLastRolledBackHashWithTimestamp:(NSString *)lastRolledBackHash {
+    NSString *hashValue = lastRolledBackHash ?: @"";
+    self.lastRolledBackHash = hashValue;
+    self.lastRolledBackAt = [hashValue isEqualToString:@""] ? 0.0 : [[NSDate date] timeIntervalSince1970];
+}
+
+ - (void)enforceLastRolledBackExpiry {
+     if (!self.lastRolledBackHash || [self.lastRolledBackHash isEqualToString:@""]) {
+         return;
+     }
+     if (self.lastRolledBackAt <= 0.0) {
+         return;
+     }
+     NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
+     if (now - self.lastRolledBackAt >= [StallionMeta lastRolledBackTTL]) {
+         self.lastRolledBackHash = @"";
+         self.lastRolledBackAt = 0.0;
+     }
+ }
+
+ - (void)markSuccessfulLaunch:(NSString *)releaseHash {
+     if (!releaseHash || [releaseHash isEqualToString:@""]) {
+         return;
+     }
+     if (![releaseHash isEqualToString:self.lastSuccessfulLaunchHash]) {
+         self.successfulLaunchCount = 0;
+         self.lastSuccessfulLaunchHash = releaseHash;
+     }
+     if (self.successfulLaunchCount < 3) { // MAX_SUCCESS_LAUNCH_THRESHOLD
+         self.successfulLaunchCount += 1;
+     }
+ }
+
+ - (NSInteger)getSuccessfulLaunchCount:(NSString *)releaseHash {
+     NSString *currentHash = releaseHash ?: @"";
+     if (![currentHash isEqualToString:self.lastSuccessfulLaunchHash]) {
+         return 0;
+     } else {
+         return self.successfulLaunchCount;
+     }
+ }
 
 @end

@@ -1,10 +1,12 @@
 package com.stallion.networkmanager;
 
+import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
 import com.stallion.storage.StallionConfig;
+import com.stallion.utils.StallionDeviceInfo;
 import com.stallion.utils.StallionFileManager;
 import com.stallion.utils.StallionSignatureVerification;
 import com.stallion.utils.StallionSlotManager;
@@ -43,6 +45,8 @@ public class StallionSyncHandler {
         requestPayload.put("platform", "android");
         requestPayload.put("projectId", projectId);
         requestPayload.put("appliedBundleHash", appliedBundleHash);
+        // Attach device metadata for analytics
+        requestPayload.put("deviceMeta", StallionDeviceInfo.getDeviceMetaJson(config));
 
         // Make API call using StallionApiManager
         JSONObject releaseMeta = StallionApiManager.post(
@@ -52,7 +56,7 @@ public class StallionSyncHandler {
 
         // Process API response
         processReleaseMeta(releaseMeta, appVersion);
-
+        stateManager.setIsSyncSuccessful(true);
       } catch (Exception e) {
         emitSyncError(e);
       } finally {
@@ -167,12 +171,25 @@ public class StallionSyncHandler {
           @Override
           public void onProgress(double downloadFraction) {
             // Optional: Handle progress updates
+            emitDownloadProgressProd(newReleaseHash, downloadFraction);
           }
         }
       );
     } catch (Exception ignored) {
       isDownloadInProgress.set(false);
     }
+  }
+
+  private static void emitDownloadProgressProd(String releaseHash, double newProgress) {
+    JSONObject successPayload = new JSONObject();
+    try {
+      successPayload.put("releaseHash", releaseHash);
+      successPayload.put("progress", String.valueOf(newProgress));
+    } catch (Exception ignored) { }
+    StallionEventManager.getInstance().sendEventWithoutCaching(
+      StallionEventConstants.NativeProdEventTypes.DOWNLOAD_PROGRESS_PROD.toString(),
+      successPayload
+    );
   }
 
   private static void emitSyncError(Exception e) {
