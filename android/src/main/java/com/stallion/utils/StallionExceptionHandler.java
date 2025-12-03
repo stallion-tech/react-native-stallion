@@ -17,6 +17,7 @@ public class StallionExceptionHandler {
   private static boolean isErrorBoundaryInitialized = false;
   private static boolean isNativeSignalsInitialized = false;
   private static boolean hasProcessedNativeCrashMarker = false;
+  private static boolean isRollbackPerformed = false;
 
   public static void initErrorBoundary() {
     if (isErrorBoundaryInitialized) {
@@ -24,25 +25,33 @@ public class StallionExceptionHandler {
     }
     isErrorBoundaryInitialized = true;
 
+    // Reset rollback flag when initializing exception handler
+    isRollbackPerformed = false;
+
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
       _exceptionThread = thread;
       _exceptionThrowable = throwable;
 
-      // Safely trim the stack trace string
-      String stackTraceString = Log.getStackTraceString(throwable);
-      stackTraceString = stackTraceString.length() > 900
-        ? stackTraceString.substring(0, 900) + "..."
-        : stackTraceString;
+      try {
+        // Safely trim the stack trace string
+        String stackTraceString = Log.getStackTraceString(throwable);
+        stackTraceString = stackTraceString.length() > 900
+          ? stackTraceString.substring(0, 900) + "..."
+          : stackTraceString;
 
-      StallionStateManager stateManager = StallionStateManager.getInstance();
-      StallionMetaConstants.SwitchState switchState = stateManager.stallionMeta.getSwitchState();
+        StallionStateManager stateManager = StallionStateManager.getInstance();
+        StallionMetaConstants.SwitchState switchState = stateManager.stallionMeta.getSwitchState();
 
-      if (switchState == StallionMetaConstants.SwitchState.PROD) {
-        handleProdState(stackTraceString, stateManager);
-      } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
-        handleStageState(stackTraceString, stateManager);
-      } else {
+        if (switchState == StallionMetaConstants.SwitchState.PROD) {
+          handleProdState(stackTraceString, stateManager);
+        } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
+          handleStageState(stackTraceString, stateManager);
+        } else {
+          continueExceptionFlow();
+        }
+      } catch (Exception e) {
+        // If anything goes wrong in our handler, ensure we still chain to previous handler
         continueExceptionFlow();
       }
     });
@@ -78,14 +87,28 @@ public class StallionExceptionHandler {
     boolean isAutoRollback = !stateManager.getIsMounted();
     String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
 
-    // Emit exception event
-    emitException(stackTraceString, currentHash, isAutoRollback, true);
+    // Only prevent multiple executions for auto rollback cases
+    // Launch crashes (when mounted) can continue to be registered
+    if (isRollbackPerformed && isAutoRollback) {
+      continueExceptionFlow();
+      return;
+    }
+
+    // Emit exception event (wrap in try-catch to ensure chaining happens)
+    try {
+      emitException(stackTraceString, currentHash, isAutoRollback, true);
+    } catch (Exception ignored) { }
 
     // Perform rollback if auto-rollback is enabled
     if (isAutoRollback) {
-      StallionSlotManager.rollbackProd(true, stackTraceString);
+      // Set rollback flag only for auto rollback cases
+      isRollbackPerformed = true;
+      try {
+        StallionSlotManager.rollbackProd(true, stackTraceString);
+      } catch (Exception ignored) { }
     }
 
+    // Always chain to previous handler, even if rollback or emit failed
     continueExceptionFlow();
   }
 
@@ -93,13 +116,27 @@ public class StallionExceptionHandler {
     boolean isAutoRollback = !stateManager.getIsMounted();
     String currentStageHash = stateManager.stallionMeta.getStageNewHash();
 
-    // Emit exception event
-    emitException(stackTraceString, currentStageHash, isAutoRollback, false);
-
-    if(isAutoRollback) {
-      StallionSlotManager.rollbackStage();
+    // Only prevent multiple executions for auto rollback cases
+    // Launch crashes (when mounted) can continue to be registered
+    if (isRollbackPerformed && isAutoRollback) {
+      continueExceptionFlow();
+      return;
     }
 
+    // Emit exception event (wrap in try-catch to ensure chaining happens)
+    try {
+      emitException(stackTraceString, currentStageHash, isAutoRollback, false);
+    } catch (Exception ignored) { }
+
+    if(isAutoRollback) {
+      // Set rollback flag only for auto rollback cases
+      isRollbackPerformed = true;
+      try {
+        StallionSlotManager.rollbackStage();
+      } catch (Exception ignored) { }
+    }
+
+    // Always chain to previous handler, even if rollback or emit failed
     continueExceptionFlow();
   }
 
@@ -149,16 +186,32 @@ public class StallionExceptionHandler {
         if (switchState == StallionMetaConstants.SwitchState.PROD) {
           String currentHash = stateManager.stallionMeta.getHashAtCurrentProdSlot();
           // Use isAutoRollback from previous crash, not current session state
-          emitException(stackTraceString, currentHash, isAutoRollback, true);
+          try {
+            emitException(stackTraceString, currentHash, isAutoRollback, true);
+          } catch (Exception ignored) { }
           if (isAutoRollback) {
-            StallionSlotManager.rollbackProd(true, stackTraceString);
+            // Only prevent multiple executions for auto rollback cases
+            if (!isRollbackPerformed) {
+              isRollbackPerformed = true;
+              try {
+                StallionSlotManager.rollbackProd(true, stackTraceString);
+              } catch (Exception ignored) { }
+            }
           }
         } else if (switchState == StallionMetaConstants.SwitchState.STAGE) {
           String currentStageHash = stateManager.stallionMeta.getStageNewHash();
           // Use isAutoRollback from previous crash, not current session state
-          emitException(stackTraceString, currentStageHash, isAutoRollback, false);
+          try {
+            emitException(stackTraceString, currentStageHash, isAutoRollback, false);
+          } catch (Exception ignored) { }
           if (isAutoRollback) {
-            StallionSlotManager.rollbackStage();
+            // Only prevent multiple executions for auto rollback cases
+            if (!isRollbackPerformed) {
+              isRollbackPerformed = true;
+              try {
+                StallionSlotManager.rollbackStage();
+              } catch (Exception ignored) { }
+            }
           }
         }
 

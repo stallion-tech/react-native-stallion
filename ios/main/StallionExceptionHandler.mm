@@ -19,6 +19,7 @@
 #include <exception>
 #include <cxxabi.h>
 #include <string>
+#include <atomic>
 
 // Forward declarations
 void handleException(NSException *exception);
@@ -31,38 +32,35 @@ void handleCppTerminate(void);
 
 NSUncaughtExceptionHandler *_defaultExceptionHandler;
 std::terminate_handler _defaultTerminateHandler;
-BOOL exceptionAlertDismissed = FALSE;
-static BOOL rollbackPerformed = FALSE;
-static BOOL isInitialized = FALSE;
+static std::atomic<bool> exceptionAlertDismissed(false);
+static std::atomic<bool> exceptionAlertShowing(false);
+static std::atomic<bool> rollbackPerformed(false);
 static struct sigaction _previousHandlers[32]; // Store previous handlers for chaining
 
 + (void)initExceptionHandler {
-    // Prevent multiple initializations
-    if (isInitialized) {
-        return;
-    }
-    isInitialized = TRUE;
-    
-    // Reset rollback flag when initializing exception handler
-    [self resetRollbackFlag];
-    
-    // Store and set Objective-C exception handler
-    if (!_defaultExceptionHandler) {
-        _defaultExceptionHandler = NSGetUncaughtExceptionHandler();
-    }
-    NSSetUncaughtExceptionHandler(&handleException);
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Reset rollback flag when initializing exception handler
+        [self resetRollbackFlag];
+        
+        // Store and set Objective-C exception handler
+        if (!_defaultExceptionHandler) {
+            _defaultExceptionHandler = NSGetUncaughtExceptionHandler();
+        }
+        NSSetUncaughtExceptionHandler(&handleException);
 
-    // Store and set C++ terminate handler
-    if (!_defaultTerminateHandler) {
-        _defaultTerminateHandler = std::get_terminate();
-    }
-    std::set_terminate(handleCppTerminate);
-    
-    // Setup signal handlers using sigaction with chaining
-    setupSignalHandlers();
-    
-    // Initialize JavaScript exception handler
-    [self initJavaScriptExceptionHandler];
+        // Store and set C++ terminate handler
+        if (!_defaultTerminateHandler) {
+            _defaultTerminateHandler = std::get_terminate();
+        }
+        std::set_terminate(handleCppTerminate);
+        
+        // Setup signal handlers using sigaction with chaining
+        setupSignalHandlers();
+        
+        // Initialize JavaScript exception handler
+        [self initJavaScriptExceptionHandler];
+    });
 }
 
 + (void)initJavaScriptExceptionHandler {
@@ -77,7 +75,7 @@ static struct sigaction _previousHandlers[32]; // Store previous handlers for ch
 }
 
 + (void)resetRollbackFlag {
-    rollbackPerformed = FALSE;
+    rollbackPerformed.store(false);
 }
 
 @end
@@ -93,14 +91,13 @@ static void performStallionRollback(NSString *errorString) {
   
   // Only prevent multiple executions for auto rollback cases
   // Launch crashes (when mounted) can continue to be registered
-  if (rollbackPerformed && isAutoRollback) {
-      NSLog(@"Auto rollback already performed, skipping duplicate rollback attempt");
-      return;
-  }
-  
-  // Set rollback flag only for auto rollback cases
   if (isAutoRollback) {
-    rollbackPerformed = TRUE;
+    // Use compare-and-swap to atomically check and set the flag
+    bool expected = false;
+    if (!rollbackPerformed.compare_exchange_strong(expected, true)) {
+      // Flag was already true, skip duplicate rollback
+      return;
+    }
   }
   
   if (errorString.length > 900) {
@@ -133,7 +130,10 @@ static void performStallionRollback(NSString *errorString) {
               StallionObjConstants.is_auto_rollback_key: isAutoRollback ? @"true" : @"false"
           }];
 
-      if(!exceptionAlertDismissed) {
+      // Check if alert is already showing (atomic check to prevent duplicates)
+      bool expectedShowing = false;
+      if (exceptionAlertShowing.compare_exchange_strong(expectedShowing, true)) {
+        // We successfully claimed the right to show the alert
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Stallion Exception Handler"
            message:[NSString stringWithFormat:@"%@\n%@",
                     @"A crash occurred in the app. Build was rolled back. Check crash report below. Continue crash to invoke other exception handlers. \n \n",
@@ -143,7 +143,8 @@ static void performStallionRollback(NSString *errorString) {
         [alert addAction:[UIAlertAction actionWithTitle:@"Continue Crash"
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *action) {
-                                                    exceptionAlertDismissed = TRUE;
+                                                    // Set flag to true only when button is pressed
+                                                    exceptionAlertDismissed.store(true);
                                                 }]];
 
         UIApplication *app = [UIApplication sharedApplication];
@@ -153,7 +154,8 @@ static void performStallionRollback(NSString *errorString) {
             [rootViewController presentViewController:alert animated:YES completion:nil];
         });
 
-        while (exceptionAlertDismissed == FALSE) {
+        // Wait for user to press the button (exceptionAlertDismissed becomes true)
+        while (!exceptionAlertDismissed.load()) {
             [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         }
       }
