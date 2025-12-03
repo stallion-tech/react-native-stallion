@@ -84,7 +84,10 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     String pendingReleaseUrl = stallionStateManager.getPendingReleaseUrl();
     String pendingReleaseHash = stallionStateManager.getPendingReleaseHash();
     if(!pendingReleaseUrl.isEmpty() && !pendingReleaseHash.isEmpty()) {
-      StallionSyncHandler.downloadNewRelease(pendingReleaseHash, pendingReleaseUrl);
+      String pendingReleaseDiffUrl = stallionStateManager.getPendingReleaseDiffUrl();
+      boolean pendingReleaseIsBundlePatched = stallionStateManager.getPendingReleaseIsBundlePatched();
+      String pendingReleaseBundleDiffId = stallionStateManager.getPendingReleaseBundleDiffId();
+      StallionSyncHandler.downloadNewRelease(pendingReleaseHash, pendingReleaseUrl, pendingReleaseDiffUrl, pendingReleaseIsBundlePatched, pendingReleaseBundleDiffId);
       stallionStateManager.setPendingRelease("", "");
     }
   }

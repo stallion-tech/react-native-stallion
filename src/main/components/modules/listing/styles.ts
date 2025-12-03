@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
   mainListContainer: {
     flexGrow: 1,
     backgroundColor: COLORS.background_grey,
+    paddingBottom: STD_MARGIN * 2,
   },
   initalLoaderContainer: {
     width: '100%',

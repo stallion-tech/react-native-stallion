@@ -5,6 +5,7 @@ import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
 import { getStallionMetaNative } from './StallionNativeUtils';
+import { setCrashOccurred } from './crashState';
 import {
   HEADER_TITLE,
   STALLION_EB_BTN_TXT,
@@ -31,20 +32,50 @@ class ErrorBoundary extends Component<
     this.continueCrash = this.continueCrash.bind(this);
   }
 
-  async componentDidCatch(error: Error): Promise<void> {
-    const errorString: string = [
-      error.name,
-      error.message,
-      error.cause?.toString(),
-      error.stack,
-    ].join(' ');
-    console.error('Exception occured in js layer:', error);
+  async componentDidCatch(
+    error: Error,
+    errorInfo?: React.ErrorInfo
+  ): Promise<void> {
+    // Build comprehensive error string
+    const errorParts: string[] = [];
+
+    if (error.name) {
+      errorParts.push(`Error Name: ${error.name}`);
+    }
+    if (error.message) {
+      errorParts.push(`Message: ${error.message}`);
+    }
+    if (error.cause) {
+      errorParts.push(`Cause: ${String(error.cause)}`);
+    }
+    if (error.stack) {
+      errorParts.push(`\nStack Trace:\n${error.stack}`);
+    }
+    if (errorInfo?.componentStack) {
+      errorParts.push(`\nComponent Stack:\n${errorInfo.componentStack}`);
+    }
+
+    const errorString: string =
+      errorParts.length > 0
+        ? errorParts.join('\n\n')
+        : `Unknown error: ${String(error)}`;
+
+    console.error('Exception occurred in JS layer:', error);
+    console.error('Error Info:', errorInfo);
+
+    // Mark that a crash has occurred
+    setCrashOccurred();
+
+    // Always populate state with error information
+    this.setState({
+      errorText: errorString,
+    });
+
+    // Get meta to determine behavior
     const meta = await getStallionMetaNative();
-    if (meta.switchState === SWITCH_STATES.STAGE) {
-      this.setState({
-        errorText: errorString,
-      });
-    } else {
+
+    // In production, re-throw after a brief delay to allow state update
+    if (meta.switchState !== SWITCH_STATES.STAGE) {
       requestAnimationFrame(() => {
         throw error;
       });

@@ -44,6 +44,9 @@ static StallionStateManager *_instance = nil;
         _isMounted = NO;
         _pendingReleaseUrl = @"";
         _pendingReleaseHash = @"";
+        _pendingReleaseDiffUrl = nil;
+        _pendingReleaseIsBundlePatched = NO;
+        _pendingReleaseBundleDiffId = nil;
     }
     return self;
 }

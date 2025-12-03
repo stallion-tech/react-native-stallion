@@ -15,6 +15,28 @@ import FooterLoader from '../../common/FooterLoader';
 
 import styles from './styles';
 
+interface IBucketOrBundle {
+  data: IBucketCard | IBundleCard;
+  setBucketSelection: (bucketId?: string | null | undefined) => void;
+}
+
+const BucketOrBundle: React.FC<IBucketOrBundle> = memo(
+  ({ data, setBucketSelection }) => {
+    return data?.type === CARD_TYPES.BUCKET ? (
+      <BucketCard
+        key={data.id}
+        {...data}
+        handlePress={() => setBucketSelection(data.id)}
+      />
+    ) : (
+      (data?.type === CARD_TYPES.BUNDLE && (
+        <BundleCard key={data.id} {...data} />
+      )) ||
+        null
+    );
+  }
+);
+
 const Listing: React.FC = () => {
   const {
     listingData,
@@ -65,25 +87,3 @@ const Listing: React.FC = () => {
 };
 
 export default memo(Listing);
-
-interface IBucketOrBundle {
-  data: IBucketCard | IBundleCard;
-  setBucketSelection: (bucketId?: string | null | undefined) => void;
-}
-
-const BucketOrBundle: React.FC<IBucketOrBundle> = memo(
-  ({ data, setBucketSelection }) => {
-    return data?.type === CARD_TYPES.BUCKET ? (
-      <BucketCard
-        key={data.id}
-        {...data}
-        handlePress={() => setBucketSelection(data.id)}
-      />
-    ) : (
-      (data?.type === CARD_TYPES.BUNDLE && (
-        <BundleCard key={data.id} {...data} />
-      )) ||
-        null
-    );
-  }
-);

@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   isStallionEnabled = true
 
   if isStallionEnabled then
-    s.source_files = "ios/main/**/*.{h,m,mm,swift}"
+    s.source_files = "ios/main/**/*.{h,m,mm,swift,c}"
   else
     s.source_files = "ios/noop/**/*.{h,m,mm,swift}"
     puts "Stallion is disabled, falling back to noop version. Check your stallion.config.js file"

@@ -12,6 +12,7 @@ import {
   onLaunchNative,
   popEventsNative,
 } from '../utils/StallionNativeUtils';
+import { hasCrashOccurredCheck } from '../utils/crashState';
 import StallionNativeModule from '../../StallionNativeModule';
 import { IStallionConfigJson } from '../../types/config.types';
 import { useApiClient } from '../utils/useApiClient';
@@ -153,6 +154,13 @@ export const useStallionEvents = (
 
   useEffect(() => {
     setTimeout(() => {
+      // Don't send onLaunchNative if a JS crash has occurred
+      if (hasCrashOccurredCheck()) {
+        console.warn(
+          'React Native Stallion: Skipping onLaunchNative due to JS crash'
+        );
+        return;
+      }
       if (stallionInitParams) {
         try {
           onLaunchNative(JSON.stringify(stallionInitParams));

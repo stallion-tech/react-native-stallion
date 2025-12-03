@@ -38,9 +38,6 @@ class Stallion: RCTEventEmitter {
             stallionStateManager.stallionMeta.markSuccessfulLaunch(currentReleaseHash)
             stallionStateManager.syncStallionMeta()
         }
-        
-        // Test patch update on launch (for testing only)
-        StallionPatchTester.testPatchUpdate()
     }
 
     private func checkPendingDownloads() {
@@ -49,9 +46,16 @@ class Stallion: RCTEventEmitter {
               !pendingReleaseUrl.isEmpty,
               !pendingReleaseHash.isEmpty else { return }
 
-        StallionSyncHandler.downloadNewRelease(newReleaseHash: pendingReleaseHash, newReleaseUrl: pendingReleaseUrl)
+        let pendingReleaseDiffUrl = stallionStateManager.pendingReleaseDiffUrl
+        let pendingReleaseIsBundlePatched = stallionStateManager.pendingReleaseIsBundlePatched
+        let pendingReleaseBundleDiffId = stallionStateManager.pendingReleaseBundleDiffId
+        
+        StallionSyncHandler.downloadNewRelease(newReleaseHash: pendingReleaseHash, newReleaseUrl: pendingReleaseUrl, diffUrl: pendingReleaseDiffUrl, isBundlePatched: pendingReleaseIsBundlePatched, bundleDiffId: pendingReleaseBundleDiffId)
         stallionStateManager.pendingReleaseUrl = ""
         stallionStateManager.pendingReleaseHash = ""
+        stallionStateManager.pendingReleaseDiffUrl = nil
+        stallionStateManager.pendingReleaseIsBundlePatched = false
+        stallionStateManager.pendingReleaseBundleDiffId = nil
     }
 
   @objc func getStallionConfig(_ promise: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {

@@ -35,10 +35,7 @@ const App: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text>
-        yarn test:patch:c-code stallion-temp-7Pp0rWuvdzNa
-        stallion-temp-UEGc06ssiS7U
-      </Text>
+      <Text>Hello world</Text>
       <Button title="OpenModal" onPress={showModal} />
       {isRestartRequired ? <Text>Restart the app</Text> : null}
     </View>
@@ -52,7 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
+    backgroundColor: 'white',
   },
   box: {
     width: 60,
