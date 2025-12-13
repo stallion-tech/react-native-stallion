@@ -23,6 +23,6 @@ public class StallionApiConstants {
   public static final String STALLION_DEVICE_ID_KEY = "uid";
 
 
-  public static final String STALLION_API_BASE = "https://preprod-api.stalliontech.io";
+  public static final String STALLION_API_BASE = "https://api.stalliontech.io";
   public static final String STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta";
 }

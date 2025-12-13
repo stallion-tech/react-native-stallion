@@ -66,11 +66,6 @@ class ErrorBoundary extends Component<
     // Mark that a crash has occurred
     setCrashOccurred();
 
-    // Always populate state with error information
-    this.setState({
-      errorText: errorString,
-    });
-
     // Get meta to determine behavior
     const meta = await getStallionMetaNative();
 
@@ -78,6 +73,10 @@ class ErrorBoundary extends Component<
     if (meta.switchState !== SWITCH_STATES.STAGE) {
       requestAnimationFrame(() => {
         throw error;
+      });
+    } else {
+      this.setState({
+        errorText: errorString,
       });
     }
   }
