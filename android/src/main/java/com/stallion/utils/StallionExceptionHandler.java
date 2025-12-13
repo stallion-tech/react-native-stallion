@@ -9,24 +9,26 @@ import com.stallion.storage.StallionStateManager;
 
 import org.json.JSONObject;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class StallionExceptionHandler {
 
   private static Thread.UncaughtExceptionHandler _androidUncaughtExceptionHandler;
   private static Thread _exceptionThread;
   private static Throwable _exceptionThrowable;
-  private static boolean isErrorBoundaryInitialized = false;
-  private static boolean isNativeSignalsInitialized = false;
-  private static boolean hasProcessedNativeCrashMarker = false;
-  private static boolean isRollbackPerformed = false;
+  private static final AtomicBoolean isErrorBoundaryInitialized = new AtomicBoolean(false);
+  private static final AtomicBoolean isNativeSignalsInitialized = new AtomicBoolean(false);
+  private static final AtomicBoolean hasProcessedNativeCrashMarker = new AtomicBoolean(false);
+  private static final AtomicBoolean isRollbackPerformed = new AtomicBoolean(false);
 
   public static void initErrorBoundary() {
-    if (isErrorBoundaryInitialized) {
+    // Use compareAndSet to atomically check and set initialization flag
+    if (!isErrorBoundaryInitialized.compareAndSet(false, true)) {
       return; // Prevent multiple initializations
     }
-    isErrorBoundaryInitialized = true;
 
     // Reset rollback flag when initializing exception handler
-    isRollbackPerformed = false;
+    isRollbackPerformed.set(false);
 
     _androidUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
@@ -58,11 +60,10 @@ public class StallionExceptionHandler {
 
     // Initialize native signal handler once and process any prior crash marker
     try {
-      if (!isNativeSignalsInitialized) {
+      if (isNativeSignalsInitialized.compareAndSet(false, true)) {
         System.loadLibrary("stallion-crash");
         String filesDir = StallionStateManager.getInstance().getStallionConfig().getFilesDirectory();
         initNativeSignalHandler(filesDir);
-        isNativeSignalsInitialized = true;
       }
       processNativeCrashMarkerIfPresent();
     } catch (Throwable ignored) {}
@@ -89,9 +90,13 @@ public class StallionExceptionHandler {
 
     // Only prevent multiple executions for auto rollback cases
     // Launch crashes (when mounted) can continue to be registered
-    if (isRollbackPerformed && isAutoRollback) {
-      continueExceptionFlow();
-      return;
+    if (isAutoRollback) {
+      // Use compareAndSet to atomically check and set the flag
+      if (!isRollbackPerformed.compareAndSet(false, true)) {
+        // Flag was already true, skip duplicate rollback
+        continueExceptionFlow();
+        return;
+      }
     }
 
     // Emit exception event (wrap in try-catch to ensure chaining happens)
@@ -101,8 +106,6 @@ public class StallionExceptionHandler {
 
     // Perform rollback if auto-rollback is enabled
     if (isAutoRollback) {
-      // Set rollback flag only for auto rollback cases
-      isRollbackPerformed = true;
       try {
         StallionSlotManager.rollbackProd(true, stackTraceString);
       } catch (Exception ignored) { }
@@ -118,9 +121,13 @@ public class StallionExceptionHandler {
 
     // Only prevent multiple executions for auto rollback cases
     // Launch crashes (when mounted) can continue to be registered
-    if (isRollbackPerformed && isAutoRollback) {
-      continueExceptionFlow();
-      return;
+    if (isAutoRollback) {
+      // Use compareAndSet to atomically check and set the flag
+      if (!isRollbackPerformed.compareAndSet(false, true)) {
+        // Flag was already true, skip duplicate rollback
+        continueExceptionFlow();
+        return;
+      }
     }
 
     // Emit exception event (wrap in try-catch to ensure chaining happens)
@@ -129,8 +136,6 @@ public class StallionExceptionHandler {
     } catch (Exception ignored) { }
 
     if(isAutoRollback) {
-      // Set rollback flag only for auto rollback cases
-      isRollbackPerformed = true;
       try {
         StallionSlotManager.rollbackStage();
       } catch (Exception ignored) { }
@@ -148,7 +153,7 @@ public class StallionExceptionHandler {
 
   private static void processNativeCrashMarkerIfPresent() {
     try {
-      if (hasProcessedNativeCrashMarker) { return; }
+      if (hasProcessedNativeCrashMarker.get()) { return; }
       String filesDir = StallionStateManager.getInstance().getStallionConfig().getFilesDirectory();
       java.io.File marker = new java.io.File(filesDir + "/stallion_crash.marker");
       if (marker.exists()) {
@@ -191,8 +196,7 @@ public class StallionExceptionHandler {
           } catch (Exception ignored) { }
           if (isAutoRollback) {
             // Only prevent multiple executions for auto rollback cases
-            if (!isRollbackPerformed) {
-              isRollbackPerformed = true;
+            if (isRollbackPerformed.compareAndSet(false, true)) {
               try {
                 StallionSlotManager.rollbackProd(true, stackTraceString);
               } catch (Exception ignored) { }
@@ -206,8 +210,7 @@ public class StallionExceptionHandler {
           } catch (Exception ignored) { }
           if (isAutoRollback) {
             // Only prevent multiple executions for auto rollback cases
-            if (!isRollbackPerformed) {
-              isRollbackPerformed = true;
+            if (isRollbackPerformed.compareAndSet(false, true)) {
               try {
                 StallionSlotManager.rollbackStage();
               } catch (Exception ignored) { }
@@ -217,7 +220,7 @@ public class StallionExceptionHandler {
 
         // delete marker
         StallionFileManager.deleteFileOrFolderSilently(marker);
-        hasProcessedNativeCrashMarker = true;
+        hasProcessedNativeCrashMarker.set(true);
       }
     } catch (Exception ignored) {}
   }
