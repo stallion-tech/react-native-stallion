@@ -18,6 +18,7 @@ import { SWITCH_STATES } from '../../types/meta.types';
 interface IErrorBoundaryProps {}
 interface IErrorBoundaryState {
   errorText?: string | null;
+  originalError?: Error | null;
 }
 
 class ErrorBoundary extends Component<
@@ -28,6 +29,7 @@ class ErrorBoundary extends Component<
     super(props);
     this.state = {
       errorText: null,
+      originalError: null,
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
@@ -71,18 +73,24 @@ class ErrorBoundary extends Component<
 
     // In production, re-throw after a brief delay to allow state update
     if (meta.switchState !== SWITCH_STATES.STAGE) {
-      requestAnimationFrame(() => {
-        throw error;
-      });
+      throw error;
     } else {
+      // Store both error string and original error for STAGE mode
       this.setState({
         errorText: errorString,
+        originalError: error,
       });
     }
   }
 
   continueCrash() {
-    throw new Error(this.state.errorText || '');
+    // Re-throw original error if available to preserve full context (stack trace, name, etc.)
+    // Fallback to new error with error text if original is not available
+    if (this.state.originalError) {
+      throw this.state.originalError;
+    } else {
+      throw new Error(this.state.errorText || '');
+    }
   }
   render() {
     if (this.state.errorText) {
