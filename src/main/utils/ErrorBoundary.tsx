@@ -73,7 +73,9 @@ class ErrorBoundary extends Component<
 
     // In production, re-throw after a brief delay to allow state update
     if (meta.switchState !== SWITCH_STATES.STAGE) {
-      throw error;
+      requestAnimationFrame(() => {
+        throw error;
+      });
     } else {
       // Store both error string and original error for STAGE mode
       this.setState({
