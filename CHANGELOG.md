@@ -1,3 +1,10 @@
+# [2.3.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.5...v2.3.0-alpha.6) (2025-12-16)
+
+
+### Bug Fixes
+
+* js error boundary, exception handler safety checks ([#86](https://github.com/stallion-tech/react-native-stallion/issues/86)) ([e7b9443](https://github.com/stallion-tech/react-native-stallion/commit/e7b94434f280f0160630b30890aced8ea36c3410))
+
 # [2.3.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.4...v2.3.0-alpha.5) (2025-11-26)
 
 
