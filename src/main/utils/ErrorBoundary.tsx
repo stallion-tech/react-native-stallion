@@ -18,6 +18,7 @@ import { SWITCH_STATES } from '../../types/meta.types';
 interface IErrorBoundaryProps {}
 interface IErrorBoundaryState {
   errorText?: string | null;
+  originalError?: Error | null;
 }
 
 class ErrorBoundary extends Component<
@@ -28,6 +29,7 @@ class ErrorBoundary extends Component<
     super(props);
     this.state = {
       errorText: null,
+      originalError: null,
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
@@ -66,11 +68,6 @@ class ErrorBoundary extends Component<
     // Mark that a crash has occurred
     setCrashOccurred();
 
-    // Always populate state with error information
-    this.setState({
-      errorText: errorString,
-    });
-
     // Get meta to determine behavior
     const meta = await getStallionMetaNative();
 
@@ -79,11 +76,23 @@ class ErrorBoundary extends Component<
       requestAnimationFrame(() => {
         throw error;
       });
+    } else {
+      // Store both error string and original error for STAGE mode
+      this.setState({
+        errorText: errorString,
+        originalError: error,
+      });
     }
   }
 
   continueCrash() {
-    throw new Error(this.state.errorText || '');
+    // Re-throw original error if available to preserve full context (stack trace, name, etc.)
+    // Fallback to new error with error text if original is not available
+    if (this.state.originalError) {
+      throw this.state.originalError;
+    } else {
+      throw new Error(this.state.errorText || '');
+    }
   }
   render() {
     if (this.state.errorText) {
