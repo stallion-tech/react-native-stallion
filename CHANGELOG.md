@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/stallion-tech/react-native-stallion/compare/v2.2.0...v2.3.0) (2025-12-17)
+
+
+### Features
+
+* 2.3.0 stable - bundle signing, event emitter, exception enhancements ([#55](https://github.com/stallion-tech/react-native-stallion/issues/55)) ([705d96c](https://github.com/stallion-tech/react-native-stallion/commit/705d96cc3df0790c12dff46973df6d502e68abb7)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32) [#38](https://github.com/stallion-tech/react-native-stallion/issues/38) [#41](https://github.com/stallion-tech/react-native-stallion/issues/41) [#42](https://github.com/stallion-tech/react-native-stallion/issues/42) [#44](https://github.com/stallion-tech/react-native-stallion/issues/44) [#49](https://github.com/stallion-tech/react-native-stallion/issues/49) [#53](https://github.com/stallion-tech/react-native-stallion/issues/53) [#49](https://github.com/stallion-tech/react-native-stallion/issues/49) [#66](https://github.com/stallion-tech/react-native-stallion/issues/66) [#75](https://github.com/stallion-tech/react-native-stallion/issues/75) [#86](https://github.com/stallion-tech/react-native-stallion/issues/86)
+
 # [2.3.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.5...v2.3.0-alpha.6) (2025-12-16)
 
 
