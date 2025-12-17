@@ -5,6 +5,7 @@ import Header from '../components/common/Header';
 import ButtonFullWidth from '../components/common/ButtonFullWidth';
 
 import { getStallionMetaNative } from './StallionNativeUtils';
+import { setCrashOccurred } from './crashState';
 import {
   HEADER_TITLE,
   STALLION_EB_BTN_TXT,
@@ -17,6 +18,7 @@ import { SWITCH_STATES } from '../../types/meta.types';
 interface IErrorBoundaryProps {}
 interface IErrorBoundaryState {
   errorText?: string | null;
+  originalError?: Error | null;
 }
 
 class ErrorBoundary extends Component<
@@ -27,32 +29,70 @@ class ErrorBoundary extends Component<
     super(props);
     this.state = {
       errorText: null,
+      originalError: null,
     };
     this.continueCrash = this.continueCrash.bind(this);
   }
 
-  async componentDidCatch(error: Error): Promise<void> {
-    const errorString: string = [
-      error.name,
-      error.message,
-      error.cause?.toString(),
-      error.stack,
-    ].join(' ');
-    console.error('Exception occured in js layer:', error);
+  async componentDidCatch(
+    error: Error,
+    errorInfo?: React.ErrorInfo
+  ): Promise<void> {
+    // Build comprehensive error string
+    const errorParts: string[] = [];
+
+    if (error.name) {
+      errorParts.push(`Error Name: ${error.name}`);
+    }
+    if (error.message) {
+      errorParts.push(`Message: ${error.message}`);
+    }
+    if (error.cause) {
+      errorParts.push(`Cause: ${String(error.cause)}`);
+    }
+    if (error.stack) {
+      errorParts.push(`\nStack Trace:\n${error.stack}`);
+    }
+    if (errorInfo?.componentStack) {
+      errorParts.push(`\nComponent Stack:\n${errorInfo.componentStack}`);
+    }
+
+    const errorString: string =
+      errorParts.length > 0
+        ? errorParts.join('\n\n')
+        : `Unknown error: ${String(error)}`;
+
+    console.error('Exception occurred in JS layer:', error);
+    console.error('Error Info:', errorInfo);
+
+    // Mark that a crash has occurred
+    setCrashOccurred();
+
+    // Get meta to determine behavior
     const meta = await getStallionMetaNative();
-    if (meta.switchState === SWITCH_STATES.STAGE) {
-      this.setState({
-        errorText: errorString,
-      });
-    } else {
+
+    // In production, re-throw after a brief delay to allow state update
+    if (meta.switchState !== SWITCH_STATES.STAGE) {
       requestAnimationFrame(() => {
         throw error;
+      });
+    } else {
+      // Store both error string and original error for STAGE mode
+      this.setState({
+        errorText: errorString,
+        originalError: error,
       });
     }
   }
 
   continueCrash() {
-    throw new Error(this.state.errorText || '');
+    // Re-throw original error if available to preserve full context (stack trace, name, etc.)
+    // Fallback to new error with error text if original is not available
+    if (this.state.originalError) {
+      throw this.state.originalError;
+    } else {
+      throw new Error(this.state.errorText || '');
+    }
   }
   render() {
     if (this.state.errorText) {

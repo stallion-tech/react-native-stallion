@@ -3,6 +3,7 @@ package com.stallion.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.stallion.events.StallionEventManager;
 import com.stallion.utils.StallionExceptionHandler;
 
 import org.json.JSONException;
@@ -20,7 +21,7 @@ public class StallionStateManager {
   private boolean isMounted;
   private String pendingReleaseUrl;
   private String pendingReleaseHash;
-
+  private boolean isSyncSuccessful;
 
   private StallionStateManager(Context context) {
     this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -29,11 +30,15 @@ public class StallionStateManager {
     this.isMounted = false;
     this.pendingReleaseUrl = "";
     this.pendingReleaseHash = "";
+    
+    // Reset mount state on initialization (ensures mount marker file is deleted for new session)
+    setIsMounted(false);
   }
 
   public static synchronized void init(Context context) {
     if (instance == null) {
       instance = new StallionStateManager(context);
+      StallionEventManager.init();
       StallionExceptionHandler.initErrorBoundary();
     }
   }
@@ -78,6 +83,18 @@ public class StallionStateManager {
 
   public void setIsMounted(Boolean isMounted) {
     this.isMounted = isMounted;
+    // Write mount state to a simple file that C++ can read
+    String filesDir = getStallionConfig().getFilesDirectory();
+    java.io.File mountMarker = new java.io.File(filesDir + "/stallion_mount.marker");
+    if (isMounted) {
+      try {
+        // Create file to indicate mounted (file existence = mounted)
+        mountMarker.createNewFile();
+      } catch (Exception ignored) {}
+    } else {
+      // Delete file to indicate not mounted (no file = not mounted)
+      mountMarker.delete();
+    }
   }
 
   public boolean getIsMounted() {
@@ -110,4 +127,8 @@ public class StallionStateManager {
   public String getPendingReleaseHash() {
     return this.pendingReleaseHash;
   }
+
+  public boolean getIsSyncSuccessful() { return this.isSyncSuccessful; }
+
+  public void setIsSyncSuccessful(boolean isSyncSuccessful) { this.isSyncSuccessful = isSyncSuccessful; }
 }

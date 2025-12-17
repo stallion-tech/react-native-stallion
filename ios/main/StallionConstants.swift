@@ -34,6 +34,7 @@ class StallionConstants {
         static let SecretKey = "secretKey"
     }
     static let PROGRESS_EVENT_THRESHOLD: Float = 0.05;
+    static let PROGRESS_THROTTLE_INTERVAL_MS: TimeInterval = 0.3; // 300ms
   
     static let PROD_DIRECTORY = "StallionProd"
     static let STAGE_DIRECTORY = "StallionStage"
@@ -78,6 +79,7 @@ class StallionConstants {
       static let INSTALLED_PROD = "INSTALLED_PROD"
       static let STABILIZED_PROD = "STABILIZED_PROD"
       static let EXCEPTION_PROD = "EXCEPTION_PROD"
+      static let SIGNATURE_VERIFICATION_FAILED = "SIGNATURE_VERIFICATION_FAILED"
     }
     public struct NativeEventTypesStage {
       static let DOWNLOAD_STARTED_STAGE = "DOWNLOAD_STARTED_STAGE"

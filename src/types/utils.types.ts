@@ -41,7 +41,7 @@ export type TDownloadBundleNative = (
   bundleInfo: IBundleInfo
 ) => Promise<string>;
 
-export type TOnLaunchBundleNative = (launchMessage: string) => void;
+export type TOnLaunchBundleNative = (stallionInitParams: string) => void;
 
 export interface IUseStallionUpdate {
   isRestartRequired: boolean;

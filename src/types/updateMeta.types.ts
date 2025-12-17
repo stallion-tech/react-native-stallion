@@ -21,6 +21,7 @@ export enum UpdateMetaActionKind {
   SET_CURRENTLY_RUNNING_META = 'SET_CURRENTLY_RUNNING_META',
   SET_NEW_BUNDLE_META = 'SET_NEW_BUNDLE_META',
   SET_INIT_PROD_SLOT = 'SET_INIT_PROD_SLOT',
+  SET_PENDING_RELEASE_HASH = 'SET_PENDING_RELEASE_HASH',
 }
 
 interface ISetRunningUpdateMeta {
@@ -38,7 +39,13 @@ export interface ISetInitProdSlot {
   payload: SLOT_STATES;
 }
 
+export interface ISetPendingReleaseHash {
+  type: UpdateMetaActionKind.SET_PENDING_RELEASE_HASH;
+  payload: string;
+}
+
 export type IUpdateMetaAction =
   | ISetRunningUpdateMeta
   | ISetNewUpdateMeta
-  | ISetInitProdSlot;
+  | ISetInitProdSlot
+  | ISetPendingReleaseHash;

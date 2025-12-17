@@ -72,3 +72,5 @@ lib/
 .npmrc
 
 sdk-package
+
+ios/main/StallionVersion.h

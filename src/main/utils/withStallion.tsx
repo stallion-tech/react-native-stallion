@@ -4,12 +4,16 @@ import GlobalProvider from '../state';
 import ErrorBoundary from './ErrorBoundary';
 
 import StallionModal from '../components/modules/modal/StallionModal';
+import { IStallionInitParams } from 'src/types/utils.types';
 
-const withStallion = <T,>(BaseComponent: ComponentType<T>) => {
+const withStallion = <T,>(
+  BaseComponent: ComponentType<T>,
+  initPrams?: IStallionInitParams
+) => {
   const StallionProvider: React.FC<T> = ({ children, ...props }) => {
     return (
       <ErrorBoundary>
-        <GlobalProvider>
+        <GlobalProvider stallionInitParams={initPrams}>
           <BaseComponent {...(props as T)}>{children}</BaseComponent>
           <StallionModal />
         </GlobalProvider>

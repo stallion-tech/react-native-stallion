@@ -2,7 +2,7 @@
 //  StallionStateManager.m
 //  DoubleConversion
 //
-//  Created by Jasbir Singh Shergill on 28/01/25.
+//  Created by Thor963 on 28/01/25.
 //
 
 #import "StallionStateManager.h"
@@ -44,6 +44,9 @@ static StallionStateManager *_instance = nil;
         _isMounted = NO;
         _pendingReleaseUrl = @"";
         _pendingReleaseHash = @"";
+        
+        // Reset mount state on initialization (ensures mount marker file is deleted for new session)
+        [self setIsMounted:NO];
     }
     return self;
 }
@@ -68,6 +71,32 @@ static StallionStateManager *_instance = nil;
 - (void)clearStallionMeta {
     [self.stallionMeta reset];
     [self syncStallionMeta];
+}
+
+- (void)setIsMounted:(BOOL)isMounted {
+    _isMounted = isMounted;
+    // Write mount state to a simple file that signal handler can read (async-signal-safe)
+    NSString *filesDir = self.stallionConfig.filesDirectory;
+    NSString *mountMarkerPath = [NSString stringWithFormat:@"%@/stallion_mount.marker", filesDir];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (isMounted) {
+        // Create file to indicate mounted (file existence = mounted)
+        @try {
+            [fileManager createFileAtPath:mountMarkerPath contents:nil attributes:nil];
+        } @catch (NSException *e) {
+            // Silently ignore errors
+        }
+    } else {
+        // Delete file to indicate not mounted (no file = not mounted)
+        @try {
+            if ([fileManager fileExistsAtPath:mountMarkerPath]) {
+                [fileManager removeItemAtPath:mountMarkerPath error:nil];
+            }
+        } @catch (NSException *e) {
+            // Silently ignore errors
+        }
+    }
 }
 
 #pragma mark - Local Storage Methods

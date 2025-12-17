@@ -1,14 +1,20 @@
 package com.stallion.networkmanager;
 
+import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionConfigConstants;
 import com.stallion.storage.StallionMetaConstants;
 import com.stallion.storage.StallionStateManager;
 import com.stallion.storage.StallionConfig;
+import com.stallion.utils.StallionDeviceInfo;
+import com.stallion.utils.StallionFileManager;
+import com.stallion.utils.StallionSignatureVerification;
 import com.stallion.utils.StallionSlotManager;
 import com.stallion.events.StallionEventConstants.NativeProdEventTypes;
 
 import org.json.JSONObject;
+
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StallionSyncHandler {
@@ -39,6 +45,8 @@ public class StallionSyncHandler {
         requestPayload.put("platform", "android");
         requestPayload.put("projectId", projectId);
         requestPayload.put("appliedBundleHash", appliedBundleHash);
+        // Attach device metadata for analytics
+        requestPayload.put("deviceMeta", StallionDeviceInfo.getDeviceMetaJson(config));
 
         // Make API call using StallionApiManager
         JSONObject releaseMeta = StallionApiManager.post(
@@ -48,7 +56,7 @@ public class StallionSyncHandler {
 
         // Process API response
         processReleaseMeta(releaseMeta, appVersion);
-
+        stateManager.setIsSyncSuccessful(true);
       } catch (Exception e) {
         emitSyncError(e);
       } finally {
@@ -85,11 +93,13 @@ public class StallionSyncHandler {
 
     StallionStateManager stateManager = StallionStateManager.getInstance();
     String lastRolledBackHash = stateManager.stallionMeta.getLastRolledBackHash();
+    String lastUnverifiedHash = stateManager.getStallionConfig().getLastUnverifiedHash();
 
     if (
-        !newReleaseHash.isEmpty()
-        && !newReleaseUrl.isEmpty()
-        && !newReleaseHash.equals(lastRolledBackHash)
+          !newReleaseHash.isEmpty()
+          && !newReleaseUrl.isEmpty()
+          && !newReleaseHash.equals(lastRolledBackHash)
+          && !newReleaseHash.equals(lastUnverifiedHash)
     ) {
       if(stateManager.getIsMounted()) {
         downloadNewRelease(newReleaseHash, newReleaseUrl);
@@ -112,6 +122,7 @@ public class StallionSyncHandler {
         + StallionConfigConstants.TEMP_FOLDER_SLOT;
       String projectId = config.getProjectId();
       String downloadUrl = newReleaseUrl + "?projectId=" + projectId;
+      String publicSigningKey = config.getPublicSigningKey();
 
       long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, downloadUrl, downloadPath);
 
@@ -131,6 +142,22 @@ public class StallionSyncHandler {
           @Override
           public void onSuccess(String successPayload) {
             isDownloadInProgress.set(false);
+            StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
+
+            if(publicSigningKey != null && !publicSigningKey.isEmpty()) {
+              if(
+                !StallionSignatureVerification.verifyReleaseSignature(
+                downloadPath + StallionConfigConstants.UNZIP_FOLDER_NAME,
+                publicSigningKey)
+              ) {
+                // discard the downloaded release
+                config.setLastUnverifiedHash(newReleaseHash);
+                emitSignatureVerificationFailed(newReleaseHash);
+                StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
+                return;
+              }
+            }
+
             stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
             stateManager.stallionMeta.setProdTempHash(newReleaseHash);
             String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
@@ -138,19 +165,31 @@ public class StallionSyncHandler {
               StallionSlotManager.stabilizeProd();
             }
             stateManager.syncStallionMeta();
-            StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
             emitDownloadSuccess(newReleaseHash);
           }
 
           @Override
           public void onProgress(double downloadFraction) {
             // Optional: Handle progress updates
+            emitDownloadProgressProd(newReleaseHash, downloadFraction);
           }
         }
       );
     } catch (Exception ignored) {
       isDownloadInProgress.set(false);
     }
+  }
+
+  private static void emitDownloadProgressProd(String releaseHash, double newProgress) {
+    JSONObject successPayload = new JSONObject();
+    try {
+      successPayload.put("releaseHash", releaseHash);
+      successPayload.put("progress", String.valueOf(newProgress));
+    } catch (Exception ignored) { }
+    StallionEventManager.getInstance().sendEventWithoutCaching(
+      StallionEventConstants.NativeProdEventTypes.DOWNLOAD_PROGRESS_PROD.toString(),
+      successPayload
+    );
   }
 
   private static void emitSyncError(Exception e) {
@@ -195,6 +234,16 @@ public class StallionSyncHandler {
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       isResume ? NativeProdEventTypes.DOWNLOAD_RESUME_PROD.toString(): NativeProdEventTypes.DOWNLOAD_STARTED_PROD.toString(),
+      successPayload
+    );
+  }
+  private static void emitSignatureVerificationFailed(String releaseHash) {
+    JSONObject successPayload = new JSONObject();
+    try {
+      successPayload.put("releaseHash", releaseHash);
+    } catch (Exception ignored) { }
+    StallionEventManager.getInstance().sendEvent(
+      NativeProdEventTypes.SIGNATURE_VERIFICATION_FAILED.toString(),
       successPayload
     );
   }

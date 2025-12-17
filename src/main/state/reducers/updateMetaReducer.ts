@@ -9,6 +9,7 @@ export interface IUpdateMetaState {
   currentlyRunningBundle: IUpdateMeta | null;
   newBundle: IUpdateMeta | null;
   initialProdSlot: SLOT_STATES | null;
+  pendingReleaseHash: string | null;
 }
 
 const updateMetaReducer = (
@@ -36,6 +37,13 @@ const updateMetaReducer = (
       return {
         ...state,
         initialProdSlot: initProdSlot,
+      };
+
+    case UpdateMetaActionKind.SET_PENDING_RELEASE_HASH:
+      const { payload: pendingReleaseHash } = action;
+      return {
+        ...state,
+        pendingReleaseHash: pendingReleaseHash,
       };
     default:
       return state;

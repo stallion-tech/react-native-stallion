@@ -20,6 +20,9 @@ public class StallionConfig {
   private final SharedPreferences sharedPreferences;
   private final String filesDirectory;
   private String lastDownloadingUrl;
+  private String lastUnverifiedHash;
+  private final String publicSigningKey;
+
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -32,12 +35,20 @@ public class StallionConfig {
       parentPackageName
     );
     this.projectId = stallionProjectIdRes != 0 ?context.getString(stallionProjectIdRes) : "";
+
     int stallionAppTokenRes = res.getIdentifier(
       StallionConfigConstants.STALLION_APP_TOKEN_IDENTIFIER,
       "string",
       parentPackageName
     );
     this.appToken = stallionAppTokenRes != 0 ? context.getString(stallionAppTokenRes) : "";
+
+    int stallionPublicKeyRes = res.getIdentifier(
+      StallionConfigConstants.STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER,
+      "string",
+      parentPackageName
+    );
+    this.publicSigningKey = stallionPublicKeyRes != 0 ? context.getString(stallionPublicKeyRes) : "";
 
     // get or generate UID
     String cachedUniqueId = sharedPreferences.getString(
@@ -65,6 +76,7 @@ public class StallionConfig {
     this.appVersion = fetchAppVersion(context);
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
     this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
+    this.lastUnverifiedHash = sharedPreferences.getString(StallionConfigConstants.LAST_UNVERIFIED_HASH, "");
   }
 
   public String getLastDownloadingUrl() {
@@ -75,6 +87,17 @@ public class StallionConfig {
     this.lastDownloadingUrl = newUrl;
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, newUrl);
+    editor.apply();
+  }
+
+  public String getLastUnverifiedHash() {
+    return this.lastUnverifiedHash;
+  }
+
+  public void setLastUnverifiedHash(String newUnverifiedHash) {
+    this.lastUnverifiedHash = newUnverifiedHash;
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putString(StallionConfigConstants.LAST_UNVERIFIED_HASH, newUnverifiedHash);
     editor.apply();
   }
 
@@ -96,12 +119,10 @@ public class StallionConfig {
   }
 
   public void updateSdkToken(String newApiKey) {
-    if(!newApiKey.isEmpty()) {
       this.sdkToken = newApiKey;
       SharedPreferences.Editor editor = sharedPreferences.edit();
       editor.putString(StallionConfigConstants.API_KEY_IDENTIFIER, this.sdkToken);
       editor.apply();
-    }
   }
 
   public String getAppToken() {
@@ -117,6 +138,10 @@ public class StallionConfig {
   }
 
   public String getFilesDirectory() { return this.filesDirectory; }
+
+  public String getPublicSigningKey() {
+    return this.publicSigningKey;
+  }
 
   public JSONObject toJSON() {
     JSONObject configJson = new JSONObject();

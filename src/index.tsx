@@ -29,3 +29,5 @@ export { sync, restart } from './main/utils/StallionNativeUtils';
 export { useStallionUpdate } from './main/utils/useStallionUpdate';
 export const addEventListener =
   stallionEventEmitter.addEventListener.bind(stallionEventEmitter);
+export const removeEventListener =
+  stallionEventEmitter.removeEventListener.bind(stallionEventEmitter);

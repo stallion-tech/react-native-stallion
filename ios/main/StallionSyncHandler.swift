@@ -2,7 +2,7 @@
 //  StallionSyncHandler.swift
 //  react-native-stallion
 //
-//  Created by Jasbir Singh Shergill on 29/01/25.
+//  Created by Thor963 on 29/01/25.
 //
 
 import Foundation
@@ -46,6 +46,7 @@ class StallionSyncHandler {
                       "platform": StallionConstants.PlatformValue,
                       "projectId": projectId,
                       "appliedBundleHash": appliedBundleHash,
+                      "deviceMeta": StallionDeviceInfo.getDeviceMetaJson(config)
                   ]
 
                   // Make API call using URLSession
@@ -151,9 +152,10 @@ class StallionSyncHandler {
               !newReleaseHash.isEmpty else { return }
 
         let stateManager = StallionStateManager.sharedInstance()
-        let lastRolledBackHash = stateManager?.stallionMeta?.lastRolledBackHash ?? ""
+        let lastRolledBackHash = stateManager?.stallionMeta?.getLastRolledBackHash() ?? ""
+        let lastUnverifiedHash = stateManager?.stallionConfig?.lastUnverifiedHash ?? ""
 
-        if newReleaseHash != lastRolledBackHash {
+        if newReleaseHash != lastRolledBackHash && newReleaseHash != lastUnverifiedHash {
             if stateManager?.isMounted == true {
                 downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl)
             } else {
@@ -179,29 +181,52 @@ class StallionSyncHandler {
       let downloadPath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT
       let projectId = config.projectId ?? ""
       
+      let publicSigningKey = config.publicSigningKey ?? ""
+      
       guard let fromUrl = URL(string: newReleaseUrl + "?projectId=" + projectId) else { return }
 
       emitDownloadStarted(releaseHash: newReleaseHash)
 
-      StallionFileDownloader().downloadBundle(url: fromUrl, downloadDirectory: downloadPath, onProgress: { progress in
-        // Handle progress updates if necessary
-    }, resolve: { _ in
-        completeDownload()
-      stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
-      stateManager.stallionMeta?.prodTempHash =  newReleaseHash
-      if let currentProdNewHash = stateManager.stallionMeta?.prodNewHash,
-         !currentProdNewHash.isEmpty {
-          StallionSlotManager.stabilizeProd()
-      }
-      stateManager.syncStallionMeta()
-      emitDownloadSuccess(releaseHash: newReleaseHash)
-    }, reject: { code, prefix, error  in
-        completeDownload()
-      emitDownloadError(
-        releaseHash: newReleaseHash,
-        error: "\(String(describing: prefix))\(String(describing: error))"
+      StallionFileDownloader().downloadBundle(
+        url: fromUrl,
+        downloadDirectory: downloadPath,
+        onProgress: { progress in
+          emitDownloadProgress(releaseHash: newReleaseHash, progress: progress)
+        },
+        resolve: { _ in
+          completeDownload()
+          
+          if(publicSigningKey != nil && !publicSigningKey.isEmpty) {
+            if(
+              !StallionSignatureVerification.verifyReleaseSignature(
+                downloadedBundlePath: downloadPath + "/" + StallionConstants.FilePaths.ZipFolderName,
+                publicKeyPem: publicSigningKey
+              )
+            ) {
+              // discard downloaded release
+              config.updateLastUnverifiedHash(newReleaseHash)
+              emitSignatureVerificationFailed(releaseHash: newReleaseHash)
+              StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+              return;
+            }
+          }
+          stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
+          stateManager.stallionMeta?.prodTempHash =  newReleaseHash
+          if let currentProdNewHash = stateManager.stallionMeta?.prodNewHash,
+             !currentProdNewHash.isEmpty {
+              StallionSlotManager.stabilizeProd()
+          }
+          stateManager.syncStallionMeta()
+          emitDownloadSuccess(releaseHash: newReleaseHash)
+        },
+        reject: { code, prefix, error  in
+          completeDownload()
+          emitDownloadError(
+            releaseHash: newReleaseHash,
+            error: "\(String(describing: prefix))\(String(describing: error))"
+          )
+        }
       )
-    })
   }
     
     private static func completeDownload() {
@@ -245,6 +270,25 @@ class StallionSyncHandler {
                              eventBody: startedPayload,
                              shouldCache: true
       )
+    }
+  
+    private static func emitSignatureVerificationFailed(releaseHash: String) {
+      let verificationFailurePayload: NSDictionary = ["releaseHash": releaseHash]
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.SIGNATURE_VERIFICATION_FAILED,
+                             eventBody: verificationFailurePayload,
+                             shouldCache: true
+      )
+    }
+
+    private static func emitDownloadProgress(releaseHash: String, progress: Float) {
+        let progressPayload: NSDictionary = [
+            "releaseHash": releaseHash,
+            "progress": "\(progress)"
+        ]
+        Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_PROGRESS_PROD,
+                               eventBody: progressPayload,
+                               shouldCache: false
+        )
     }
 }
 

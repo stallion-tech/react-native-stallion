@@ -91,7 +91,7 @@ const BundleCardInfoSection: React.FC<IBundleCardInfoSection> = ({
       {description ? (
         <View style={styles.descContainer}>
           <Text style={styles.releaseNoteText}>{BUNDLE_CARD_RELEASE_NOTE}</Text>
-          <Text numberOfLines={1} style={styles.releaseNoteDescriptionText}>
+          <Text numberOfLines={2} style={styles.releaseNoteDescriptionText}>
             {description}
           </Text>
         </View>

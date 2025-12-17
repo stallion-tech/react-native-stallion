@@ -14,6 +14,12 @@ public class StallionMeta {
   private String prodNewHash;
   private String prodStableHash;
   private String lastRolledBackHash;
+  private long lastRolledBackAt;
+  private int successfulLaunchCount;
+  private String lastSuccessfulLaunchHash;
+
+  public static final int MAX_SUCCESS_LAUNCH_THRESHOLD = 3;
+  public static final long LAST_ROLLED_BACK_TTL_MS = 6L * 60L * 60L * 1000L; // 6 hours
 
   public StallionMeta() {
     this.reset();
@@ -29,6 +35,9 @@ public class StallionMeta {
     this.prodNewHash = "";
     this.prodStableHash = "";
     this.lastRolledBackHash = "";
+    this.lastRolledBackAt = 0L;
+    this.successfulLaunchCount = 0;
+    this.lastSuccessfulLaunchHash = "";
   }
 
   // Getters and Setters
@@ -121,11 +130,13 @@ public class StallionMeta {
   }
 
   public String getLastRolledBackHash() {
+    enforceLastRolledBackExpiry();
     return lastRolledBackHash;
   }
 
   public void setLastRolledBackHash(String lastRolledBackHash) {
-    this.lastRolledBackHash = lastRolledBackHash;
+    this.lastRolledBackHash = lastRolledBackHash == null ? "" : lastRolledBackHash;
+    this.lastRolledBackAt = this.lastRolledBackHash.isEmpty() ? 0L : System.currentTimeMillis();
   }
 
   // Convert to JSON
@@ -148,6 +159,9 @@ public class StallionMeta {
       metaJson.put("prodSlot", prodJson);
 
       metaJson.put("lastRolledBackHash", lastRolledBackHash);
+      metaJson.put("lastRolledBackAt", lastRolledBackAt);
+      metaJson.put("successfulLaunchCount", successfulLaunchCount);
+      metaJson.put("lastSuccessfulLaunchHash", lastSuccessfulLaunchHash);
 
     } catch (JSONException e) {
       return new JSONObject();
@@ -169,6 +183,9 @@ public class StallionMeta {
       );
 
       stallionMeta.setLastRolledBackHash(jsonObject.optString("lastRolledBackHash", ""));
+      stallionMeta.lastRolledBackAt = jsonObject.optLong("lastRolledBackAt", 0L);
+      stallionMeta.successfulLaunchCount = jsonObject.optInt("successfulLaunchCount", 0);
+      stallionMeta.lastSuccessfulLaunchHash = jsonObject.optString("lastSuccessfulLaunchHash", "");
 
       JSONObject stageJson = jsonObject.optJSONObject("stageSlot");
       if(stageJson != null) {
@@ -201,6 +218,40 @@ public class StallionMeta {
       return stallionMeta;
     } catch (Exception e) {
       return stallionMeta;
+    }
+  }
+
+  public void markSuccessfulLaunch(String releaseHash) {
+    if(releaseHash == null || releaseHash.isEmpty()) {
+      return;
+    }
+    if (!releaseHash.equals(this.lastSuccessfulLaunchHash)) {
+      this.successfulLaunchCount = 0;
+      this.lastSuccessfulLaunchHash = releaseHash;
+    }
+    if (this.successfulLaunchCount < MAX_SUCCESS_LAUNCH_THRESHOLD) {
+      this.successfulLaunchCount += 1;
+    }
+  }
+
+  public int getSuccessfulLaunchCount(String releaseHash) {
+    String currentHash = releaseHash == null ? "" : releaseHash;
+    if (!currentHash.equals(this.lastSuccessfulLaunchHash)) {
+      return 0;
+    } else return this.successfulLaunchCount;
+  }
+
+  private void enforceLastRolledBackExpiry() {
+    if (this.lastRolledBackHash == null || this.lastRolledBackHash.isEmpty()) {
+      return;
+    }
+    if (this.lastRolledBackAt <= 0L) {
+      return;
+    }
+    long now = System.currentTimeMillis();
+    if (now - this.lastRolledBackAt >= LAST_ROLLED_BACK_TTL_MS) {
+      this.lastRolledBackHash = "";
+      this.lastRolledBackAt = 0L;
     }
   }
 }

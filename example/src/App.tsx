@@ -6,6 +6,7 @@ import {
   useStallionModal,
   useStallionUpdate,
   addEventListener,
+  restart,
 } from 'react-native-stallion';
 
 const App: React.FC = () => {
@@ -20,15 +21,22 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     if (isRestartRequired) {
-      Alert.alert('Restart the app', JSON.stringify(newReleaseBundle));
+      Alert.alert('New Release installed', JSON.stringify(newReleaseBundle), [
+        {
+          text: 'Restart',
+          onPress: restart,
+        },
+      ]);
     }
   }, [isRestartRequired, newReleaseBundle]);
 
   React.useEffect(() => {
-    addEventListener((_) => {
+    addEventListener((event) => {
+      console.log('Stallion event:', event);
       // use data
     });
   }, []);
+
   return (
     <View style={styles.container}>
       <Text>Hello world</Text>

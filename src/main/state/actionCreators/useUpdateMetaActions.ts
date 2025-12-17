@@ -54,8 +54,10 @@ const useUpdateMetaActions = (
   }, [metaState.prodSlot, updateMetaState.initialProdSlot]);
 
   const newReleaseHash = useMemo<string>(() => {
-    return metaState.prodSlot?.tempHash || '';
-  }, [metaState.prodSlot]);
+    return (
+      updateMetaState.pendingReleaseHash || metaState.prodSlot?.tempHash || ''
+    );
+  }, [metaState.prodSlot, updateMetaState.pendingReleaseHash]);
 
   const getUpdateMetaData = useCallback(
     (releaseId: string): Promise<any> => {
