@@ -103,11 +103,3 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 }
-
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "Stallion"
-    codegenJavaPackageName = "com.stallion"
-  }
-}
