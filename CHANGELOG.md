@@ -1,3 +1,10 @@
+# [2.3.0-alpha.7](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.6...v2.3.0-alpha.7) (2025-12-30)
+
+
+### Bug Fixes
+
+* android 16kb, removed react codegen block ([#91](https://github.com/stallion-tech/react-native-stallion/issues/91)) ([c92e6cd](https://github.com/stallion-tech/react-native-stallion/commit/c92e6cd4dea287643ad1d87262a71303af805d6b))
+
 # [2.3.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.5...v2.3.0-alpha.6) (2025-12-16)
 
 
