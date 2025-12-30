@@ -1,3 +1,10 @@
+# [2.3.0-alpha.8](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.7...v2.3.0-alpha.8) (2025-12-30)
+
+
+### Bug Fixes
+
+* alpha 2.3.1 release ([5890a27](https://github.com/stallion-tech/react-native-stallion/commit/5890a27f0e39e7f3b698d0f155e50196c36f335d))
+
 # [2.3.0-alpha.7](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0-alpha.6...v2.3.0-alpha.7) (2025-12-30)
 
 
