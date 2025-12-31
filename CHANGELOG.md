@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0...v2.3.1) (2025-12-31)
+
+
+### Bug Fixes
+
+* android 16kb page size fix, new arch codegen removed ([#92](https://github.com/stallion-tech/react-native-stallion/issues/92)) ([9b2f91a](https://github.com/stallion-tech/react-native-stallion/commit/9b2f91a71dc603c58653fd1c924221be7b81ee5b))
+
 # [2.4.0-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0...v2.4.0-alpha.1) (2025-12-30)
 
 
