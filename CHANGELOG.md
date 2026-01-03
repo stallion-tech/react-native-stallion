@@ -1,3 +1,10 @@
+# [2.4.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.2...v2.4.0-alpha.3) (2026-01-03)
+
+
+### Bug Fixes
+
+* ios precompiled deps fix pod deps installation ([#93](https://github.com/stallion-tech/react-native-stallion/issues/93)) ([0cdde47](https://github.com/stallion-tech/react-native-stallion/commit/0cdde4781b5e441e7b84803612e9949d5ccb07f7))
+
 # [2.4.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.1...v2.4.0-alpha.2) (2026-01-02)
 
 
