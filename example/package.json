@@ -5,19 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start --reset-cache",
-    "pods": "pod-install --quiet",
-    "bundle:initial": "bash scripts/generate-initial-bundle.sh",
-    "bundle:updated": "bash scripts/generate-updated-bundle.sh",
-    "bundle:patch": "bash scripts/generate-patch.sh",
-    "bundle:all": "bash scripts/generate-all-bundles.sh",
-    "bundle:stallion-hbc": "bash scripts/generate-stallion-temp-hbc.sh",
-    "bundle:stallion-hbc:new": "bash scripts/generate-stallion-temp-hbc-specific.sh stallion-temp-5taZNeKirsKB",
-    "bundle:stallion-hbc:GxSWJ5V9shUT": "bash scripts/generate-stallion-temp-hbc-specific.sh stallion-temp-GxSWJ5V9shUT",
-    "bundle:patch:temp": "bash scripts/generate-patch-between-temp.sh",
-    "test:patch:e2e": "bash scripts/test-patch-end-to-end.sh",
-    "test:patch:roundtrip": "bash scripts/test-patch-roundtrip.sh",
-    "test:patch:c-code": "bash scripts/test-patch-with-c-code.sh"
+    "start": "react-native start --reset-cache"
   },
   "dependencies": {
     "react": "18.2.0",
