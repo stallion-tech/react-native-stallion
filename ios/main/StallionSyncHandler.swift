@@ -274,7 +274,7 @@ class StallionSyncHandler {
               )
             ) {
               // discard downloaded release
-             config.updateLastUnverifiedHash(newReleaseHash)
+              config.updateLastUnverifiedHash(newReleaseHash)
               emitSignatureVerificationFailed(releaseHash: newReleaseHash)
               StallionFileManager.deleteFileOrFolderSilently(downloadPath)
               return;

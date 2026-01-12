@@ -58,3 +58,9 @@ target_include_directories(
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/bzip2
 )
+
+# Fix for 16KB page size compatibility (required for Android 15+)
+# This ensures LOAD segments are aligned at 16KB boundaries
+set_target_properties(stallion-crash PROPERTIES
+  LINK_FLAGS "-Wl,-z,max-page-size=16384"
+)
