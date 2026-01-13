@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.1...v2.3.2) (2026-01-13)
+
+
+### Bug Fixes
+
+* ios podspec precompiled deps support ([#94](https://github.com/stallion-tech/react-native-stallion/issues/94)) ([35f255f](https://github.com/stallion-tech/react-native-stallion/commit/35f255f74644f993a67d4e727dc751f31d4f08a0))
+
 # [2.4.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.2...v2.4.0-alpha.3) (2026-01-03)
 
 
