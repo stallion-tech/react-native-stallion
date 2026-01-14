@@ -1,3 +1,10 @@
+# [2.4.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.3...v2.4.0-alpha.4) (2026-01-14)
+
+
+### Features
+
+* 2.4.0 alpha ([#96](https://github.com/stallion-tech/react-native-stallion/issues/96)) ([3430975](https://github.com/stallion-tech/react-native-stallion/commit/3430975b038b0d82f1549d104d7277ce2d540020))
+
 # [2.4.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.2...v2.4.0-alpha.3) (2026-01-03)
 
 
