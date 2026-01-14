@@ -70,8 +70,8 @@ public class StallionSyncHandler {
       JSONObject data = releaseMeta.optJSONObject("data");
       if (data == null) return;
 
-      handleAppliedReleaseData(data.optJSONObject("appliedBundleData"), appVersion);
-      handleNewReleaseData(data.optJSONObject("newBundleData"));
+     handleAppliedReleaseData(data.optJSONObject("appliedBundleData"), appVersion);
+     handleNewReleaseData(data.optJSONObject("newBundleData"));
     }
   }
 
@@ -91,6 +91,23 @@ public class StallionSyncHandler {
     String newReleaseUrl = newReleaseData.optString("downloadUrl");
     String newReleaseHash = newReleaseData.optString("checksum");
 
+    // Extract diffData if it exists
+    JSONObject diffData = newReleaseData.optJSONObject("bundleDiff");
+    String diffUrl = null;
+    boolean isBundlePatched = false;
+    String bundleDiffId = null;
+    if (diffData != null) {
+      diffUrl = diffData.optString("url");
+      if (diffUrl != null && diffUrl.isEmpty()) {
+        diffUrl = null;
+      }
+      isBundlePatched = diffData.optBoolean("isBundlePatched", false);
+      bundleDiffId = diffData.optString("id");
+      if (bundleDiffId != null && bundleDiffId.isEmpty()) {
+        bundleDiffId = null;
+      }
+    }
+
     StallionStateManager stateManager = StallionStateManager.getInstance();
     String lastRolledBackHash = stateManager.stallionMeta.getLastRolledBackHash();
     String lastUnverifiedHash = stateManager.getStallionConfig().getLastUnverifiedHash();
@@ -102,14 +119,29 @@ public class StallionSyncHandler {
           && !newReleaseHash.equals(lastUnverifiedHash)
     ) {
       if(stateManager.getIsMounted()) {
-        downloadNewRelease(newReleaseHash, newReleaseUrl);
+        downloadNewRelease(newReleaseHash, newReleaseUrl, diffUrl, isBundlePatched, bundleDiffId);
       } else {
-        stateManager.setPendingRelease(newReleaseUrl, newReleaseHash);
+        stateManager.setPendingRelease(newReleaseUrl, newReleaseHash, diffUrl, isBundlePatched, bundleDiffId);
       }
     }
   }
 
+  // Overloaded method for backward compatibility
   public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl) {
+    downloadNewRelease(newReleaseHash, newReleaseUrl, null, false);
+  }
+
+  // Overloaded method for backward compatibility
+  public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl, String diffUrl) {
+    downloadNewRelease(newReleaseHash, newReleaseUrl, diffUrl, false, null);
+  }
+
+  // Overloaded method for backward compatibility
+  public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl, String diffUrl, boolean isBundlePatched) {
+    downloadNewRelease(newReleaseHash, newReleaseUrl, diffUrl, isBundlePatched, null);
+  }
+
+  public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl, String diffUrl, boolean isBundlePatched, String bundleDiffId) {
     // Ensure only one download job runs at a time
     if (!isDownloadInProgress.compareAndSet(false, true)) {
       return; // Exit if another job is already running
@@ -121,12 +153,24 @@ public class StallionSyncHandler {
         + StallionConfigConstants.PROD_DIRECTORY
         + StallionConfigConstants.TEMP_FOLDER_SLOT;
       String projectId = config.getProjectId();
-      String downloadUrl = newReleaseUrl + "?projectId=" + projectId;
+
+      // Use diffUrl if it exists, otherwise use newReleaseUrl
+      String urlToDownload = (diffUrl != null && !diffUrl.isEmpty()) ? diffUrl : newReleaseUrl;
+      String downloadUrl = urlToDownload + "?projectId=" + projectId;
       String publicSigningKey = config.getPublicSigningKey();
+
+      // Track if this is a diff download
+      final boolean isDiffDownload = (diffUrl != null && !diffUrl.isEmpty());
+      // Store original newReleaseUrl for potential retry
+      final String originalNewReleaseUrl = newReleaseUrl;
+      // Store isBundlePatched flag for patch handler
+      final boolean isBundlePatchedFlag = isBundlePatched;
+      // Store bundleDiffId for events
+      final String bundleDiffIdForEvents = bundleDiffId;
 
       long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, downloadUrl, downloadPath);
 
-      emitDownloadStarted(newReleaseHash, alreadyDownloaded > 0);
+      emitDownloadStarted(newReleaseHash, alreadyDownloaded > 0, bundleDiffIdForEvents);
 
       StallionFileDownloader.downloadBundle(
         downloadUrl,
@@ -144,6 +188,28 @@ public class StallionSyncHandler {
             isDownloadInProgress.set(false);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
 
+            // If this was a diff download, handle patch
+            if (isDiffDownload) {
+              try {
+                // Get base bundle path from current slot
+                String slotPath = stateManager.stallionMeta.getCurrentProdSlotPath();
+                String baseBundlePath = config.getFilesDirectory()
+                  + StallionConfigConstants.PROD_DIRECTORY
+                  + slotPath;
+
+                // Invoke patch handler with isBundlePatched flag
+                StallionPatchHandler.applyPatch(baseBundlePath, downloadPath, isBundlePatchedFlag);
+              } catch (Exception e) {
+                // Patch application failed, retry with full bundle download
+                // Clean up the failed diff download
+                StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
+                isDownloadInProgress.set(false);
+                // Retry download with full bundle (no diffUrl)
+                downloadNewRelease(newReleaseHash, originalNewReleaseUrl, null, false, null);
+                return;
+              }
+            }
+
             if(publicSigningKey != null && !publicSigningKey.isEmpty()) {
               if(
                 !StallionSignatureVerification.verifyReleaseSignature(
@@ -158,14 +224,14 @@ public class StallionSyncHandler {
               }
             }
 
-            stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
-            stateManager.stallionMeta.setProdTempHash(newReleaseHash);
-            String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
-            if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
-              StallionSlotManager.stabilizeProd();
-            }
-            stateManager.syncStallionMeta();
-            emitDownloadSuccess(newReleaseHash);
+          stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
+          stateManager.stallionMeta.setProdTempHash(newReleaseHash);
+          String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
+          if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
+            StallionSlotManager.stabilizeProd();
+          }
+          stateManager.syncStallionMeta();
+          emitDownloadSuccess(newReleaseHash, bundleDiffIdForEvents);
           }
 
           @Override
@@ -216,10 +282,13 @@ public class StallionSyncHandler {
     );
   }
 
-  private static void emitDownloadSuccess(String releaseHash) {
+  private static void emitDownloadSuccess(String releaseHash, String bundleDiffId) {
     JSONObject successPayload = new JSONObject();
     try {
       successPayload.put("releaseHash", releaseHash);
+      if (bundleDiffId != null && !bundleDiffId.isEmpty()) {
+        successPayload.put("diffId", bundleDiffId);
+      }
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       NativeProdEventTypes.DOWNLOAD_COMPLETE_PROD.toString(),
@@ -227,10 +296,13 @@ public class StallionSyncHandler {
     );
   }
 
-  private static void emitDownloadStarted(String releaseHash, Boolean isResume) {
+  private static void emitDownloadStarted(String releaseHash, Boolean isResume, String bundleDiffId) {
     JSONObject successPayload = new JSONObject();
     try {
       successPayload.put("releaseHash", releaseHash);
+      if (bundleDiffId != null && !bundleDiffId.isEmpty()) {
+        successPayload.put("diffId", bundleDiffId);
+      }
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       isResume ? NativeProdEventTypes.DOWNLOAD_RESUME_PROD.toString(): NativeProdEventTypes.DOWNLOAD_STARTED_PROD.toString(),

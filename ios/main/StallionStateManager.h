@@ -16,6 +16,9 @@
 @property (nonatomic, assign) BOOL isMounted;
 @property (nonatomic, copy) NSString *pendingReleaseUrl;
 @property (nonatomic, copy) NSString *pendingReleaseHash;
+@property (nonatomic, copy) NSString *pendingReleaseDiffUrl;
+@property (nonatomic, assign) BOOL pendingReleaseIsBundlePatched;
+@property (nonatomic, copy) NSString *pendingReleaseBundleDiffId;
 
 + (instancetype)sharedInstance;
 + (void)initializeInstance;

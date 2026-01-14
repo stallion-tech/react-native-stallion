@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   isStallionEnabled = true
 
   if isStallionEnabled then
-    s.source_files = "ios/main/**/*.{h,m,mm,swift}"
+    s.source_files = "ios/main/**/*.{h,m,mm,swift,c}"
   else
     s.source_files = "ios/noop/**/*.{h,m,mm,swift}"
     puts "Stallion is disabled, falling back to noop version. Check your stallion.config.js file"
@@ -48,6 +48,8 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   if isStallionEnabled then 
     s.dependency "ZIPFoundation"
+    # Link libbz2 for bspatch (bsdiff/bspatch uses bzip2 compression)
+    s.libraries = "bz2"
   end
 
   if respond_to?(:install_modules_dependencies, true)

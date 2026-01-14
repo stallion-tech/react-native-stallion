@@ -13,11 +13,7 @@ const App: React.FC = () => {
   const { showModal } = useStallionModal();
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
 
-  // console.log(
-  //   isRestartRequired,
-  //   'isRestartRequired',
-  //   newReleaseBundle
-  // );
+  // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
     if (isRestartRequired) {
@@ -53,6 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   box: {
     width: 60,

@@ -1,5 +1,6 @@
 package com.stallion.storage;
 
+import com.stallion.storage.StallionConfigConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +75,17 @@ public class StallionMeta {
       case STABLE_SLOT:
         return this.prodStableHash;
       default: return "";
+    }
+  }
+
+  public String getCurrentProdSlotPath() {
+    switch (this.currentProdSlot) {
+      case NEW_SLOT:
+        return StallionConfigConstants.NEW_FOLDER_SLOT;
+      case STABLE_SLOT:
+        return StallionConfigConstants.STABLE_FOLDER_SLOT;
+      default:
+        return StallionConfigConstants.NEW_FOLDER_SLOT;
     }
   }
 

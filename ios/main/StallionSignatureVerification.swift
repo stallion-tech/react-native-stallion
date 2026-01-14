@@ -37,7 +37,7 @@ class StallionSignatureVerification {
             guard let payloadData = base64UrlDecode(payload),
                   let payloadJson = try JSONSerialization.jsonObject(with: payloadData) as? [String: Any],
                   let expectedHash = payloadJson["packageHash"] as? String else { return false }
-
+          
             let actualHash = try computeCodePushStyleHash(folderPath: downloadedBundlePath)
             return expectedHash == actualHash
 

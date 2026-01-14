@@ -21,6 +21,9 @@ public class StallionStateManager {
   private boolean isMounted;
   private String pendingReleaseUrl;
   private String pendingReleaseHash;
+  private String pendingReleaseDiffUrl;
+  private boolean pendingReleaseIsBundlePatched;
+  private String pendingReleaseBundleDiffId;
   private boolean isSyncSuccessful;
 
   private StallionStateManager(Context context) {
@@ -30,6 +33,9 @@ public class StallionStateManager {
     this.isMounted = false;
     this.pendingReleaseUrl = "";
     this.pendingReleaseHash = "";
+    this.pendingReleaseDiffUrl = null;
+    this.pendingReleaseIsBundlePatched = false;
+    this.pendingReleaseBundleDiffId = null;
     
     // Reset mount state on initialization (ensures mount marker file is deleted for new session)
     setIsMounted(false);
@@ -116,8 +122,15 @@ public class StallionStateManager {
   }
 
   public void setPendingRelease(String pendingReleaseUrl, String pendingReleaseHash) {
+    setPendingRelease(pendingReleaseUrl, pendingReleaseHash, null, false, null);
+  }
+
+  public void setPendingRelease(String pendingReleaseUrl, String pendingReleaseHash, String diffUrl, boolean isBundlePatched, String bundleDiffId) {
     this.pendingReleaseUrl = pendingReleaseUrl;
     this.pendingReleaseHash = pendingReleaseHash;
+    this.pendingReleaseDiffUrl = diffUrl;
+    this.pendingReleaseIsBundlePatched = isBundlePatched;
+    this.pendingReleaseBundleDiffId = bundleDiffId;
   }
 
   public String getPendingReleaseUrl() {
@@ -126,6 +139,18 @@ public class StallionStateManager {
 
   public String getPendingReleaseHash() {
     return this.pendingReleaseHash;
+  }
+
+  public String getPendingReleaseDiffUrl() {
+    return this.pendingReleaseDiffUrl;
+  }
+
+  public boolean getPendingReleaseIsBundlePatched() {
+    return this.pendingReleaseIsBundlePatched;
+  }
+
+  public String getPendingReleaseBundleDiffId() {
+    return this.pendingReleaseBundleDiffId;
   }
 
   public boolean getIsSyncSuccessful() { return this.isSyncSuccessful; }
