@@ -1,6 +1,6 @@
 {
   "name": "react-native-stallion",
-  "version": "2.4.0-alpha.1",
+  "version": "2.4.0-alpha.4",
   "description": "Offical React Native SDK for Stallion",
   "main": "index",
   "types": "types/index.d.ts",
@@ -27,7 +27,6 @@
   ],
   "scripts": {
     "test": "jest",
-    "test:patch:c-code": "node scripts/test-patch-c-code.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "example": "yarn --cwd example",
