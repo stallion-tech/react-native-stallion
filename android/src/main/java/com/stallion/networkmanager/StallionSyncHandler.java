@@ -1,7 +1,5 @@
 package com.stallion.networkmanager;
 
-import android.util.Log;
-
 import com.stallion.events.StallionEventConstants;
 import com.stallion.events.StallionEventManager;
 import com.stallion.storage.StallionConfigConstants;
@@ -201,7 +199,6 @@ public class StallionSyncHandler {
 
                 // Invoke patch handler with isBundlePatched flag
                 StallionPatchHandler.applyPatch(baseBundlePath, downloadPath, isBundlePatchedFlag);
-                Log.d("StallionPatchHandler", "patch applied!!");
               } catch (Exception e) {
                 // Patch application failed, retry with full bundle download
                 // Clean up the failed diff download
@@ -214,7 +211,6 @@ public class StallionSyncHandler {
             }
 
             if(publicSigningKey != null && !publicSigningKey.isEmpty()) {
-              Log.d("StallionPatchHandler", "checking bundle signing");
               if(
                 !StallionSignatureVerification.verifyReleaseSignature(
                 downloadPath + StallionConfigConstants.UNZIP_FOLDER_NAME,
@@ -227,8 +223,6 @@ public class StallionSyncHandler {
                 return;
               }
             }
-
-            Log.d("StallionPatchHandler", "bundle signing verified");
 
           stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
           stateManager.stallionMeta.setProdTempHash(newReleaseHash);

@@ -59,7 +59,6 @@ const useUpdateMetaActions = (
     );
   }, [metaState.prodSlot, updateMetaState.pendingReleaseHash]);
 
-  console.log('updateMetaState', updateMetaState, metaState);
   const getUpdateMetaData = useCallback(
     (releaseId: string): Promise<any> => {
       return getData(API_PATHS.GET_META_FROM_HASH, {
@@ -72,10 +71,7 @@ const useUpdateMetaActions = (
 
   useEffect(() => {
     if (currentlyRunningHash && !updateMetaState.currentlyRunningBundle) {
-      console.log('currentlyRunningHash', JSON.stringify(currentlyRunningHash));
       getUpdateMetaData(currentlyRunningHash).then((res) => {
-        console.log(JSON.stringify(res), 'res');
-
         if (res.data) {
           updateMetaDispatch({
             type: UpdateMetaActionKind.SET_CURRENTLY_RUNNING_META,
