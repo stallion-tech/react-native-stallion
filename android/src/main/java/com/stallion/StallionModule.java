@@ -183,6 +183,15 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
     ProcessPhoenix.triggerRebirth(getReactApplicationContext());
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String getActiveReleaseHash() {
+    try {
+      return stallionStateManager.stallionMeta.getActiveReleaseHash();
+    } catch (Exception e) {
+      return "";
+    }
+  }
+
   @ReactMethod
   public void addListener(String eventName) {
     // No-op: required for RN event emitter contract

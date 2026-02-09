@@ -12,7 +12,7 @@ import useStallionModalMain from './main/utils/useStallionModal';
 
 import { IUseStallionModal, IWithStallion } from './types/utils.types';
 import { stallionEventEmitter } from './main/utils/StallionEventEmitter';
-import getCurrentBundle from './main/utils/getCurrentBundle';
+import { getActiveReleaseHashNative } from './main/utils/StallionNativeUtils';
 
 export let withStallion: IWithStallion;
 export let useStallionModal: () => IUseStallionModal;
@@ -33,4 +33,4 @@ export const addEventListener =
 export const removeEventListener =
   stallionEventEmitter.removeEventListener.bind(stallionEventEmitter);
 
-  export const getActiveBundleHash = getCurrentBundle;
+export const ACTIVE_RELEASE_HASH = getActiveReleaseHashNative();

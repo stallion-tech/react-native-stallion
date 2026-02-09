@@ -43,6 +43,8 @@ export type TDownloadBundleNative = (
 
 export type TOnLaunchBundleNative = (stallionInitParams: string) => void;
 
+export type TGetActiveReleaseHashNative = () => string | null;
+
 export interface IUseStallionUpdate {
   isRestartRequired: boolean;
   currentlyRunningBundle: IUpdateMeta | null;
