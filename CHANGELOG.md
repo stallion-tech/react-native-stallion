@@ -1,3 +1,10 @@
+# [2.4.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.4...v2.4.0-alpha.5) (2026-02-13)
+
+
+### Bug Fixes
+
+* getActiveBundleHash function added ([#101](https://github.com/stallion-tech/react-native-stallion/issues/101)) ([bb51fa5](https://github.com/stallion-tech/react-native-stallion/commit/bb51fa551b05b6eb3d4996e2db0d4c9b895a64d8))
+
 # [2.4.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.3...v2.4.0-alpha.4) (2026-01-14)
 
 
