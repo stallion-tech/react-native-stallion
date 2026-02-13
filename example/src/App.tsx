@@ -7,6 +7,7 @@ import {
   useStallionUpdate,
   addEventListener,
   restart,
+  ACTIVE_RELEASE_HASH,
 } from 'react-native-stallion';
 
 const App: React.FC = () => {
@@ -37,6 +38,7 @@ const App: React.FC = () => {
     <View style={styles.container}>
       <Text>Hello world</Text>
       <Button title="OpenModal" onPress={showModal} />
+      <Text>Active Bundle Hash: {ACTIVE_RELEASE_HASH}</Text>
       {isRestartRequired ? <Text>Restart the app</Text> : null}
     </View>
   );

@@ -7,6 +7,7 @@ import {
   TToggleStallionSwitchNative,
   TOnLaunchBundleNative,
   TGetStallionConfigNative,
+  TGetActiveReleaseHashNative,
 } from 'src/types/utils.types';
 
 export const setSdkTokenNative: TSetSdkTokenNative =
@@ -63,4 +64,8 @@ export const acknowledgeEventsNative: (eventIds: string) => Promise<string> =
 
 export const restart = () => {
   StallionNativeModule?.restart?.();
+};
+
+export const getActiveReleaseHashNative: TGetActiveReleaseHashNative = () => {
+  return StallionNativeModule?.getActiveReleaseHash() || null;
 };
