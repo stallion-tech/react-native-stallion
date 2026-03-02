@@ -9,9 +9,13 @@ import Foundation
 import ZIPFoundation
 
 class StallionFileDownloader: NSObject {
-    private lazy var urlSession = URLSession(configuration: .default,
-                                             delegate: self,
-                                             delegateQueue: nil)
+    private lazy var urlSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 540.0 // 9 minutes per request
+        configuration.timeoutIntervalForResource = 3600.0 // 1 hour total
+        configuration.waitsForConnectivity = true
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }()
     private var downloadTask: URLSessionDownloadTask?
     private var _resolve: RCTPromiseResolveBlock?
     private var _reject: RCTPromiseRejectBlock?
@@ -65,9 +69,9 @@ class StallionFileDownloader: NSObject {
         let downloadFolder = URL(fileURLWithPath: downloadDirectory, isDirectory: true)
         let fileManager = FileManager.default
         
-        // Delete existing folder if it exists
+        // Delete existing folder if it exists (ignore errors - we'll create it anyway)
         if fileManager.fileExists(atPath: downloadFolder.path) {
-            try fileManager.removeItem(at: downloadFolder)
+            try? fileManager.removeItem(at: downloadFolder)
         }
         
         // Create new download folder
