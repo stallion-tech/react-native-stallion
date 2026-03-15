@@ -61,11 +61,19 @@ public class StallionModule extends ReactContextBaseJavaModule implements Lifecy
 
   @ReactMethod
   public void onLaunch(String launchData) {
-    // try {
-    //  JSONObject launchDataJson = new JSONObject(launchData);
-    // } catch (Exception e) {
-    //   e.printStackTrace();
-    // }
+    try {
+      if (launchData != null && !launchData.isEmpty()) {
+        JSONObject launchDataJson = new JSONObject(launchData);
+        if (launchDataJson.has("baseUrl")) {
+          String baseUrl = launchDataJson.getString("baseUrl");
+          if (baseUrl != null && !baseUrl.isEmpty()) {
+            com.stallion.utils.StallionApiBaseUrl.set(baseUrl);
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     stallionStateManager.setIsMounted(true);
     DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext().getJSModule(
       DeviceEventManagerModule.RCTDeviceEventEmitter.class

@@ -4,6 +4,7 @@ export interface IStallionConfigJson {
   appToken: string;
   sdkToken: string;
   appVersion: string;
+  baseUrl?: string;
 }
 
 export enum ConfigActionKind {

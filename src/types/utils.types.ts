@@ -8,7 +8,9 @@ interface IBundleInfo {
   hash: string;
 }
 
-export interface IStallionInitParams {}
+export interface IStallionInitParams {
+  baseUrl?: string; // Optional, defaults to 'https://api.stalliontech.io'
+}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,

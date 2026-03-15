@@ -50,7 +50,7 @@ public class StallionSyncHandler {
 
         // Make API call using StallionApiManager
         JSONObject releaseMeta = StallionApiManager.post(
-          StallionApiConstants.STALLION_API_BASE + StallionApiConstants.STALLION_INFO_API_PATH,
+          StallionApiConstants.getStallionApiBase() + StallionApiConstants.STALLION_INFO_API_PATH,
           requestPayload.toString()
         );
 
