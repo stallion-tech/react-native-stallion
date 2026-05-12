@@ -65,6 +65,7 @@ android {
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    ndkVersion getExtOrDefault("ndkVersion")
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     buildConfigField "String", "STALLION_SDK_VERSION", "\"${getSdkVersionFromPackageJson()}\""
   }
