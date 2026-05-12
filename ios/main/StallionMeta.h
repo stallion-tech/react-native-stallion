@@ -35,6 +35,7 @@
 - (void)setLastRolledBackHashWithTimestamp:(NSString *)lastRolledBackHash;
 - (void)markSuccessfulLaunch:(NSString *)releaseHash;
 - (NSInteger)getSuccessfulLaunchCount:(NSString *)releaseHash;
+- (NSString *)getCurrentProdSlotPath;
 + (instancetype)fromDictionary:(NSDictionary *)dict;
 
 @end

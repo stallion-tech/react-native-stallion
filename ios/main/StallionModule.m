@@ -75,9 +75,9 @@
 
     switch (stallionMeta.currentStageSlot) {
         case SlotStateNewSlot:
-            return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]]
-                          defaultBundlePath:defaultBundlePath
-                               releaseHash:stallionMeta.stageNewHash isProd:false];
+           return [self resolveBundlePath:[NSString stringWithFormat:@"%@/%@/%@", baseFolderPath, [StallionObjConstants stage_directory], [StallionObjConstants new_folder_slot]]
+                         defaultBundlePath:defaultBundlePath
+                              releaseHash:stallionMeta.stageNewHash isProd:false];
         default:
             return [self getDefaultBundle:defaultBundlePath];
     }

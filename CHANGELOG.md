@@ -1,9 +1,24 @@
-## [2.3.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.1...v2.3.2) (2026-01-13)
+# [2.4.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.5...v2.4.0-alpha.6) (2026-04-24)
 
 
 ### Bug Fixes
 
+* added 16kb support for bspatch lib also ([#114](https://github.com/stallion-tech/react-native-stallion/issues/114)) ([017e79a](https://github.com/stallion-tech/react-native-stallion/commit/017e79a124f0043c54cab302a47b1e1833927b16))
 * ios podspec precompiled deps support ([#94](https://github.com/stallion-tech/react-native-stallion/issues/94)) ([35f255f](https://github.com/stallion-tech/react-native-stallion/commit/35f255f74644f993a67d4e727dc751f31d4f08a0))
+
+# [2.4.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.4...v2.4.0-alpha.5) (2026-02-13)
+
+
+### Bug Fixes
+
+* getActiveBundleHash function added ([#101](https://github.com/stallion-tech/react-native-stallion/issues/101)) ([bb51fa5](https://github.com/stallion-tech/react-native-stallion/commit/bb51fa551b05b6eb3d4996e2db0d4c9b895a64d8))
+
+# [2.4.0-alpha.4](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.3...v2.4.0-alpha.4) (2026-01-14)
+
+
+### Features
+
+* 2.4.0 alpha ([#96](https://github.com/stallion-tech/react-native-stallion/issues/96)) ([3430975](https://github.com/stallion-tech/react-native-stallion/commit/3430975b038b0d82f1549d104d7277ce2d540020))
 
 # [2.4.0-alpha.3](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.2...v2.4.0-alpha.3) (2026-01-03)
 
@@ -18,6 +33,8 @@
 ### Bug Fixes
 
 * android 16kb page size fix, new arch codegen removed ([#92](https://github.com/stallion-tech/react-native-stallion/issues/92)) ([9b2f91a](https://github.com/stallion-tech/react-native-stallion/commit/9b2f91a71dc603c58653fd1c924221be7b81ee5b))
+
+## [2.3.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.1...v2.3.2) (2026-01-13)
 
 ## [2.3.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.0...v2.3.1) (2025-12-31)
 

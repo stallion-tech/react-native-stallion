@@ -151,21 +151,55 @@ class StallionSyncHandler {
               !newReleaseUrl.isEmpty,
               !newReleaseHash.isEmpty else { return }
 
+        // Extract diffData if it exists
+        var diffUrl: String? = nil
+        var isBundlePatched: Bool = false
+        var bundleDiffId: String? = nil
+        if let diffData = newReleaseData["bundleDiff"] as? [String: Any] {
+            if let extractedDiffUrl = diffData["url"] as? String,
+               !extractedDiffUrl.isEmpty {
+                diffUrl = extractedDiffUrl
+            }
+            isBundlePatched = diffData["isBundlePatched"] as? Bool ?? false
+            if let extractedId = diffData["id"] as? String,
+               !extractedId.isEmpty {
+                bundleDiffId = extractedId
+            }
+        }
+
         let stateManager = StallionStateManager.sharedInstance()
         let lastRolledBackHash = stateManager?.stallionMeta?.getLastRolledBackHash() ?? ""
         let lastUnverifiedHash = stateManager?.stallionConfig?.lastUnverifiedHash ?? ""
 
         if newReleaseHash != lastRolledBackHash && newReleaseHash != lastUnverifiedHash {
             if stateManager?.isMounted == true {
-                downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl)
+                downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl, diffUrl: diffUrl, isBundlePatched: isBundlePatched, bundleDiffId: bundleDiffId)
             } else {
               stateManager?.pendingReleaseUrl = newReleaseUrl
               stateManager?.pendingReleaseHash = newReleaseHash
+              stateManager?.pendingReleaseDiffUrl = diffUrl
+              stateManager?.pendingReleaseIsBundlePatched = isBundlePatched
+              stateManager?.pendingReleaseBundleDiffId = bundleDiffId
             }
         }
     }
 
+    // Overloaded method for backward compatibility
     static func downloadNewRelease(newReleaseHash: String, newReleaseUrl: String) {
+        downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
+    }
+
+    // Overloaded method for backward compatibility
+    static func downloadNewRelease(newReleaseHash: String, newReleaseUrl: String, diffUrl: String?) {
+        downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl, diffUrl: diffUrl, isBundlePatched: false, bundleDiffId: nil)
+    }
+
+    // Overloaded method for backward compatibility
+    static func downloadNewRelease(newReleaseHash: String, newReleaseUrl: String, diffUrl: String?, isBundlePatched: Bool) {
+        downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl, diffUrl: diffUrl, isBundlePatched: isBundlePatched, bundleDiffId: nil)
+    }
+
+    static func downloadNewRelease(newReleaseHash: String, newReleaseUrl: String, diffUrl: String?, isBundlePatched: Bool, bundleDiffId: String?) {
         guard let stateManager = StallionStateManager.sharedInstance(),
               let config = stateManager.stallionConfig else { return }
       
@@ -181,11 +215,22 @@ class StallionSyncHandler {
       let downloadPath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT
       let projectId = config.projectId ?? ""
       
+      // Use diffUrl if it exists, otherwise use newReleaseUrl
+      let urlToDownload = (diffUrl != nil && !diffUrl!.isEmpty) ? diffUrl! : newReleaseUrl
       let publicSigningKey = config.publicSigningKey ?? ""
       
-      guard let fromUrl = URL(string: newReleaseUrl + "?projectId=" + projectId) else { return }
+      // Track if this is a diff download
+      let isDiffDownload = (diffUrl != nil && !diffUrl!.isEmpty)
+      // Store original newReleaseUrl for potential retry
+      let originalNewReleaseUrl = newReleaseUrl
+      // Store isBundlePatched flag for patch handler
+      let isBundlePatchedFlag = isBundlePatched
+      // Store bundleDiffId for events
+      let bundleDiffIdForEvents = bundleDiffId
+      
+      guard let fromUrl = URL(string: urlToDownload + "?projectId=" + projectId) else { return }
 
-      emitDownloadStarted(releaseHash: newReleaseHash)
+      emitDownloadStarted(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents)
 
       StallionFileDownloader().downloadBundle(
         url: fromUrl,
@@ -195,6 +240,31 @@ class StallionSyncHandler {
         },
         resolve: { _ in
           completeDownload()
+          
+          // If this was a diff download, handle patch
+          if isDiffDownload {
+              // Get base bundle path from current slot
+              guard let slotPath = stateManager.stallionMeta?.getCurrentProdSlotPath() else {
+                  // No valid slot path (e.g., default slot), skip patch and retry with full bundle
+                  StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+                  downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
+                  return
+              }
+              
+              do {
+                  let baseBundlePath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + slotPath
+                  
+                  // Invoke patch handler with isBundlePatched flag
+                  try StallionPatchHandler.applyPatch(baseBundlePath: baseBundlePath, diffPath: downloadPath, isBundlePatched: isBundlePatchedFlag)
+              } catch {
+                  // Patch application failed, retry with full bundle download
+                  // Clean up the failed diff download
+                  StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+                  // Retry download with full bundle (no diffUrl)
+                  downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
+                  return
+              }
+          }
           
           if(publicSigningKey != nil && !publicSigningKey.isEmpty) {
             if(
@@ -217,7 +287,7 @@ class StallionSyncHandler {
               StallionSlotManager.stabilizeProd()
           }
           stateManager.syncStallionMeta()
-          emitDownloadSuccess(releaseHash: newReleaseHash)
+          emitDownloadSuccess(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents)
         },
         reject: { code, prefix, error  in
           completeDownload()
@@ -256,18 +326,24 @@ class StallionSyncHandler {
       )
     }
 
-    private static func emitDownloadSuccess(releaseHash: String) {
-      let successPayload: NSDictionary = ["releaseHash": releaseHash]
+    private static func emitDownloadSuccess(releaseHash: String, bundleDiffId: String?) {
+      var successPayload: [String: Any] = ["releaseHash": releaseHash]
+      if let bundleDiffId = bundleDiffId, !bundleDiffId.isEmpty {
+          successPayload["diffId"] = bundleDiffId
+      }
       Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_COMPLETE_PROD,
-                             eventBody: successPayload,
+                             eventBody: successPayload as NSDictionary,
                              shouldCache: true
       )
     }
 
-    private static func emitDownloadStarted(releaseHash: String) {
-        let startedPayload: NSDictionary = ["releaseHash": releaseHash]
+    private static func emitDownloadStarted(releaseHash: String, bundleDiffId: String?) {
+        var startedPayload: [String: Any] = ["releaseHash": releaseHash]
+        if let bundleDiffId = bundleDiffId, !bundleDiffId.isEmpty {
+            startedPayload["diffId"] = bundleDiffId
+        }
         Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesProd.DOWNLOAD_STARTED_PROD,
-                             eventBody: startedPayload,
+                             eventBody: startedPayload as NSDictionary,
                              shouldCache: true
       )
     }

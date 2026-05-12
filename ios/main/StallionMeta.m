@@ -6,6 +6,7 @@
 //
 
 #import "StallionMeta.h"
+#import "StallionObjConstants.h"
 
 @implementation StallionMeta
 
@@ -169,5 +170,16 @@
          return self.successfulLaunchCount;
      }
  }
+
+- (NSString *)getCurrentProdSlotPath {
+    switch (self.currentProdSlot) {
+        case SlotStateNewSlot:
+            return StallionObjConstants.new_folder_slot;
+        case SlotStateStableSlot:
+            return StallionObjConstants.stable_folder_slot;
+        default:
+            return nil;
+    }
+}
 
 @end

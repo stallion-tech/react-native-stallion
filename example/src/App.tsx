@@ -7,17 +7,14 @@ import {
   useStallionUpdate,
   addEventListener,
   restart,
+  ACTIVE_RELEASE_HASH,
 } from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
 
-  // console.log(
-  //   isRestartRequired,
-  //   'isRestartRequired',
-  //   newReleaseBundle
-  // );
+  // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
     if (isRestartRequired) {
@@ -41,6 +38,7 @@ const App: React.FC = () => {
     <View style={styles.container}>
       <Text>Hello world</Text>
       <Button title="OpenModal" onPress={showModal} />
+      <Text>Active Bundle Hash: {ACTIVE_RELEASE_HASH}</Text>
       {isRestartRequired ? <Text>Restart the app</Text> : null}
     </View>
   );
@@ -53,6 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   box: {
     width: 60,

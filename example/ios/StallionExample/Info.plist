@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>StallionPublicSigningKey</key>
+	<string>MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApm9SgaDU9lXLi5OD6sd9
+WpNP8bWeGRzLYOReqH5yuu21kYTDaDt1/+vTpCBNuyX2ZjtKNvKujnAXuWf8Zfj4
+JcWb/r4clDQK0sNy8G7x7s+4Mup6W73lW5AtUnREQZX8IA00lp76r9ii6HYxXTpO
+CgHpXyRyPLkMNc+HxaTmDHbldZtRCREcLldI7NnQkFMyZlHK2r1QxiQLpTIEK0vI
+IJyXeHOeJUROebZn/UI7UDKiSCvlaHMsJ4pnIAyLrtqFQ8w9rf3aljmYX52m6Rbc
+df8fwbWtBCH8OPW5SEDTMDzvE1siAvYwRNxbeXHMrAypPg/DaATdXoKMObjJWRm1
+owIDAQAB</string>
 	<key>StallionAppToken</key>
 	<string>spb_qLFBKtdR9TBZtsKPDqMXvFD_ebcs-Tdjyc7F4-dX7q</string>
 	<key>StallionProjectId</key>

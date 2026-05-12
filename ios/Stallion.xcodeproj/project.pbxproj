@@ -10,6 +10,7 @@
 		5E555C0D2413F4C50049A1A2 /* Stallion.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Stallion.m */; };
 		F4FF95D7245B92E800C19C63 /*  Stallion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /*  Stallion.swift */; };
 		F4FF95DA245B92EB00C19C63 /* StallionDeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */; };
+		F4FF95E1245B92F000C19C68 /* bspatch.c in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95DF245B92EE00C19C66 /* bspatch.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		F4FF95D6245B92E800C19C63 /* Stallion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stallion.swift; sourceTree = "<group>"; };
 		F4FF95D7245B92E900C19C63 /* StallionVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StallionVersion.h"; sourceTree = "<group>"; };
 		F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StallionDeviceInfo.swift"; sourceTree = "<group>"; };
+		F4FF95DF245B92EE00C19C66 /* bspatch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bspatch.c; sourceTree = "<group>"; };
+		F4FF95E0245B92EF00C19C67 /* bspatch_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bspatch_bridge.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,8 @@
 			children = (
 				F4FF95D6245B92E800C19C63 /* Stallion.swift */,
 				F4FF95D9245B92EB00C19C63 /* StallionDeviceInfo.swift */,
+				F4FF95DF245B92EE00C19C66 /* bspatch.c */,
+				F4FF95E0245B92EF00C19C67 /* bspatch_bridge.h */,
 				B3E7B5891CC2AC0600A0062D /* Stallion.m */,
 				F4FF95D5245B92E700C19C63 /* Stallion-Bridging-Header.h */,
 				F4FF95D7245B92E900C19C63 /* StallionVersion.h */,
@@ -123,6 +128,7 @@
 			files = (
 				F4FF95D7245B92E800C19C63 /* Stallion.swift in Sources */,
 				F4FF95DA245B92EB00C19C63 /* StallionDeviceInfo.swift in Sources */,
+				F4FF95E1245B92F000C19C68 /* bspatch.c in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* Stallion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
