@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/stallion-tech/react-native-stallion/compare/v2.3.2...v2.4.0) (2026-05-12)
+
+
+### Features
+
+* patch updates ([#107](https://github.com/stallion-tech/react-native-stallion/issues/107)) ([cbd2c78](https://github.com/stallion-tech/react-native-stallion/commit/cbd2c780512b2fb5220a63809d5b2843906eb7f7)), closes [#32](https://github.com/stallion-tech/react-native-stallion/issues/32) [#38](https://github.com/stallion-tech/react-native-stallion/issues/38) [#41](https://github.com/stallion-tech/react-native-stallion/issues/41) [#42](https://github.com/stallion-tech/react-native-stallion/issues/42) [#44](https://github.com/stallion-tech/react-native-stallion/issues/44) [#49](https://github.com/stallion-tech/react-native-stallion/issues/49) [#53](https://github.com/stallion-tech/react-native-stallion/issues/53) [#49](https://github.com/stallion-tech/react-native-stallion/issues/49) [#66](https://github.com/stallion-tech/react-native-stallion/issues/66) [#75](https://github.com/stallion-tech/react-native-stallion/issues/75) [#86](https://github.com/stallion-tech/react-native-stallion/issues/86)
+
 # [2.4.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.5...v2.4.0-alpha.6) (2026-04-24)
 
 
