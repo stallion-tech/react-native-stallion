@@ -28,6 +28,16 @@ class Stallion: RCTEventEmitter {
     }
 
     @objc func onLaunch(_ launchData: String) {
+        // Parse launch data and update baseUrl if provided
+        if !launchData.isEmpty {
+            if let data = launchData.data(using: .utf8),
+               let params = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let baseUrl = params["baseUrl"] as? String,
+               !baseUrl.isEmpty {
+                StallionApiBaseUrl.set(baseUrl)
+            }
+        }
+        
         stallionStateManager.isMounted = true
         checkPendingDownloads()
         let currentReleaseHash = stallionStateManager.stallionMeta.getHashAtCurrentProdSlot()

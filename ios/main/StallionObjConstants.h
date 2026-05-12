@@ -45,5 +45,6 @@
 @property (class, nonatomic, readonly) NSString *last_rolled_back_release_hash_key;
 @property (class, nonatomic, readonly) NSString *auto_rolled_back_prod_event;
 @property (class, nonatomic, readonly) NSString *is_auto_rollback_key;
+@property (class, nonatomic, readonly) NSString *default_stallion_api_base;
 
 @end

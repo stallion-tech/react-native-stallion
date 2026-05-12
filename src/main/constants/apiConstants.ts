@@ -1,4 +1,8 @@
-export const API_BASE_URL = 'https://api.stalliontech.io';
+import { DEFAULT_API_BASE_URL } from '../utils/getApiBaseUrl';
+
+// Keep for backward compatibility, but mark as deprecated
+/** @deprecated Use getApiBaseUrl() instead */
+export const API_BASE_URL = DEFAULT_API_BASE_URL;
 
 export enum API_PATHS {
   LOGIN = '/api/v1/sdk/auth/verify-pin',

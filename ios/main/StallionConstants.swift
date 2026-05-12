@@ -45,7 +45,12 @@ class StallionConstants {
 
     static let CURRENT_PROD_SLOT_KEY = "stallionProdCurrentSlot"
     static let CURRENT_STAGE_SLOT_KEY = "stallionStageCurrentSlot"
-    static let STALLION_API_BASE = "https://api.stalliontech.io"
+    // Use utility for base URL (returns custom or default)
+    static var STALLION_API_BASE: String {
+        return StallionApiBaseUrl.get()
+    }
+    // Keep default as constant for reference
+    static let DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io"
     static let STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta"
     static let STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId"
     static let STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken"

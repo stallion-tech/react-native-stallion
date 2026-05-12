@@ -22,7 +22,21 @@ public class StallionApiConstants {
   public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-pin-access-token";
   public static final String STALLION_DEVICE_ID_KEY = "uid";
 
+  // Default constant for reference
+  public static final String DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io";
 
-  public static final String STALLION_API_BASE = "https://api.stalliontech.io";
+  /**
+   * Gets the API base URL from config or returns default
+   * @return String - The base URL to use
+   */
+  public static String getStallionApiBase() {
+    return com.stallion.utils.StallionApiBaseUrl.get();
+  }
+
+  // Keep old constant for backward compatibility, but mark as deprecated
+  /** @deprecated Use getStallionApiBase() instead */
+  @Deprecated
+  public static final String STALLION_API_BASE = DEFAULT_STALLION_API_BASE;
+  
   public static final String STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta";
 }

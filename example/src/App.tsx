@@ -44,7 +44,9 @@ const App: React.FC = () => {
   );
 };
 
-export default withStallion(App);
+export default withStallion(App, {
+  baseUrl: 'https://api.stalliontech.io',
+});
 
 const styles = StyleSheet.create({
   container: {
