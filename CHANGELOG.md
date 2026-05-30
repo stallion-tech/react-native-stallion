@@ -1,3 +1,11 @@
+# [2.4.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.5...v2.4.0-alpha.6) (2026-04-24)
+
+
+### Bug Fixes
+
+* added 16kb support for bspatch lib also ([#114](https://github.com/stallion-tech/react-native-stallion/issues/114)) ([017e79a](https://github.com/stallion-tech/react-native-stallion/commit/017e79a124f0043c54cab302a47b1e1833927b16))
+* ios podspec precompiled deps support ([#94](https://github.com/stallion-tech/react-native-stallion/issues/94)) ([35f255f](https://github.com/stallion-tech/react-native-stallion/commit/35f255f74644f993a67d4e727dc751f31d4f08a0))
+
 # [2.4.0-alpha.5](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.4...v2.4.0-alpha.5) (2026-02-13)
 
 

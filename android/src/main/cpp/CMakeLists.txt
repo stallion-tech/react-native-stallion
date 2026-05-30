@@ -64,3 +64,7 @@ target_include_directories(
 set_target_properties(stallion-crash PROPERTIES
   LINK_FLAGS "-Wl,-z,max-page-size=16384"
 )
+
+set_target_properties(stallion-bspatch PROPERTIES
+  LINK_FLAGS "-Wl,-z,max-page-size=16384"
+)
