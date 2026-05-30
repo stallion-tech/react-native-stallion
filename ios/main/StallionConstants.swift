@@ -49,8 +49,12 @@ class StallionConstants {
     static var STALLION_API_BASE: String {
         return StallionApiBaseUrl.get()
     }
-    // Keep default as constant for reference
-    static let DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io"
+    /// Legacy global API host; used only to detect implicit defaults in prefs.
+    static let LEGACY_DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io"
+    static let REGIONAL_API_BASE_AP = "https://api-ap.stalliontech.io"
+    static let REGIONAL_API_BASE_US = "https://api-us.stalliontech.io"
+    /// @deprecated Use LEGACY_DEFAULT_STALLION_API_BASE or StallionApiBaseUrl.get()
+    static let DEFAULT_STALLION_API_BASE = LEGACY_DEFAULT_STALLION_API_BASE
     static let STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta"
     static let STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId"
     static let STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken"

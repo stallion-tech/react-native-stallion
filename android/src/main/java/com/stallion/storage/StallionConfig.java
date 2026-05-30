@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 import com.stallion.storage.StallionConfigConstants;
-import com.stallion.networkmanager.StallionApiConstants;
+import com.stallion.utils.StallionApiBaseUrl;
 
 public class StallionConfig {
   private String uid;
@@ -26,7 +26,6 @@ public class StallionConfig {
   private String lastUnverifiedHash;
   private final String publicSigningKey;
   private String baseUrl;
-
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -81,7 +80,8 @@ public class StallionConfig {
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
     this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
     this.lastUnverifiedHash = sharedPreferences.getString(StallionConfigConstants.LAST_UNVERIFIED_HASH, "");
-    this.baseUrl = sharedPreferences.getString(StallionConfigConstants.BASE_URL_IDENTIFIER, StallionApiConstants.DEFAULT_STALLION_API_BASE);
+    String storedBaseUrl = sharedPreferences.getString(StallionConfigConstants.BASE_URL_IDENTIFIER, "");
+    this.baseUrl = storedBaseUrl != null ? storedBaseUrl : "";
   }
 
   public String getLastDownloadingUrl() {
@@ -153,8 +153,16 @@ public class StallionConfig {
   }
 
   public void setBaseUrl(String baseUrl) {
-    this.baseUrl = baseUrl != null ? baseUrl : StallionApiConstants.DEFAULT_STALLION_API_BASE;
-    sharedPreferences.edit().putString(StallionConfigConstants.BASE_URL_IDENTIFIER, this.baseUrl).apply();
+    if (baseUrl == null || baseUrl.isEmpty()) {
+      this.baseUrl = "";
+      sharedPreferences.edit().remove(StallionConfigConstants.BASE_URL_IDENTIFIER).apply();
+      return;
+    }
+    this.baseUrl = baseUrl;
+    sharedPreferences
+      .edit()
+      .putString(StallionConfigConstants.BASE_URL_IDENTIFIER, this.baseUrl)
+      .apply();
   }
 
   public JSONObject toJSON() {
@@ -165,7 +173,7 @@ public class StallionConfig {
       configJson.put("appToken", this.appToken);
       configJson.put("sdkToken", this.sdkToken);
       configJson.put("appVersion", this.appVersion);
-      configJson.put("baseUrl", this.baseUrl != null ? this.baseUrl : StallionApiConstants.DEFAULT_STALLION_API_BASE);
+      configJson.put("baseUrl", StallionApiBaseUrl.get());
       return configJson;
     } catch (JSONException ignored) {
       return new JSONObject();

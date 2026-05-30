@@ -21,7 +21,7 @@
         _filesDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject ?: @"";
         _publicSigningKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER] ?: @"";
         _lastUnverifiedHash = [defaults stringForKey:LAST_UNVERIFIED_KEY_IDENTIFIER] ?: @"";
-        _baseUrl = [defaults stringForKey:BASE_URL_IDENTIFIER] ?: [StallionObjConstants default_stallion_api_base];
+        _baseUrl = [defaults stringForKey:BASE_URL_IDENTIFIER] ?: @"";
 
         NSString *cachedUid = [defaults stringForKey:UNIQUE_ID_IDENTIFIER];
         if (cachedUid && ![cachedUid isEqualToString:@""]) {
@@ -54,8 +54,13 @@
 }
 
 - (void)updateBaseUrl:(NSString *)newBaseUrl {
-    _baseUrl = newBaseUrl ?: [StallionObjConstants default_stallion_api_base];
-    [[NSUserDefaults standardUserDefaults] setObject:_baseUrl forKey:BASE_URL_IDENTIFIER];
+    if (newBaseUrl == nil || [newBaseUrl length] == 0) {
+        _baseUrl = @"";
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:BASE_URL_IDENTIFIER];
+    } else {
+        _baseUrl = newBaseUrl;
+        [[NSUserDefaults standardUserDefaults] setObject:_baseUrl forKey:BASE_URL_IDENTIFIER];
+    }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -67,7 +72,7 @@
             @"appToken": self.appToken ?: @"",
             @"sdkToken": self.sdkToken ?: @"",
             @"appVersion": self.appVersion ?: @"",
-            @"baseUrl": self.baseUrl ?: [StallionObjConstants default_stallion_api_base]
+            @"baseUrl": self.baseUrl ?: @""
         };
     } @catch (NSException *exception) {
         NSLog(@"Error in toDictionary: %@", exception.reason);

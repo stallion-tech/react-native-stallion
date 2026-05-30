@@ -28,16 +28,17 @@ class Stallion: RCTEventEmitter {
     }
 
     @objc func onLaunch(_ launchData: String) {
-        // Parse launch data and update baseUrl if provided
-        if !launchData.isEmpty {
-            if let data = launchData.data(using: .utf8),
-               let params = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-               let baseUrl = params["baseUrl"] as? String,
-               !baseUrl.isEmpty {
-                StallionApiBaseUrl.set(baseUrl)
-            }
+        var customBaseUrl = ""
+        if !launchData.isEmpty,
+           let data = launchData.data(using: .utf8),
+           let params = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           params.keys.contains("baseUrl"),
+           let baseUrl = params["baseUrl"] as? String,
+           !baseUrl.isEmpty {
+            customBaseUrl = baseUrl
         }
-        
+        StallionApiBaseUrl.set(customBaseUrl)
+
         stallionStateManager.isMounted = true
         checkPendingDownloads()
         let currentReleaseHash = stallionStateManager.stallionMeta.getHashAtCurrentProdSlot()
@@ -71,7 +72,9 @@ class Stallion: RCTEventEmitter {
   @objc func getStallionConfig(_ promise: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
       do {
           if let config = stallionStateManager.stallionConfig {
-            let configJsonData = try JSONSerialization.data(withJSONObject: config.toDictionary(), options: [])
+            var configDict = config.toDictionary() as? [String: Any] ?? [:]
+            configDict["baseUrl"] = StallionApiBaseUrl.get()
+            let configJsonData = try JSONSerialization.data(withJSONObject: configDict, options: [])
               if let configJsonString = String(data: configJsonData, encoding: .utf8) {
                   promise(configJsonString)
               } else {

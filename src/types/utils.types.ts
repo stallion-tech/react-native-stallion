@@ -9,7 +9,7 @@ interface IBundleInfo {
 }
 
 export interface IStallionInitParams {
-  baseUrl?: string; // Optional, defaults to 'https://api.stalliontech.io'
+  baseUrl?: string; // Optional explicit override; otherwise derived from app token region (default AP)
 }
 
 export type IWithStallion = (

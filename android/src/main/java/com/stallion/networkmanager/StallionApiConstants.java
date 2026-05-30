@@ -22,8 +22,15 @@ public class StallionApiConstants {
   public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-pin-access-token";
   public static final String STALLION_DEVICE_ID_KEY = "uid";
 
-  // Default constant for reference
-  public static final String DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io";
+  /** Legacy global API host; used only to detect implicit defaults in prefs. */
+  public static final String LEGACY_DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io";
+
+  public static final String REGIONAL_API_BASE_AP = "https://api-ap.stalliontech.io";
+  public static final String REGIONAL_API_BASE_US = "https://api-us.stalliontech.io";
+
+  /** @deprecated Use LEGACY_DEFAULT_STALLION_API_BASE or getStallionApiBase() */
+  @Deprecated
+  public static final String DEFAULT_STALLION_API_BASE = LEGACY_DEFAULT_STALLION_API_BASE;
 
   /**
    * Gets the API base URL from config or returns default
