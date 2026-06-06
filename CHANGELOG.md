@@ -1,3 +1,10 @@
+# [2.4.0-alpha.7](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.6...v2.4.0-alpha.7) (2026-06-06)
+
+
+### Bug Fixes
+
+* custom base url support ([#109](https://github.com/stallion-tech/react-native-stallion/issues/109)) ([5dc99ec](https://github.com/stallion-tech/react-native-stallion/commit/5dc99ec5f6bd73ae91f0a3ef8f8aa87ba0427e67))
+
 # [2.4.0-alpha.6](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0-alpha.5...v2.4.0-alpha.6) (2026-04-24)
 
 
