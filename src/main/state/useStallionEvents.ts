@@ -19,6 +19,7 @@ import { useApiClient } from '../utils/useApiClient';
 import { API_PATHS } from '../constants/apiConstants';
 import debounce from '../utils/debounce';
 import { IStallionInitParams } from '../../types/utils.types';
+import { clearApiBaseUrlCache } from '../utils/getApiBaseUrl';
 import {
   IUpdateMetaAction,
   UpdateMetaActionKind,
@@ -160,6 +161,7 @@ export const useStallionEvents = (
         );
         return;
       }
+      clearApiBaseUrlCache();
       if (stallionInitParams) {
         try {
           onLaunchNative(JSON.stringify(stallionInitParams));

@@ -11,6 +11,9 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
+import com.stallion.storage.StallionConfigConstants;
+import com.stallion.utils.StallionApiBaseUrl;
+
 public class StallionConfig {
   private String uid;
   private final String projectId;
@@ -22,7 +25,7 @@ public class StallionConfig {
   private String lastDownloadingUrl;
   private String lastUnverifiedHash;
   private final String publicSigningKey;
-
+  private String baseUrl;
 
   public StallionConfig(Context context, SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
@@ -77,6 +80,8 @@ public class StallionConfig {
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
     this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
     this.lastUnverifiedHash = sharedPreferences.getString(StallionConfigConstants.LAST_UNVERIFIED_HASH, "");
+    String storedBaseUrl = sharedPreferences.getString(StallionConfigConstants.BASE_URL_IDENTIFIER, "");
+    this.baseUrl = storedBaseUrl != null ? storedBaseUrl : "";
   }
 
   public String getLastDownloadingUrl() {
@@ -143,6 +148,23 @@ public class StallionConfig {
     return this.publicSigningKey;
   }
 
+  public String getBaseUrl() {
+    return this.baseUrl;
+  }
+
+  public void setBaseUrl(String baseUrl) {
+    if (baseUrl == null || baseUrl.isEmpty()) {
+      this.baseUrl = "";
+      sharedPreferences.edit().remove(StallionConfigConstants.BASE_URL_IDENTIFIER).apply();
+      return;
+    }
+    this.baseUrl = baseUrl;
+    sharedPreferences
+      .edit()
+      .putString(StallionConfigConstants.BASE_URL_IDENTIFIER, this.baseUrl)
+      .apply();
+  }
+
   public JSONObject toJSON() {
     JSONObject configJson = new JSONObject();
     try {
@@ -151,6 +173,7 @@ public class StallionConfig {
       configJson.put("appToken", this.appToken);
       configJson.put("sdkToken", this.sdkToken);
       configJson.put("appVersion", this.appVersion);
+      configJson.put("baseUrl", StallionApiBaseUrl.get());
       return configJson;
     } catch (JSONException ignored) {
       return new JSONObject();

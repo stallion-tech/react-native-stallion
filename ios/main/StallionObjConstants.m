@@ -129,4 +129,8 @@
     return @"LAST_ROLLED_BACK_RELEASE_HASH";
 }
 
++ (NSString *)default_stallion_api_base {
+    return @"https://api.stalliontech.io";
+}
+
 @end
