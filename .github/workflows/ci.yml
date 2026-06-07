@@ -4,14 +4,26 @@ on:
     branches:
       - main
       - alpha
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    # Prevent the app's own release commit from re-triggering this workflow
+    if: github.actor != 'stallion-release-bot[bot]'
     permissions: write-all
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -19,25 +31,13 @@ jobs:
       - name: Typecheck files
         run: yarn typecheck
 
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
       - name: Run unit tests
         run: yarn test --maxWorkers=2 --coverage
 
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
       - name: Setup git user
         run: |
-          git config --global user.name ${{ secrets.GH_DEPLOY_NAME }}
-          git config --global user.email ${{ secrets.GH_DEPLOY_EMAIL }}
+          git config --global user.name "${{ secrets.GH_DEPLOY_NAME }}"
+          git config --global user.email "${{ secrets.GH_DEPLOY_EMAIL }}"
 
       - name: Prep release
         run: yarn prepare-release
@@ -45,7 +45,7 @@ jobs:
       - name: Release package
         run: yarn semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GIT_AUTHOR_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
           GIT_AUTHOR_NAME: ${{ secrets.GH_DEPLOY_NAME }}
