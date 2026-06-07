@@ -22,7 +22,28 @@ public class StallionApiConstants {
   public static final String STALLION_SDK_TOKEN_KEY = "x-sdk-pin-access-token";
   public static final String STALLION_DEVICE_ID_KEY = "uid";
 
+  /** Legacy global API host; used only to detect implicit defaults in prefs. */
+  public static final String LEGACY_DEFAULT_STALLION_API_BASE = "https://api.stalliontech.io";
 
-  public static final String STALLION_API_BASE = "https://api.stalliontech.io";
+  public static final String REGIONAL_API_BASE_AP = "https://api-ap.stalliontech.io";
+  public static final String REGIONAL_API_BASE_US = "https://api-us.stalliontech.io";
+
+  /** @deprecated Use LEGACY_DEFAULT_STALLION_API_BASE or getStallionApiBase() */
+  @Deprecated
+  public static final String DEFAULT_STALLION_API_BASE = LEGACY_DEFAULT_STALLION_API_BASE;
+
+  /**
+   * Gets the API base URL from config or returns default
+   * @return String - The base URL to use
+   */
+  public static String getStallionApiBase() {
+    return com.stallion.utils.StallionApiBaseUrl.get();
+  }
+
+  // Keep old constant for backward compatibility, but mark as deprecated
+  /** @deprecated Use getStallionApiBase() instead */
+  @Deprecated
+  public static final String STALLION_API_BASE = DEFAULT_STALLION_API_BASE;
+  
   public static final String STALLION_INFO_API_PATH = "/api/v1/promoted/get-update-meta";
 }

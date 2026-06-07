@@ -45,7 +45,7 @@ const StallionSlot: React.FC<IStallionSlot> = ({ slot, isActive }) => {
           borderWidth: isActive ? 1 : 0,
         },
       ]}
-    ></View>
+    />
   );
 };
 

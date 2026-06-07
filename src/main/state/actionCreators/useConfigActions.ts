@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import { getStallionConfigNative } from '../../utils/StallionNativeUtils';
+import { clearApiBaseUrlCache } from '../../utils/getApiBaseUrl';
 
 import { IConfigAction } from '../../../types/config.types';
 import { setConfig } from '../actions/configActions';
@@ -10,6 +11,8 @@ const useConfigActions = (dispatch: React.Dispatch<IConfigAction>) => {
     try {
       const stallionConfig = await getStallionConfigNative();
       dispatch(setConfig(stallionConfig));
+      // Clear base URL cache when config is refreshed to pick up any baseUrl changes
+      clearApiBaseUrlCache();
     } catch (_) {}
   }, [dispatch]);
 

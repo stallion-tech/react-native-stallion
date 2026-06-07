@@ -8,7 +8,9 @@ interface IBundleInfo {
   hash: string;
 }
 
-export interface IStallionInitParams {}
+export interface IStallionInitParams {
+  baseUrl?: string; // Optional explicit override; otherwise derived from app token region (default AP)
+}
 
 export type IWithStallion = (
   BaseComponent: React.ComponentType,
