@@ -5,7 +5,7 @@
 [![npm Version](https://img.shields.io/npm/v/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)  
 [![License](https://img.shields.io/npm/l/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)
 
-**React Native Stallion** is the modern **CodePush alternative** and **App Center replacement** for React Native apps. Ship app updates instantly with **98% smaller patches**—no App Store delays. The best **Expo Updates alternative** with advanced OTA controls, patch-based updates, and enterprise-grade security.
+**React Native Stallion** is the modern **CodePush alternative** and **App Center replacement** for React Native apps. Ship app updates instantly with **up to 98% smaller patches (depending on changes)**—no app store resubmission required for JavaScript updates. The best **Expo Updates alternative** with advanced OTA controls, patch-based updates, and advanced security features.
 
 👉 **[Sign up with Stallion](https://console.stalliontech.io/)** to start shipping OTA updates today
 
@@ -15,13 +15,13 @@
 
 React Native Stallion is the **best CodePush alternative** for teams that need modern OTA update capabilities:
 
-- **98% Smaller Patch Updates** – Binary-safe differential updates, not full bundles
+- **Up to 98% Smaller Patch Updates (Depending on Changes)** – Binary-safe differential updates, not full bundles
 - **Automatic Rollback & Crash Recovery** – Instant rollback on crashes or failures
-- **Enterprise-Grade Security** – Cryptographic bundle signing with customer keys
-- **Zero App Store Delays** – Ship JavaScript updates instantly, no review needed
+- **Advanced Security Features** – Cryptographic bundle signing with customer keys
+- **No App Store Resubmission for JavaScript Updates** – Ship JavaScript updates instantly
 - **CodePush Compatible** – Easy migration from CodePush or App Center
 - **Advanced Analytics** – Release-wise adoption and failure tracking
-- **On-Premise Option** – Self-hosted deployment for enterprise security
+- **On-Premise Option** – Self-hosted deployment with a security-focused architecture
 - **Free Tier Available** – Perfect for indie devs and small teams
 
 ---
@@ -57,11 +57,11 @@ const UpdateModal = () => {
 
 ## Key Features
 
-### Patch Updates (98% Smaller)
+### Patch Updates (Up to 98% Smaller, Depending on Changes)
 
 React Native Stallion uses **binary-safe differential updates** instead of full bundles. Ship only what changed—tiny patches that are cryptographically verified and applied atomically.
 
-- **Differential/Patch Updates** – Binary-safe diffs, 98% smaller than full bundles
+- **Differential/Patch Updates** – Binary-safe diffs, up to 98% smaller than full bundles (depending on changes)
 - **Bandwidth Efficiency** – Minimal data transfer for faster installs
 - **Instant Updates** – Users never notice the update process
 
@@ -74,14 +74,14 @@ Protect your users with automatic rollback capabilities:
 - **Manual Rollback** – Device-level revert for installed updates
 - **Rollback Analytics** – Track rollback rates and reasons
 
-### Enterprise Security
+### Security-Focused Architecture
 
-Enterprise-grade security features for production apps:
+Advanced security features for production apps:
 
 - **Bundle Signing** – Cryptographic verification with customer-managed keys
 - **Integrity Verification** – SHA-256 checksums for tamper-proof updates
 - **On-Premise Hosting** – Deploy behind your firewall with full control
-- **GDPR & Regional Compliance** – Data residency options
+- **Privacy-Focused Architecture** – Supports regional data residency
 
 ### Advanced OTA Controls
 
@@ -154,19 +154,19 @@ React Native Stallion is the **best CodePush alternative** for teams migrating f
 
 The best **Expo Updates alternative** with more features:
 
-- ✅ Patch updates (98% smaller)
+- ✅ Patch updates (up to 98% smaller, depending on changes)
 - ✅ Advanced OTA controls
 - ✅ More affordable pricing
 - ✅ Works with Expo SDK 52+ and bare React Native
 
 ### Enterprise OTA Updates
 
-Enterprise-grade OTA update solution:
+Enterprise-ready OTA update solution:
 
 - ✅ On-premise hosting
-- ✅ SOC 2 compliant
 - ✅ Bundle signing with customer keys
-- ✅ Regional compliance options
+- ✅ Privacy-focused architecture
+- ✅ Supports regional data residency
 
 ---
 
@@ -176,7 +176,7 @@ Enterprise-grade OTA update solution:
 - **SHA-256 Integrity Verification** – Automatic checksum validation
 - **Automatic Crash Detection** – Instant rollback on crashes
 - **On-Premise Deployment** – Full infrastructure control
-- **Audit Logging** – Complete audit trails for compliance
+- **Audit Logging** – Complete audit trails
 
 ---
 
@@ -186,9 +186,9 @@ Enterprise-grade OTA update solution:
 
 Take full control with self-hosted deployment:
 
-- **Enterprise-Grade Security** – Behind your firewall
+- **Security-Focused Architecture** – Behind your firewall
 - **Complete Infrastructure Control** – Your data centers
-- **Regional Compliance** – GDPR & data residency
+- **Privacy-Focused Architecture** – Supports regional data residency
 - **Seamless CI/CD** – REST APIs and webhooks
 - **Zero Vendor Lock-in** – Full access to logs and metrics
 
@@ -219,4 +219,4 @@ We welcome contributions! Please see the [CONTRIBUTING.md](./CONTRIBUTING.md) fi
 
 ---
 
-> **React Native Stallion** – The fastest, safest way to manage React Native OTA updates. The best **CodePush alternative** and **Expo Updates replacement** with patch-based updates, enterprise security, and 98% smaller deployments.
+> **React Native Stallion** – The fastest, safest way to manage React Native OTA updates. The best **CodePush alternative** and **Expo Updates replacement** with patch-based updates, advanced security features, and up to 98% smaller deployments (depending on changes).
