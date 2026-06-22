@@ -7,7 +7,14 @@ const port = Number(args.port || 43119);
 const artifactPath = resolve(args.artifact || 'bundle-b.zip');
 const releaseHash = args.hash || 'e2e-release-b';
 const appVersion = args['app-version'] || '1.0.0.0';
-const state = { metadataRequests: [], ranges: [], events: [], rollback: false, enabled: true };
+const state = {
+  serverId: 'react-native-stallion-windows-e2e',
+  metadataRequests: [],
+  ranges: [],
+  events: [],
+  rollback: false,
+  enabled: true,
+};
 
 const json = (response, status, value) => {
   const body = Buffer.from(JSON.stringify(value));

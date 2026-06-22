@@ -1,5 +1,4 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)..\..\..\Directory.Build.props" />
   <PropertyGroup>
     <StallionEnabled>true</StallionEnabled>
     <StallionProjectId>stallion-windows-e2e</StallionProjectId>

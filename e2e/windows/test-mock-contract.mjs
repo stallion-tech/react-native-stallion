@@ -24,6 +24,7 @@ try {
   const partial = await fetch(metadata.data.newBundleData.downloadUrl, { headers: { range: 'bytes=4-' } });
   if (partial.status !== 206 || !(await partial.arrayBuffer()).byteLength) throw new Error('range response mismatch');
   const state = await fetch('http://127.0.0.1:43119/__state').then(response => response.json());
+  if (state.serverId !== 'react-native-stallion-windows-e2e') throw new Error('mock server identity mismatch');
   if (state.metadataRequests[0].payload.platform !== 'windows' || state.ranges[0] !== 'bytes=4-') throw new Error('request capture mismatch');
   process.stdout.write('mock Stallion contract test passed\n');
 } finally {
