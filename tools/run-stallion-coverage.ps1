@@ -210,6 +210,9 @@ if (-not $coverageReport.SelectSingleNode("/coverage/packages/package")) {
   throw "Coverage collector produced no package data. Check the DLL/PDB pair and coverage filters; HTML generation was skipped."
 }
 $toolManifest = Join-Path $root ".config\dotnet-tools.json"
+if (-not (Test-Path -LiteralPath $toolManifest -PathType Leaf)) {
+  throw "The .NET tool manifest is missing at '$toolManifest'."
+}
 & dotnet tool restore --tool-manifest $toolManifest
 if ($LASTEXITCODE -ne 0) {
   throw "ReportGenerator restore failed with exit code $LASTEXITCODE."

@@ -79,3 +79,4 @@ ios/main/StallionVersion.h
 windows/StallionTests/fixtures/signing-private.pem
 windows/ReactNativeStallionWindows/StallionSigningConfig.g.h
 *.vcxproj.user
+coverage
