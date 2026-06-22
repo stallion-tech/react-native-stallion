@@ -10,6 +10,10 @@
     "src",
     "lib",
     "android",
+    "windows",
+    "!windows/StallionTests",
+    "Directory.Build.props",
+    "!e2e/windows",
     "ios",
     "cpp",
     "*.podspec",
@@ -34,12 +38,15 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
     "dev": "bob watch",
     "prepare-release": "bob build && node scripts/prep-release.js",
-    "pack-local": "yarn run prepare-release && cd sdk-package && yarn pack && open . && cd .."
+    "pack-local": "yarn run prepare-release && cd sdk-package && yarn pack && open . && cd ..",
+    "test:native:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/run-stallion-coverage.ps1",
+    "e2e:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"& './e2e/windows/run-ci.ps1' -Node (Get-Command node).Source\""
   },
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "windows"
   ],
   "repository": {
     "type": "git",
@@ -67,8 +74,9 @@
     "jest": "^28.1.1",
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
-    "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react": "19.1.4",
+    "react-native": "0.81.6",
+    "react-native-windows": "0.81.20",
     "react-native-builder-bob": "^0.20.0",
     "rimraf": "3.0.2",
     "semantic-release": "19.0.3",
@@ -78,9 +86,15 @@
   "resolutions": {
     "@types/react": "17.0.21"
   },
+  "peerDependenciesMeta": {
+    "react-native-windows": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-windows": "*"
   },
   "engines": {
     "node": ">= 16.0.0"

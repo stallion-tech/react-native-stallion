@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <CodeCoverage>
+    <EnableStaticNativeInstrumentation>True</EnableStaticNativeInstrumentation>
+    <EnableDynamicNativeInstrumentation>True</EnableDynamicNativeInstrumentation>
+    <EnableStaticNativeInstrumentationRestore>True</EnableStaticNativeInstrumentationRestore>
+    <UseVerifiableInstrumentation>False</UseVerifiableInstrumentation>
+    <CollectFromChildProcesses>True</CollectFromChildProcesses>
+    <ModulePaths>
+      <Include>
+        <ModulePath>.*[\\/]ReactNativeStallionWindows\.dll$</ModulePath>
+        <ModulePath>.*[\\/]StallionTests\.exe$</ModulePath>
+      </Include>
+      <Exclude>
+        <ModulePath>.*[\\/]Microsoft\.ReactNative[\\/].*</ModulePath>
+      </Exclude>
+    </ModulePaths>
+  </CodeCoverage>
+</Configuration>

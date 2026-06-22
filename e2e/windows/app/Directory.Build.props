@@ -1,0 +1,11 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\..\Directory.Build.props" />
+  <PropertyGroup>
+    <StallionEnabled>true</StallionEnabled>
+    <StallionProjectId>stallion-windows-e2e</StallionProjectId>
+    <StallionAppToken>e2e-app-token</StallionAppToken>
+    <StallionBaseUrl>http://127.0.0.1:43119</StallionBaseUrl>
+    <StallionAppVersion>1.0.0.0</StallionAppVersion>
+    <StallionPlatform>windows</StallionPlatform>
+  </PropertyGroup>
+</Project>

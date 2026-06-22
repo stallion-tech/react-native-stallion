@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SolutionDir)\ExperimentalFeatures.props" Condition="Exists('$(SolutionDir)\ExperimentalFeatures.props')" />
+  <PropertyGroup Label="Globals">
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <MinimalCoreWin>true</MinimalCoreWin>
+    <ProjectGuid>{73D10678-CB8F-472B-89A5-A81591975410}</ProjectGuid>
+    <ProjectName>ReactNativeStallionWindows</ProjectName>
+    <RootNamespace>ReactNativeStallionWindows</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
+    <AppxPackage>false</AppxPackage>
+  </PropertyGroup>
+  <PropertyGroup Label="ReactNativeWindowsProps">
+    <ReactNativeWindowsDir Condition="'$(ReactNativeWindowsDir)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'node_modules\react-native-windows\package.json'))\node_modules\react-native-windows\</ReactNativeWindowsDir>
+    <RunAutolinkCheck>false</RunAutolinkCheck>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StallionEnabled Condition="'$(StallionEnabled)' == ''">true</StallionEnabled>
+    <StallionEnabledDefine Condition="'$(StallionEnabled)' == 'true'">1</StallionEnabledDefine>
+    <StallionEnabledDefine Condition="'$(StallionEnabledDefine)' == ''">0</StallionEnabledDefine>
+    <StallionProjectId Condition="'$(StallionProjectId)' == ''">
+    </StallionProjectId>
+    <StallionAppToken Condition="'$(StallionAppToken)' == ''">
+    </StallionAppToken>
+    <StallionPublicSigningKey Condition="'$(StallionPublicSigningKey)' == ''">
+    </StallionPublicSigningKey>
+    <StallionPublicSigningKeyFile Condition="'$(StallionPublicSigningKeyFile)' == ''">
+    </StallionPublicSigningKeyFile>
+    <StallionNodeExe Condition="'$(StallionNodeExe)' == ''">node</StallionNodeExe>
+    <StallionArchivePassword Condition="'$(StallionArchivePassword)' == ''">
+    </StallionArchivePassword>
+    <StallionBaseUrl Condition="'$(StallionBaseUrl)' == ''">
+    </StallionBaseUrl>
+    <StallionAppVersion Condition="'$(StallionAppVersion)' == ''">0.0.0.0</StallionAppVersion>
+    <StallionPlatform>windows</StallionPlatform>
+    <StallionLibzipRuntime Condition="'$(ApplicationType)' == 'Windows Store'">uwp</StallionLibzipRuntime>
+    <StallionLibzipRuntime Condition="'$(StallionLibzipRuntime)' == ''">windows</StallionLibzipRuntime>
+    <StallionLibzipConfiguration Condition="'$(Configuration)' == 'Release'">release</StallionLibzipConfiguration>
+    <StallionLibzipConfiguration Condition="'$(StallionLibzipConfiguration)' == ''">debug</StallionLibzipConfiguration>
+    <StallionLibzipDebugSuffix Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'DebugUnpacked'">d</StallionLibzipDebugSuffix>
+    <StallionLibzipRoot Condition="'$(Pkglibzip-c)' != ''">$(Pkglibzip-c)</StallionLibzipRoot>
+    <StallionLibzipRoot Condition="'$(StallionLibzipRoot)' == '' and '$(NuGetPackageRoot)' != ''">$(NuGetPackageRoot)libzip-c\1.11.3.1</StallionLibzipRoot>
+    <StallionLibzipRoot Condition="'$(StallionLibzipRoot)' == ''">$(UserProfile)\.nuget\packages\libzip-c\1.11.3.1</StallionLibzipRoot>
+  </PropertyGroup>
+  <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.WindowsSdk.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugUnpacked|x64">
+      <Configuration>DebugUnpacked</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug' or '$(Configuration)'=='DebugUnpacked'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <StallionSigningConfigHeader>$(IntDir)StallionSigningConfig.g.h</StallionSigningConfigHeader>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="ReactNativeWindowsPropertySheets">
+    <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.CppLib.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <PreprocessorDefinitions>_WINRT_DLL;REACTNATIVESTALLIONWINDOWS_EXPORTS;STALLION_ENABLED=$(StallionEnabledDefine);STALLION_PROJECT_ID="$(StallionProjectId)";STALLION_APP_TOKEN="$(StallionAppToken)";STALLION_ARCHIVE_PASSWORD="$(StallionArchivePassword)";STALLION_BASE_URL="$(StallionBaseUrl)";STALLION_APP_VERSION="$(StallionAppVersion)";STALLION_PLATFORM="$(StallionPlatform)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);$(MSBuildThisFileDirectory);$(StallionLibzipRoot)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(StallionLibzipRoot)\lib\$(StallionLibzipRuntime)\$(Platform)\$(StallionLibzipConfiguration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shell32.lib;user32.lib;windowsapp.lib;winhttp.lib;crypt32.lib;zip.lib;bz2$(StallionLibzipDebugSuffix).lib;zlib$(StallionLibzipDebugSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>ReactNativeStallionWindows.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' or '$(Configuration)'=='DebugUnpacked'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ReactPackageProvider.h">
+      <DependentUpon>ReactPackageProvider.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="StallionArchive.h" />
+    <ClInclude Include="StallionConfig.h" />
+    <ClInclude Include="StallionCore.h" />
+    <ClInclude Include="StallionModule.h" />
+    <ClInclude Include="StallionNetwork.h" />
+    <ClInclude Include="StallionSignature.h" />
+    <ClInclude Include="StallionUpdateManager.h" />
+    <ClInclude Include="StallionWindows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ReactPackageProvider.cpp">
+      <DependentUpon>ReactPackageProvider.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="StallionArchive.cpp" />
+    <ClCompile Include="StallionCore.cpp" />
+    <ClCompile Include="StallionModule.cpp" />
+    <ClCompile Include="StallionNetwork.cpp" />
+    <ClCompile Include="StallionSignature.cpp" />
+    <ClCompile Include="StallionUpdateManager.cpp" />
+    <ClCompile Include="StallionWindows.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="ReactPackageProvider.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.lock.json" />
+    <PackageReference Include="libzip-c" Version="1.11.3.1" GeneratePathProperty="true" ExcludeAssets="build" />
+    <None Include="$(StallionLibzipRoot)\bin\$(StallionLibzipRuntime)\$(Platform)\$(StallionLibzipConfiguration)\*.dll">
+      <Link>%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ReactNativeStallionWindows.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ReactNativeWindowsTargets">
+    <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.CppLib.targets" Condition="Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.CppLib.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureReactNativeWindowsTargets" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.CppLib.props')" Text="React Native Windows C++ library props were not found." />
+  </Target>
+  <Target Name="GenerateStallionSigningConfig" BeforeTargets="ClCompile">
+    <Error Condition="'$(StallionPublicSigningKeyFile)' != '' and '$(StallionPublicSigningKey)' != ''" Text="Set either StallionPublicSigningKeyFile or StallionPublicSigningKey, not both." />
+    <Exec Condition="'$(StallionPublicSigningKeyFile)' != ''"
+          Command="&quot;$(StallionNodeExe)&quot; &quot;$(MSBuildThisFileDirectory)..\..\tools\normalize-signing-key.mjs&quot; --public-key-file &quot;$(StallionPublicSigningKeyFile)&quot; --output &quot;$(StallionSigningConfigHeader)&quot;" />
+    <Exec Condition="'$(StallionPublicSigningKeyFile)' == '' and '$(StallionPublicSigningKey)' != ''"
+          Command="&quot;$(StallionNodeExe)&quot; &quot;$(MSBuildThisFileDirectory)..\..\tools\normalize-signing-key.mjs&quot; --public-key-base64 &quot;$(StallionPublicSigningKey)&quot; --output &quot;$(StallionSigningConfigHeader)&quot;" />
+    <Exec Condition="'$(StallionPublicSigningKeyFile)' == '' and '$(StallionPublicSigningKey)' == ''"
+          Command="&quot;$(StallionNodeExe)&quot; &quot;$(MSBuildThisFileDirectory)..\..\tools\normalize-signing-key.mjs&quot; --output &quot;$(StallionSigningConfigHeader)&quot;" />
+  </Target>
+</Project>
