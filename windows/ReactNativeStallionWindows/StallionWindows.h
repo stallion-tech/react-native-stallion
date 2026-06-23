@@ -1,6 +1,10 @@
 #pragma once
 
 #include "StallionConfig.h"
+#if __has_include("StallionWindows.g.h")
+#include "StallionWindows.g.h"
+#define RNSTALLION_HAS_WINRT_FACADE 1
+#endif
 #include <filesystem>
 #include <winrt/Microsoft.ReactNative.h>
 
@@ -24,3 +28,27 @@ namespace ReactNativeStallionWindows
     static void Shutdown();
   };
 }
+
+
+#ifdef RNSTALLION_HAS_WINRT_FACADE
+namespace winrt::ReactNativeStallionWindows::implementation
+{
+  struct StallionWindows
+  {
+    static void ConfigureHost(
+      Microsoft::ReactNative::ReactNativeHost const &host,
+      Microsoft::ReactNative::ReactInstanceSettings const &settings,
+      hstring const &defaultBundleRoot,
+      hstring const &defaultBundleFile,
+      hstring const &storageRoot);
+    static void SetActive(bool active);
+    static void Restart();
+    static void Shutdown();
+  };
+}
+
+namespace winrt::ReactNativeStallionWindows::factory_implementation
+{
+  struct StallionWindows : StallionWindowsT<StallionWindows, implementation::StallionWindows> {};
+}
+#endif

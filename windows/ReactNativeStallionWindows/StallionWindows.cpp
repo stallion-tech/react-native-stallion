@@ -180,3 +180,38 @@ namespace ReactNativeStallionWindows
     }
   }
 }
+
+
+namespace winrt::ReactNativeStallionWindows::implementation
+{
+  void StallionWindows::ConfigureHost(
+    Microsoft::ReactNative::ReactNativeHost const &host,
+    Microsoft::ReactNative::ReactInstanceSettings const &settings,
+    hstring const &defaultBundleRoot,
+    hstring const &defaultBundleFile,
+    hstring const &storageRoot)
+  {
+    ::ReactNativeStallionWindows::StallionWindows::ConfigureHost(
+      host,
+      settings,
+      std::filesystem::path(defaultBundleRoot.c_str()),
+      std::wstring(defaultBundleFile.c_str()),
+      ::ReactNativeStallionWindows::StallionWindows::BuildConfig(),
+      storageRoot.empty() ? std::filesystem::path{} : std::filesystem::path(storageRoot.c_str()));
+  }
+
+  void StallionWindows::SetActive(bool active)
+  {
+    ::ReactNativeStallionWindows::StallionWindows::SetActive(active);
+  }
+
+  void StallionWindows::Restart()
+  {
+    ::ReactNativeStallionWindows::StallionWindows::Restart();
+  }
+
+  void StallionWindows::Shutdown()
+  {
+    ::ReactNativeStallionWindows::StallionWindows::Shutdown();
+  }
+}

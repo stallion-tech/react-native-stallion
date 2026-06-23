@@ -6,4 +6,18 @@ namespace ReactNativeStallionWindows
   {
     ReactPackageProvider();
   };
+  
+  [webhosthidden]
+  runtimeclass StallionWindows
+  {
+    static void ConfigureHost(
+      Microsoft.ReactNative.ReactNativeHost host,
+      Microsoft.ReactNative.ReactInstanceSettings settings,
+      String defaultBundleRoot,
+      String defaultBundleFile,
+      String storageRoot);
+    static void SetActive(Boolean active);
+    static void Restart();
+    static void Shutdown();
+  };
 }
