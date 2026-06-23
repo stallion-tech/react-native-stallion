@@ -91,7 +91,7 @@ namespace ReactNativeStallionWindows
   {
     auto value = path.wstring();
     std::replace(value.begin(), value.end(), L'\\', L'/');
-    return L"file:///" + value;
+    return L"file:///" + value + L"/";
   }
 
   void StallionWindows::RegisterPackage(winrt::Microsoft::ReactNative::ReactInstanceSettings const &settings)
