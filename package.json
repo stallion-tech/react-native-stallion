@@ -1,7 +1,7 @@
 {
   "name": "react-native-stallion",
   "version": "2.4.1",
-  "description": "Offical React Native SDK for Stallion",
+  "description": "Official React Native OTA updates SDK — CodePush alternative with patch updates, rollback, and bundle signing.",
   "main": "index",
   "types": "types/index.d.ts",
   "react-native": "src/index",
@@ -39,7 +39,15 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "codepush",
+    "codepush-alternative",
+    "ota-updates",
+    "expo-updates",
+    "app-center",
+    "over-the-air",
+    "react-native-ota",
+    "eas-update"
   ],
   "repository": {
     "type": "git",
