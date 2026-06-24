@@ -2,10 +2,7 @@
 
 # React Native Stallion – Best CodePush Alternative & Expo Updates Replacement
 
-[![npm Version](https://img.shields.io/npm/v/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)  
-[![License](https://img.shields.io/npm/l/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)  
-[![GitHub Stars](https://img.shields.io/github/stars/stallion-tech/react-native-stallion)](https://github.com/stallion-tech/react-native-stallion)  
-[![npm Downloads](https://img.shields.io/npm/dm/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion)
+[![npm Version](https://img.shields.io/npm/v/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion) [![License](https://img.shields.io/npm/l/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion) [![GitHub Stars](https://img.shields.io/github/stars/stallion-tech/react-native-stallion)](https://github.com/stallion-tech/react-native-stallion) [![npm Downloads](https://img.shields.io/npm/dm/react-native-stallion.svg)](https://www.npmjs.com/package/react-native-stallion) [![SOC 2 Type 1](https://img.shields.io/badge/SOC%202-Type%201%20Compliant-blue)](https://stalliontech.io/trust)
 
 ⭐ If React Native Stallion helps you ship OTA updates, [consider starring the repo on GitHub](https://github.com/stallion-tech/react-native-stallion)!
 
@@ -196,9 +193,7 @@ Enterprise-ready OTA update solution:
 
 ## Security
 
-React Native Stallion is SOC 2 Type 1 certified (Security, Availability, Confidentiality)
-
-![SOC 2 Type 1](https://img.shields.io/badge/SOC%202-Type%201%20Certified-blue)
+React Native Stallion is SOC 2 Type 1 compliant (Security, Availability, Confidentiality).
 
 ---
 
