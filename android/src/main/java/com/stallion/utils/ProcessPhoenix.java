@@ -72,6 +72,11 @@ public final class ProcessPhoenix extends Activity {
         Process.killProcess(getIntent().getIntExtra(KEY_MAIN_PROCESS_PID, -1)); // Kill original main process
 
         ArrayList<Intent> intents = getIntent().getParcelableArrayListExtra(KEY_RESTART_INTENTS);
+        if (intents == null || intents.isEmpty()) { // Relaunched by system without our extras
+            finish();
+            Runtime.getRuntime().exit(0);
+            return;
+        }
         startActivities(intents.toArray(new Intent[intents.size()]));
         finish();
         Runtime.getRuntime().exit(0); // Kill kill kill!
