@@ -149,6 +149,10 @@
     <ClCompile Include="StallionUpdateManager.cpp" />
     <ClCompile Include="StallionWindows.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)StallionWindows.g.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>pch.h;StallionWindows.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ReactPackageProvider.idl" />
