@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Stallion.Windows.props" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'Stallion.Local.props'))\Stallion.Local.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'Stallion.Local.props'))' != ''" />
   <Import Project="$(SolutionDir)\ExperimentalFeatures.props" Condition="Exists('$(SolutionDir)\ExperimentalFeatures.props')" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
@@ -16,7 +18,7 @@
     <RunAutolinkCheck>false</RunAutolinkCheck>
   </PropertyGroup>
   <PropertyGroup>
-    <StallionEnabled Condition="'$(StallionEnabled)' == ''">true</StallionEnabled>
+    <StallionEnabled Condition="'$(StallionEnabled)' == ''">false</StallionEnabled>
     <StallionEnabledDefine Condition="'$(StallionEnabled)' == 'true'">1</StallionEnabledDefine>
     <StallionEnabledDefine Condition="'$(StallionEnabledDefine)' == ''">0</StallionEnabledDefine>
     <StallionProjectId Condition="'$(StallionProjectId)' == ''">
@@ -32,8 +34,8 @@
     </StallionArchivePassword>
     <StallionBaseUrl Condition="'$(StallionBaseUrl)' == ''">
     </StallionBaseUrl>
-    <StallionAppVersion Condition="'$(StallionAppVersion)' == ''">0.0.0.0</StallionAppVersion>
-    <StallionPlatform>windows</StallionPlatform>
+    <StallionAppVersion Condition="'$(StallionAppVersion)' == ''"></StallionAppVersion>
+    <StallionPlatform Condition="'$(StallionPlatform)' == ''"></StallionPlatform>
     <StallionLibzipRuntime Condition="'$(ApplicationType)' == 'Windows Store'">uwp</StallionLibzipRuntime>
     <StallionLibzipRuntime Condition="'$(StallionLibzipRuntime)' == ''">windows</StallionLibzipRuntime>
     <StallionLibzipConfiguration Condition="'$(Configuration)' == 'Release'">release</StallionLibzipConfiguration>
