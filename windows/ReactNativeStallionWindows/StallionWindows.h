@@ -5,6 +5,7 @@
 #include "StallionWindows.g.h"
 #define RNSTALLION_HAS_WINRT_FACADE 1
 #endif
+#include <cstdint>
 #include <filesystem>
 #include <winrt/Microsoft.ReactNative.h>
 
@@ -14,6 +15,7 @@ namespace ReactNativeStallionWindows
   {
   public:
     static StallionConfig BuildConfig();
+    static std::string FormatPackageVersion(uint16_t major, uint16_t minor, uint16_t build, uint16_t revision);
     static std::wstring BundleRootUri(std::filesystem::path const &path);
     static void RegisterPackage(winrt::Microsoft::ReactNative::ReactInstanceSettings const &settings);
     static void ConfigureHost(

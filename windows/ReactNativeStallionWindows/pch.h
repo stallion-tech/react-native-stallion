@@ -17,6 +17,7 @@
 #include <CppWinRTIncludes.h>
 #include <winrt/base.h>
 #include <winrt/Microsoft.ReactNative.h>
+#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Cryptography.h>

@@ -91,7 +91,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactNativeStallionWindows\ReactNativeStallionWindows.vcxproj">
       <Project>{73D10678-CB8F-472B-89A5-A81591975410}</Project><ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <AdditionalProperties>StallionPublicSigningKeyFile=$(StallionTestPublicSigningKeyFile)</AdditionalProperties>
+      <AdditionalProperties>StallionPublicSigningKeyFile=$(StallionTestPublicSigningKeyFile);StallionAppVersion=7.6.5.4</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

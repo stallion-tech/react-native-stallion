@@ -55,6 +55,17 @@ namespace
       lock.lock();
     }
   }
+
+  std::string RuntimePackageVersion() noexcept
+  {
+    try {
+      auto version = winrt::Windows::ApplicationModel::Package::Current().Id().Version();
+      return ReactNativeStallionWindows::StallionWindows::FormatPackageVersion(
+        version.Major, version.Minor, version.Build, version.Revision);
+    } catch (...) {
+      return {};
+    }
+  }
 }
 
 namespace ReactNativeStallionWindows
@@ -83,8 +94,16 @@ namespace ReactNativeStallionWindows
 
   StallionConfig StallionWindows::BuildConfig()
   {
+    std::string appVersion = STALLION_APP_VERSION;
+    if (appVersion.empty()) appVersion = RuntimePackageVersion();
     return {STALLION_ENABLED != 0, STALLION_PROJECT_ID, STALLION_APP_TOKEN, GeneratedPublicSigningKey,
-            STALLION_ARCHIVE_PASSWORD, STALLION_BASE_URL, STALLION_APP_VERSION, "2.4.1-windows.1", STALLION_PLATFORM};
+            STALLION_ARCHIVE_PASSWORD, STALLION_BASE_URL, std::move(appVersion), "2.4.1-windows.1", STALLION_PLATFORM};
+  }
+
+  std::string StallionWindows::FormatPackageVersion(uint16_t major, uint16_t minor, uint16_t build, uint16_t revision)
+  {
+    return std::to_string(major) + "." + std::to_string(minor) + "." +
+      std::to_string(build) + "." + std::to_string(revision);
   }
 
   std::wstring StallionWindows::BundleRootUri(fs::path const &path)

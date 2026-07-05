@@ -36,6 +36,7 @@
     </StallionArchivePassword>
     <StallionBaseUrl Condition="'$(StallionBaseUrl)' == ''">
     </StallionBaseUrl>
+    <!-- Optional override. When empty, Stallion reads the Windows package identity version at runtime. -->
     <StallionAppVersion Condition="'$(StallionAppVersion)' == ''"></StallionAppVersion>
     <StallionPlatform Condition="'$(StallionPlatform)' == ''"></StallionPlatform>
     <StallionLibzipRuntime Condition="'$(ApplicationType)' == 'Windows Store'">uwp</StallionLibzipRuntime>

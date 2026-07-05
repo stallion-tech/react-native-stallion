@@ -5,7 +5,6 @@ param(
   [string]$ProjectId = 'stallion-windows-e2e',
   [string]$AppToken = 'e2e-app-token',
   [string]$BaseUrl = 'http://127.0.0.1:43119',
-  [string]$AppVersion = '1.0.0.0',
   [int]$TimeoutSeconds = 60
 )
 
@@ -152,7 +151,7 @@ $buildArguments = @(
   "/p:SolutionPath=$solution", '/p:SolutionFileName=StallionE2EApp.sln',
   '/p:SolutionName=StallionE2EApp', '/p:SolutionExt=.sln', '/m', '/v:minimal',
   '/p:StallionEnabled=true', "/p:StallionProjectId=$ProjectId", "/p:StallionAppToken=$AppToken",
-  "/p:StallionBaseUrl=$BaseUrl", "/p:StallionAppVersion=$AppVersion"
+  "/p:StallionBaseUrl=$BaseUrl"
 )
 Invoke-Native -FilePath $MSBuild -ArgumentList $buildArguments -Description 'RNW E2E app build'
 $exe = Resolve-BuiltExecutable

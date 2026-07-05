@@ -570,7 +570,9 @@ namespace
   {
     auto config = StallionWindows::BuildConfig();
     if (config.platformIdentity != "windows") throw std::runtime_error("compiled Windows platform identity mismatch: " + config.platformIdentity);
+    Require(config.appVersion == "7.6.5.4", "compiled Windows app version override mismatch");
     Require(config.sdkVersion == "2.4.1-windows.1", "compiled Windows SDK version mismatch");
+    Require(StallionWindows::FormatPackageVersion(1, 2, 3, 4) == "1.2.3.4", "package version formatting mismatch");
     Require(StallionWindows::BundleRootUri(L"C:\\app\\Bundle") == L"file:///C:/app/Bundle/", "bundle root URI mismatch");
     StallionWindows::Restart();
     StallionWindows::Shutdown();
