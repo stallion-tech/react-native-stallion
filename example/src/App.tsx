@@ -8,12 +8,13 @@ import {
   addEventListener,
   restart,
   ACTIVE_RELEASE_HASH,
+  useStallionConfig,
 } from 'react-native-stallion';
 
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
-
+  const { updateStallionConfig } = useStallionConfig();
   // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
@@ -28,6 +29,9 @@ const App: React.FC = () => {
   }, [isRestartRequired, newReleaseBundle]);
 
   React.useEffect(() => {
+    setTimeout(() => {
+      updateStallionConfig();
+    }, 5000);
     addEventListener((event) => {
       console.log('Stallion event:', event);
       // use data

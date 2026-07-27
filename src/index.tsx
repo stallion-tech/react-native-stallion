@@ -28,6 +28,7 @@ if (StallionNativeModule?.getStallionConfig) {
 
 export { sync, restart } from './main/utils/StallionNativeUtils';
 export { useStallionUpdate } from './main/utils/useStallionUpdate';
+export { default as useStallionConfig } from './main/utils/useStallionConfig';
 export const addEventListener =
   stallionEventEmitter.addEventListener.bind(stallionEventEmitter);
 export const removeEventListener =
