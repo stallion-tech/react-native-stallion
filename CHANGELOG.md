@@ -1,3 +1,10 @@
+# [2.5.0-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.5.0-alpha.1...v2.5.0-alpha.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* multi region auto switching support ([#121](https://github.com/stallion-tech/react-native-stallion/issues/121)) ([4bc9eb7](https://github.com/stallion-tech/react-native-stallion/commit/4bc9eb7bab797858fda7ad841c627008c62158cf))
+
 ## [2.4.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0...v2.4.1) (2026-06-07)
 
 
