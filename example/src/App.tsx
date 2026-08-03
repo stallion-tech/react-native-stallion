@@ -13,6 +13,7 @@ import {
 const App: React.FC = () => {
   const { showModal } = useStallionModal();
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
+
   // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
