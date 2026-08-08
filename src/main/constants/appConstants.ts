@@ -143,3 +143,70 @@ export const RESTART_REQUIRED_MESSAGE =
   'Bundle change detected. Click to restart app.';
 
 export const DEFAULT_STALLION_PARAMS: IStallionInitParams = {};
+
+/* ------------------------------------------------------------------ *
+ * Dev menu copy
+ * ------------------------------------------------------------------ */
+
+export const WORDMARK_TEXT = 'STALLION';
+
+export const GLYPHS = {
+  CLOSE: '✕',
+  BACK: '‹',
+  FORWARD: '›',
+};
+
+/**
+ * Captions name the mode the switch would move to, not the one it is in — the
+ * label above already states that. Flipping the switch only records the choice;
+ * the app keeps running its current bundle until it is restarted.
+ */
+export enum TAB_CAPTIONS {
+  STAGE = 'Switch on to run Production — what your customers run. Applies on restart.',
+  PROD = 'Switch off to run Testing — bundles shared with your team. Applies on restart.',
+}
+
+export enum SECTION_LABELS {
+  BUCKETS = 'BUCKETS',
+  THIS_DEVICE = 'THIS DEVICE',
+  NEW_BUNDLE = 'NEW BUNDLE',
+  ACTIVE_BUNDLE = 'ACTIVE BUNDLE',
+}
+
+export enum CHIP_TEXTS {
+  LATEST = 'Latest',
+  DOWNLOADED = 'Downloaded',
+  APPLIED = 'Applied',
+}
+
+export const RESTART_BUTTON_TEXT = 'Restart';
+export const READ_MORE_TEXT = 'Read more';
+export const READ_LESS_TEXT = 'Read less';
+
+export enum BUNDLE_META_STATES {
+  NOT_APPLIED = 'Not applied',
+  APPLIES_ON_RESTART = 'Applies on restart',
+  APPLIED = 'Applied',
+}
+
+export const META_SEPARATOR = ' · ';
+/** Bundle cards title versions lowercase ("v3"); bucket meta uses "V3". */
+export const BUNDLE_VERSION_PREFIX = 'v';
+export const BUCKET_UPDATED_PREFIX = 'Updated ';
+export const BUNDLE_COUNT_SUFFIX = ' bundles';
+export const BUNDLE_COUNT_SUFFIX_SINGULAR = ' bundle';
+
+export const DEVICE_ROW_APP_VERSION = 'App Version';
+export const DEVICE_ROW_UID = 'UID';
+
+export const PROD_EMPTY_TITLE = 'No bundles in Production';
+export const PROD_EMPTY_SUBTITLE =
+  'Promote a bundle from Testing and it will appear here.';
+
+export const EMPTY_BUCKETS_TITLE = 'No buckets yet';
+export const EMPTY_BUCKETS_SUBTITLE =
+  'Create a bucket from the Stallion dashboard and it will appear here.';
+export const EMPTY_BUNDLES_TITLE = 'No bundles in this bucket';
+export const EMPTY_BUNDLES_SUBTITLE =
+  'Upload a bundle from the Stallion CLI and it will appear here.';
+export const GENERIC_ERROR_TITLE = 'Something went wrong';
