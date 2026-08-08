@@ -1,3 +1,10 @@
+## [2.4.2-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.1...v2.4.2-alpha.1) (2026-08-04)
+
+
+### Bug Fixes
+
+* enabled config refresh export, jest import ([#129](https://github.com/stallion-tech/react-native-stallion/issues/129)) ([e75dc96](https://github.com/stallion-tech/react-native-stallion/commit/e75dc96c74ebc865d514b0794ea9b42263df6f47))
+
 ## [2.4.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.0...v2.4.1) (2026-06-07)
 
 
