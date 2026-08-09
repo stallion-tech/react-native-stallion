@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <StallionEnabled>true</StallionEnabled>
+    <StallionProjectId>stallion-windows-e2e</StallionProjectId>
+    <StallionAppToken>e2e-app-token</StallionAppToken>
+    <StallionBaseUrl>http://127.0.0.1:43119</StallionBaseUrl>
+    <StallionPlatform>windows</StallionPlatform>
+  </PropertyGroup>
+</Project>

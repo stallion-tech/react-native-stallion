@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(StallionCoverageBuild)' == 'true' and ('$(ProjectName)' == 'StallionTests' or '$(ProjectName)' == 'ReactNativeStallionWindows')">
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions>%(AdditionalOptions) /Wv:18</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(StallionCoverageBuild)' == 'true' and ('$(ProjectName)' == 'StallionTests' or '$(ProjectName)' == 'ReactNativeStallionWindows')">
+    <ClCompile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Target Name="DeduplicateCppWinRTPackageReference" BeforeTargets="CollectPackageReferences">
+    <ItemGroup>
+      <_CppWinRTPackageReference Include="@(PackageReference)"
+        Condition="'%(PackageReference.Identity)' == 'Microsoft.Windows.CppWinRT'" />
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(_CppWinRTPackageReference)">
+      <Output TaskParameter="Filtered" ItemName="_UniqueCppWinRTPackageReference" />
+    </RemoveDuplicates>
+    <ItemGroup Condition="'@(_CppWinRTPackageReference)' != ''">
+      <PackageReference Remove="@(_CppWinRTPackageReference)" />
+      <PackageReference Include="@(_UniqueCppWinRTPackageReference)" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,5 +1,11 @@
 import React, { useContext } from 'react';
-import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
+import {
+  Modal,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import Login from '../login';
 import Header from '../../../components/common/Header';
@@ -19,6 +25,15 @@ const StallionModal: React.FC = () => {
     isModalVisible,
     actions: { setIsModalVisible },
   } = useContext(GlobalContext);
+
+  if (Platform.OS === 'windows') {
+    return isModalVisible ? (
+      <View style={styles.windowsModal}>
+        <Content />
+      </View>
+    ) : null;
+  }
+
   return (
     <Modal
       transparent={true}
@@ -84,6 +99,10 @@ const styles = StyleSheet.create({
   },
   listingSection: {
     flex: 1,
+  },
+  windowsModal: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
   },
 });
 

@@ -74,3 +74,9 @@ lib/
 sdk-package
 
 ios/main/StallionVersion.h
+
+# Windows-related sensitive files
+windows/StallionTests/fixtures/signing-private.pem
+windows/ReactNativeStallionWindows/StallionSigningConfig.g.h
+*.vcxproj.user
+coverage
