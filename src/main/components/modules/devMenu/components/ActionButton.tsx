@@ -1,14 +1,11 @@
-import React, { memo, useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleProp, Text, ViewStyle } from 'react-native';
+import React, { memo } from 'react';
+import { Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { DS_BUTTON_HIT_SLOP } from '../../../../constants/designTokens';
 
 import styles from './styles';
 
 export type TButtonVariant = 'primary' | 'success' | 'outline';
-
-/** Smooths the jumps between the download callback's progress ticks. */
-const PROGRESS_FILL_DURATION = 220;
 
 interface IActionButton {
   label: string;
@@ -36,18 +33,6 @@ const ActionButton: React.FC<IActionButton> = ({
   const hasProgress = progress !== undefined;
   const clampedProgress = Math.min(Math.max(progress || 0, 0), 1);
 
-  const fillProgress = useRef(new Animated.Value(clampedProgress)).current;
-
-  useEffect(() => {
-    if (!hasProgress) return;
-    Animated.timing(fillProgress, {
-      toValue: clampedProgress,
-      duration: PROGRESS_FILL_DURATION,
-      // Width cannot be driven natively.
-      useNativeDriver: false,
-    }).start();
-  }, [hasProgress, clampedProgress, fillProgress]);
-
   return (
     <Pressable
       accessibilityRole="button"
@@ -72,16 +57,11 @@ const ActionButton: React.FC<IActionButton> = ({
       ]}
     >
       {hasProgress ? (
-        <Animated.View
+        <View
           pointerEvents="none"
           style={[
             styles.buttonProgressFill,
-            {
-              width: fillProgress.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0%', '100%'],
-              }),
-            },
+            { width: `${clampedProgress * 100}%` },
           ]}
         />
       ) : null}

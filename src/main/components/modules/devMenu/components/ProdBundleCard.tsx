@@ -55,6 +55,7 @@ const ProdBundleCard: React.FC<IProdBundleCard> = ({
         styles.card,
         styles.cardPaddedEven,
         isPending && styles.cardHighlightGreen,
+        !isPending && styles.cardHighlightIndigo,
       ]}
     >
       <View style={styles.cardTopRow}>

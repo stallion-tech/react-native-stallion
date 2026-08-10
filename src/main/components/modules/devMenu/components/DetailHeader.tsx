@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { GLYPHS } from '../../../../constants/appConstants';
-import { DS_HIT_SLOP } from '../../../../constants/designTokens';
+import BackButton from '../../../common/BackButton';
+import CrossButton from '../../../common/CrossButton';
 
 import styles from './styles';
 
@@ -20,15 +20,9 @@ const DetailHeader: React.FC<IDetailHeader> = ({
   onClosePress,
 }) => (
   <View style={styles.detailHeader}>
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Back"
-      onPress={onBackPress}
-      hitSlop={DS_HIT_SLOP}
-      style={styles.backButton}
-    >
-      <Text style={styles.backGlyph}>{GLYPHS.BACK}</Text>
-    </Pressable>
+    <View style={styles.backButton}>
+      <BackButton onPress={onBackPress} />
+    </View>
     <View style={styles.detailTitleBlock}>
       <Text style={styles.detailTitle} numberOfLines={1}>
         {title}
@@ -39,14 +33,7 @@ const DetailHeader: React.FC<IDetailHeader> = ({
         </Text>
       ) : null}
     </View>
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Close"
-      onPress={onClosePress}
-      hitSlop={DS_HIT_SLOP}
-    >
-      <Text style={styles.closeGlyph}>{GLYPHS.CLOSE}</Text>
-    </Pressable>
+    <CrossButton onPress={onClosePress} />
   </View>
 );
 

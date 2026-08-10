@@ -131,25 +131,33 @@ const BundleHistory: React.FC = () => {
   ]);
 
   const renderItem = useCallback(
-    ({ item }: { item: IBundleData }) => (
-      <BundleHistoryCard
-        id={item.id}
-        version={item.version}
-        releaseNote={item.releaseNote}
-        author={item.author?.fullName}
-        updatedAt={item.updatedAt}
-        size={item.size}
-        isLatest={item.id === latestBundleId}
-        status={getStatus(item.id)}
-        progress={downloadState.data?.currentProgress || 0}
-        expanded={!!expandedNotes[item.id]}
-        onToggleExpand={handleToggleExpand}
-        onDownload={handleDownload}
-        onRestart={handleRestart}
-      />
-    ),
+    ({ item }: { item: IBundleData }) => {
+      const isDownloading = downloadingId === item.id;
+      return (
+        <BundleHistoryCard
+          id={item.id}
+          version={item.version}
+          releaseNote={item.releaseNote}
+          author={item.author?.fullName}
+          updatedAt={item.updatedAt}
+          size={item.size}
+          isLatest={item.id === latestBundleId}
+          status={getStatus(item.id)}
+          // Only the active download row receives progress so memo can skip
+          // the rest of the list on each tick.
+          progress={
+            isDownloading ? downloadState.data?.currentProgress || 0 : undefined
+          }
+          expanded={!!expandedNotes[item.id]}
+          onToggleExpand={handleToggleExpand}
+          onDownload={handleDownload}
+          onRestart={handleRestart}
+        />
+      );
+    },
     [
       latestBundleId,
+      downloadingId,
       getStatus,
       downloadState.data?.currentProgress,
       expandedNotes,

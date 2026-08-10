@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import Chevron from '../../../common/Chevron';
 import {
   BUCKET_UPDATED_PREFIX,
   BUNDLE_COUNT_SUFFIX,
   BUNDLE_COUNT_SUFFIX_SINGULAR,
-  GLYPHS,
   META_SEPARATOR,
   VERSION_PREFIX,
 } from '../../../../constants/appConstants';
@@ -51,7 +51,7 @@ const BucketRow: React.FC<IBucketRow> = ({
           {meta}
         </Text>
       </View>
-      <Text style={styles.bucketChevron}>{GLYPHS.FORWARD}</Text>
+      <Chevron direction="right" />
     </Pressable>
   );
 };

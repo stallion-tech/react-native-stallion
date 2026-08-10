@@ -10,7 +10,7 @@ export const DS_COLORS = {
   green: '#177A4C',
   greenPressed: '#12603C',
   greenTint: '#E4F4EB',
-  screenBg: '#F5F5F7',
+  screenBg: '#FFFFFF',
   cardBg: '#FFFFFF',
   cardBorder: '#E5E5EC',
   divider: '#F1F1F4',
@@ -28,6 +28,7 @@ export const DS_COLORS = {
   errorText: '#B42318',
   errorTint: '#FEF3F2',
   errorBorder: '#FECDCA',
+  contentBg: '#F5F5F7',
 };
 
 export const DS_RADII = {
@@ -39,26 +40,16 @@ export const DS_RADII = {
 };
 
 /**
- * The header slab is tinted by the mode the app is currently in, so the state
- * is readable at a glance: warm sand while Testing, brand green in Production.
+ * Compact toggle (46×28). On (Testing) uses brand green against the
+ * white header; off (Production) keeps a neutral outline track.
  */
-export const DS_HEADER_TONES = {
-  testing: '#FFF7E8',
-  production: DS_COLORS.green,
-};
-
-/** Foreground colours that sit on top of {@link DS_HEADER_TONES}. */
-export const DS_ON_HEADER = {
-  testingPrimary: DS_COLORS.textPrimary,
-  testingSecondary: DS_COLORS.textMuted,
-  productionPrimary: DS_COLORS.white,
-  productionSecondary: 'rgba(255, 255, 255, 0.75)',
-};
-
-/** Switch track colours; the green header needs a translucent white track. */
-export const DS_TOGGLE_TRACK = {
-  off: DS_COLORS.outlineBorder,
-  on: 'rgba(255, 255, 255, 0.4)',
+export const DS_TOGGLE = {
+  width: 46,
+  height: 28,
+  thumb: 24,
+  inset: 2,
+  trackOff: DS_COLORS.outlineBorder,
+  trackOn: DS_COLORS.green,
 };
 
 export const DS_SPACING = {

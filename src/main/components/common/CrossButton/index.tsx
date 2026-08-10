@@ -1,34 +1,44 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS } from '../../../constants/colors';
-import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
+import React, { memo } from 'react';
+import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
-export const BUTTON_SIZE = HEADER_SLAB_HEIGHT / 2.5; // Change this to scale button
+import { DS_COLORS, DS_HIT_SLOP } from '../../../constants/designTokens';
+
+export const BUTTON_SIZE = 18;
 
 type CrossButtonProps = {
   onPress?: () => void;
   size?: number;
+  color?: string;
 };
 
+/**
+ * Close mark drawn with rotated Views so stroke weight and centering stay
+ * consistent across platforms (Unicode ✕ varies by font).
+ */
 const CrossButton: React.FC<CrossButtonProps> = ({
   onPress,
   size = BUTTON_SIZE,
+  color = DS_COLORS.textMuted,
 }) => {
   const strokeStyle: ViewStyle = {
     position: 'absolute',
     width: size,
-    height: 3,
-    backgroundColor: COLORS.black7,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: color,
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Close"
       onPress={onPress}
+      hitSlop={DS_HIT_SLOP}
       style={[styles.container, { width: size, height: size }]}
     >
       <View style={[strokeStyle, { transform: [{ rotate: '45deg' }] }]} />
       <View style={[strokeStyle, { transform: [{ rotate: '-45deg' }] }]} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -39,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CrossButton;
+export default memo(CrossButton);

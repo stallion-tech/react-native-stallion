@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
 
 import AppHeader from './components/AppHeader';
 import DetailHeader from './components/DetailHeader';
@@ -34,12 +34,7 @@ const DevMenu: React.FC<IDevMenu> = ({
   onTabChange,
 }) => (
   <View style={styles.root}>
-    <SafeAreaView
-      style={[
-        styles.headerSafeArea,
-        isTesting ? styles.headerTesting : styles.headerProduction,
-      ]}
-    >
+    <View style={styles.headerSafeArea}>
       {isBundleHistory ? (
         <DetailHeader
           title={bucketTitle}
@@ -49,20 +44,20 @@ const DevMenu: React.FC<IDevMenu> = ({
         />
       ) : (
         <>
-          <AppHeader isDarkTone={!isTesting} onClosePress={onClosePress} />
+          <AppHeader onClosePress={onClosePress} />
           <View style={styles.toggleArea}>
             <ModeToggle isTesting={isTesting} onChange={onTabChange} />
           </View>
         </>
       )}
-    </SafeAreaView>
+    </View>
     {downloadError ? (
       <View style={styles.bannerWrapper}>
         <ErrorBanner message={downloadError} />
       </View>
     ) : null}
     {/* Touches the bottom of the sheet, so it absorbs the home-indicator inset. */}
-    <SafeAreaView style={styles.content}>
+    <View style={styles.content}>
       {isBundleHistory ? (
         <BundleHistory />
       ) : isTesting ? (
@@ -70,7 +65,7 @@ const DevMenu: React.FC<IDevMenu> = ({
       ) : (
         <Production />
       )}
-    </SafeAreaView>
+    </View>
   </View>
 );
 

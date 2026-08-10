@@ -2,11 +2,10 @@ import { StyleSheet } from 'react-native';
 
 import {
   DS_COLORS,
-  DS_HEADER_TONES,
   DS_MONO_FONT,
-  DS_ON_HEADER,
   DS_RADII,
   DS_SPACING,
+  DS_TOGGLE,
 } from '../../../../../constants/designTokens';
 
 const styles = StyleSheet.create({
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
   },
 
   /* ---------------------------------------------------------------- *
-   * ModeToggle — off is Testing, on is Production
+   * ModeToggle — off is Production, on is Testing
    * ---------------------------------------------------------------- */
   toggleRow: {
     flexDirection: 'row',
@@ -126,21 +125,40 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   toggleLabel: {
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: '700',
-    color: DS_ON_HEADER.testingPrimary,
-  },
-  toggleLabelProduction: {
-    color: DS_ON_HEADER.productionPrimary,
+    color: DS_COLORS.textPrimary,
   },
   toggleCaption: {
     fontSize: 12,
     lineHeight: 17, // The caption wraps to two lines on narrow screens.
-    color: DS_ON_HEADER.testingSecondary,
-    marginTop: 3,
+    color: DS_COLORS.textMuted,
+    marginTop: 6,
   },
-  toggleCaptionProduction: {
-    color: DS_ON_HEADER.productionSecondary,
+  toggleTrack: {
+    width: DS_TOGGLE.width,
+    height: DS_TOGGLE.height,
+    borderRadius: DS_RADII.pill,
+    justifyContent: 'center',
+  },
+  toggleTrackOff: {
+    backgroundColor: DS_TOGGLE.trackOff,
+  },
+  toggleTrackOn: {
+    backgroundColor: DS_TOGGLE.trackOn,
+  },
+  toggleThumb: {
+    width: DS_TOGGLE.thumb,
+    height: DS_TOGGLE.thumb,
+    borderRadius: DS_RADII.pill,
+    backgroundColor: DS_COLORS.white,
+    marginLeft: DS_TOGGLE.inset,
+    // Soft lift so the thumb reads as a control, not a flat disc.
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.5,
+    elevation: 2,
   },
 
   /* ---------------------------------------------------------------- *
@@ -149,7 +167,7 @@ const styles = StyleSheet.create({
   appHeader: {
     paddingTop: 18,
     paddingHorizontal: DS_SPACING.screen,
-    paddingBottom: 14,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -158,11 +176,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // Full horse + wordmark lockup, scaled so its letterforms optically match
-  // the 17/800 wordmark in the design.
+  // Full horse + wordmark lockup — sized close to the previous header logo
+  // (HEADER_SLAB_HEIGHT × 2 wide) so it reads as a brand mark, not a chip.
   wordmarkLogo: {
-    width: 82,
-    height: 26,
+    width: 100,
+    height: 32,
   },
   wordmarkDiamond: {
     width: 12,
@@ -178,18 +196,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     color: DS_COLORS.textPrimary,
   },
-  closeGlyph: {
-    fontSize: 18,
-    color: DS_ON_HEADER.testingSecondary,
-  },
-  closeGlyphProduction: {
-    color: DS_ON_HEADER.productionPrimary,
-  },
 
   // Bundle history is reachable from Testing only, so its header always wears
-  // the testing tone.
+  // the same white slab as the rest of the menu.
   detailHeader: {
-    backgroundColor: DS_HEADER_TONES.testing,
+    backgroundColor: DS_COLORS.cardBg,
     borderBottomWidth: 1,
     borderBottomColor: DS_COLORS.headerHairline,
     paddingVertical: 18,
@@ -205,12 +216,6 @@ const styles = StyleSheet.create({
     borderRadius: DS_RADII.button,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 3,
-  },
-  backGlyph: {
-    fontSize: 28,
-    lineHeight: 28,
-    color: DS_COLORS.textPrimary,
   },
   detailTitleBlock: {
     flex: 1,
@@ -326,10 +331,6 @@ const styles = StyleSheet.create({
   bucketMeta: {
     fontSize: 13,
     color: DS_COLORS.textMuted,
-  },
-  bucketChevron: {
-    fontSize: 20,
-    color: DS_COLORS.chevron,
   },
 
   /* ---------------------------------------------------------------- *

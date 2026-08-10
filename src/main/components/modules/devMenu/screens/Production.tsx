@@ -24,9 +24,7 @@ const Production: React.FC = () => {
 
   const newBundle = updateMetaState.newBundle;
   const activeBundle = updateMetaState.currentlyRunningBundle;
-  // A downloaded bundle is what the design surfaces; the running bundle takes
-  // its place only when nothing is pending.
-  const shownBundle = newBundle || activeBundle;
+  const hasBundles = !!(newBundle || activeBundle);
 
   const handleToggleExpand = useCallback((bundleId: string) => {
     setExpandedNotes((previous) => ({
@@ -52,26 +50,32 @@ const Production: React.FC = () => {
           uid={configState?.uid}
         />
       </View>
-      {shownBundle ? (
-        <View style={styles.sectionLast}>
-          <SectionLabel
-            label={
-              newBundle
-                ? SECTION_LABELS.NEW_BUNDLE
-                : SECTION_LABELS.ACTIVE_BUNDLE
-            }
-          />
+      {newBundle ? (
+        <View style={activeBundle ? styles.section : styles.sectionLast}>
+          <SectionLabel label={SECTION_LABELS.NEW_BUNDLE} />
           <ProdBundleCard
-            meta={shownBundle}
-            variant={newBundle ? 'pending' : 'active'}
-            expanded={!!expandedNotes[shownBundle.id]}
-            onToggleExpand={() => handleToggleExpand(shownBundle.id)}
+            meta={newBundle}
+            variant="pending"
+            expanded={!!expandedNotes[newBundle.id]}
+            onToggleExpand={() => handleToggleExpand(newBundle.id)}
             onRestart={handleRestart}
           />
         </View>
-      ) : (
+      ) : null}
+      {activeBundle ? (
+        <View style={styles.sectionLast}>
+          <SectionLabel label={SECTION_LABELS.ACTIVE_BUNDLE} />
+          <ProdBundleCard
+            meta={activeBundle}
+            variant="active"
+            expanded={!!expandedNotes[activeBundle.id]}
+            onToggleExpand={() => handleToggleExpand(activeBundle.id)}
+          />
+        </View>
+      ) : null}
+      {!hasBundles ? (
         <StateCard title={PROD_EMPTY_TITLE} subtitle={PROD_EMPTY_SUBTITLE} />
-      )}
+      ) : null}
     </ScrollView>
   );
 };

@@ -1,8 +1,8 @@
-import React, { memo, useCallback } from 'react';
-import { Switch, Text, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
+import { Animated, Pressable, Text, View } from 'react-native';
 
 import { SWITCH_TEXTS, TAB_CAPTIONS } from '../../../../constants/appConstants';
-import { DS_COLORS, DS_TOGGLE_TRACK } from '../../../../constants/designTokens';
+import { DS_TOGGLE } from '../../../../constants/designTokens';
 
 import styles from './styles';
 
@@ -11,46 +11,57 @@ interface IModeToggle {
   onChange: (isTesting: boolean) => void;
 }
 
+const THUMB_TRAVEL = DS_TOGGLE.width - DS_TOGGLE.thumb - DS_TOGGLE.inset * 2;
+
 /**
- * Off is Testing (the default), on is Production — the toggle reads as
- * "am I shipping to users yet?".
+ * Off is Production (the default), on is Testing — green means the
+ * staging switch is engaged.
  */
 const ModeToggle: React.FC<IModeToggle> = ({ isTesting, onChange }) => {
-  const handleValueChange = useCallback(
-    (isProduction: boolean) => onChange(!isProduction),
-    [onChange]
+  const thumbX = useRef(
+    new Animated.Value(isTesting ? THUMB_TRAVEL : 0)
+  ).current;
+
+  useEffect(() => {
+    Animated.spring(thumbX, {
+      toValue: isTesting ? THUMB_TRAVEL : 0,
+      useNativeDriver: true,
+      bounciness: 0,
+      speed: 20,
+    }).start();
+  }, [isTesting, thumbX]);
+
+  const handlePress = useCallback(
+    () => onChange(!isTesting),
+    [isTesting, onChange]
   );
 
   return (
     <View style={styles.toggleRow}>
       <View style={styles.toggleTextBlock}>
-        <Text
-          style={[
-            styles.toggleLabel,
-            !isTesting && styles.toggleLabelProduction,
-          ]}
-        >
+        <Text style={styles.toggleLabel}>
           {isTesting ? SWITCH_TEXTS.ON : SWITCH_TEXTS.OFF}
         </Text>
-        <Text
-          style={[
-            styles.toggleCaption,
-            !isTesting && styles.toggleCaptionProduction,
-          ]}
-        >
+        <Text style={styles.toggleCaption}>
           {isTesting ? TAB_CAPTIONS.STAGE : TAB_CAPTIONS.PROD}
         </Text>
       </View>
-      <Switch
+      <Pressable
         accessibilityRole="switch"
-        accessibilityLabel={SWITCH_TEXTS.OFF}
+        accessibilityLabel={isTesting ? SWITCH_TEXTS.ON : SWITCH_TEXTS.OFF}
         accessibilityHint={isTesting ? TAB_CAPTIONS.STAGE : TAB_CAPTIONS.PROD}
-        value={!isTesting}
-        onValueChange={handleValueChange}
-        trackColor={{ false: DS_TOGGLE_TRACK.off, true: DS_TOGGLE_TRACK.on }}
-        thumbColor={DS_COLORS.white}
-        ios_backgroundColor={DS_TOGGLE_TRACK.off}
-      />
+        accessibilityState={{ checked: isTesting }}
+        onPress={handlePress}
+        hitSlop={8}
+        style={[
+          styles.toggleTrack,
+          isTesting ? styles.toggleTrackOn : styles.toggleTrackOff,
+        ]}
+      >
+        <Animated.View
+          style={[styles.toggleThumb, { transform: [{ translateX: thumbX }] }]}
+        />
+      </Pressable>
     </View>
   );
 };

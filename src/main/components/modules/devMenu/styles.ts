@@ -1,10 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import {
-  DS_COLORS,
-  DS_HEADER_TONES,
-  DS_SPACING,
-} from '../../../constants/designTokens';
+import { DS_COLORS, DS_SPACING } from '../../../constants/designTokens';
 
 const styles = StyleSheet.create({
   root: {
@@ -14,23 +10,18 @@ const styles = StyleSheet.create({
   headerSafeArea: {
     backgroundColor: DS_COLORS.cardBg,
   },
-  // The header slab is tinted by the current mode.
-  headerTesting: {
-    backgroundColor: DS_HEADER_TONES.testing,
-  },
-  headerProduction: {
-    backgroundColor: DS_HEADER_TONES.production,
-  },
   // The wordmark header and the mode toggle share one slab; only the slab's
   // bottom edge carries the hairline.
   toggleArea: {
     paddingHorizontal: DS_SPACING.screen,
-    paddingBottom: 16,
+    paddingBottom: 18,
     borderBottomWidth: 1,
+    paddingTop: DS_SPACING.cardGap,
     borderBottomColor: DS_COLORS.headerHairline,
   },
   content: {
     flex: 1,
+    backgroundColor: DS_COLORS.contentBg,
   },
   screenPadding: {
     padding: DS_SPACING.screen,
@@ -55,10 +46,6 @@ const styles = StyleSheet.create({
   },
   listFooter: {
     paddingVertical: DS_SPACING.cardGap,
-  },
-  loginArea: {
-    flex: 1,
-    backgroundColor: DS_COLORS.cardBg,
   },
 });
 

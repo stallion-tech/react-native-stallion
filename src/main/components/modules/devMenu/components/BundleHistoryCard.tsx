@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Text, View } from 'react-native';
 
-import ActionButton, { TButtonVariant } from './ActionButton';
+import ActionButton from './ActionButton';
 import Chip, { TChipTone } from './Chip';
 import ReleaseNote from './ReleaseNote';
 
@@ -29,8 +29,8 @@ export interface IBundleHistoryCard {
   size?: number;
   isLatest: boolean;
   status: BUNDLE_STATUS;
-  /** 0–1, only meaningful while status is `downloading`. */
-  progress: number;
+  /** 0–1 while this row is downloading; omit for every other row. */
+  progress?: number;
   expanded: boolean;
   onToggleExpand: (bundleId: string) => void;
   onDownload: (bundleId: string) => void;
@@ -78,10 +78,10 @@ const BundleHistoryCard: React.FC<IBundleHistoryCard> = ({
   const handleDownload = useCallback(() => onDownload(id), [onDownload, id]);
 
   const chip = getChip(status, isLatest);
-  // Latest and applied bundles are the ones the design highlights in indigo;
-  // a bundle waiting on a restart takes the green treatment instead.
+  // Applied keeps the indigo border; downloaded-pending keeps green. Latest
+  // is badge-only — no border highlight.
+  const isIndigo = status === BUNDLE_STATUS.ACTIVE;
   const isGreen = status === BUNDLE_STATUS.DOWNLOADED;
-  const isIndigo = !isGreen && (isLatest || status === BUNDLE_STATUS.ACTIVE);
 
   const meta = [
     author,
@@ -91,8 +91,6 @@ const BundleHistoryCard: React.FC<IBundleHistoryCard> = ({
   ]
     .filter(Boolean)
     .join(META_SEPARATOR);
-
-  const buttonVariant: TButtonVariant = isLatest ? 'primary' : 'outline';
 
   return (
     <View
@@ -117,18 +115,17 @@ const BundleHistoryCard: React.FC<IBundleHistoryCard> = ({
           />
         ) : status === BUNDLE_STATUS.DOWNLOADING ? (
           <ActionButton
-            label={`${Math.round(progress * 100)}%`}
-            // The outline track is what the fill reads against, so a
-            // downloading bundle drops the primary treatment until it lands.
+            label={`${Math.round((progress || 0) * 100)}%`}
+            // The outline track is what the fill reads against.
             variant="outline"
             disabled={true}
-            progress={progress}
+            progress={progress || 0}
             style={styles.buttonProgress}
           />
         ) : status === BUNDLE_STATUS.AVAILABLE ? (
           <ActionButton
             label={DOWNLOAD_BUTTON_TEXT}
-            variant={buttonVariant}
+            variant="outline"
             onPress={handleDownload}
           />
         ) : null}
