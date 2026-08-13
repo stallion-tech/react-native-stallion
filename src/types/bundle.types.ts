@@ -1,3 +1,10 @@
+export enum BUNDLE_STATUS {
+  AVAILABLE = 'available',
+  DOWNLOADING = 'downloading',
+  DOWNLOADED = 'downloaded',
+  ACTIVE = 'active',
+}
+
 export interface IBundleData {
   version: number;
   id: string;
@@ -8,6 +15,7 @@ export interface IBundleData {
   };
   releaseNote: string;
   downloadUrl: string;
+  size?: number;
 }
 
 export type IBundleDataList = IBundleData[];
