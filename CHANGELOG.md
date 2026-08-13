@@ -1,3 +1,10 @@
+## [2.4.3-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.2...v2.4.3-alpha.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* stallion dev menu refactor ([#133](https://github.com/stallion-tech/react-native-stallion/issues/133)) ([d4cbf8f](https://github.com/stallion-tech/react-native-stallion/commit/d4cbf8f5700e14cff7b14fff7ea0e97a4f7225d6))
+
 ## [2.4.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.1...v2.4.2) (2026-08-08)
 
 ### Bug Fixes
