@@ -23,16 +23,12 @@
         _lastUnverifiedHash = [defaults stringForKey:LAST_UNVERIFIED_KEY_IDENTIFIER] ?: @"";
         _baseUrl = [defaults stringForKey:BASE_URL_IDENTIFIER] ?: @"";
 
+        // get or generate UID (random install-scoped UUID)
         NSString *cachedUid = [defaults stringForKey:UNIQUE_ID_IDENTIFIER];
         if (cachedUid && ![cachedUid isEqualToString:@""]) {
             _uid = cachedUid;
         } else {
-            NSString *newUid = @"";
-            if ([UIDevice currentDevice].identifierForVendor) {
-                newUid = [UIDevice currentDevice].identifierForVendor.UUIDString;
-            } else {
-                newUid = [[NSUUID UUID] UUIDString];
-            }
+            NSString *newUid = [[NSUUID UUID] UUIDString];
             [defaults setObject:newUid forKey:UNIQUE_ID_IDENTIFIER];
             [defaults synchronize];
             _uid = newUid;
