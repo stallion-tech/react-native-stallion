@@ -1,3 +1,10 @@
+## [2.4.3-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.3-alpha.1...v2.4.3-alpha.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* added random uid as main identifier ([#136](https://github.com/stallion-tech/react-native-stallion/issues/136)) ([b5512ed](https://github.com/stallion-tech/react-native-stallion/commit/b5512ed7a322c4b693d232b0304573942d973f88))
+
 ## [2.4.3-alpha.1](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.2...v2.4.3-alpha.1) (2026-08-13)
 
 
