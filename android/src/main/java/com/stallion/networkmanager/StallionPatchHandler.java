@@ -50,7 +50,10 @@ public class StallionPatchHandler {
     // Create a temporary directory for the patched bundle
     File tempPatchedDir = new File(diffDir.getParent(), diffDir.getName() + "_patched_temp");
     try {
-      // Copy base bundle to temporary location
+      // Clear any leftover temp dir, then copy base bundle
+      if (tempPatchedDir.exists()) {
+        StallionFileManager.deleteFileOrFolderSilently(tempPatchedDir);
+      }
       StallionFileManager.copyDirectory(baseBundleDir, tempPatchedDir);
 
       // Read and parse manifest.json

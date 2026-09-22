@@ -54,7 +54,10 @@ class StallionPatchHandler {
             }
         }
         
-        // Copy base bundle to temporary location
+        // Clear any leftover temp dir, then copy base bundle
+        if FileManager.default.fileExists(atPath: tempPatchedDir.path) {
+            try? FileManager.default.removeItem(at: tempPatchedDir)
+        }
         StallionFileManager.copyFileOrDirectory(from: baseBundlePath, to: tempPatchedDir.path)
         
         // Verify copy succeeded
