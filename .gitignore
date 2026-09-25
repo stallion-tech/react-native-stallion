@@ -54,6 +54,9 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
+# this project uses yarn only; ignore stray npm lockfiles
+package-lock.json
+
 # BUCK
 buck-out/
 \.buckd/
