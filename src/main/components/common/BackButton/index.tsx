@@ -1,61 +1,38 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../../constants/colors';
-import { HEADER_SLAB_HEIGHT } from '../../../constants/appConstants';
+import React, { memo } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 
-export const BUTTON_SIZE = HEADER_SLAB_HEIGHT / 2.5; // Shared size reference
+import Chevron, { CHEVRON_SIZE } from '../Chevron';
+import { DS_COLORS, DS_HIT_SLOP } from '../../../constants/designTokens';
+
+export const BUTTON_SIZE = CHEVRON_SIZE;
 
 type BackButtonProps = {
   onPress?: () => void;
   size?: number;
+  color?: string;
 };
 
 const BackButton: React.FC<BackButtonProps> = ({
   onPress,
   size = BUTTON_SIZE,
-}) => {
-  const arrowLength = size * 0.6;
-  const offset = size * 0.28;
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.container, { width: size, height: size }]}
-    >
-      <View
-        style={[
-          styles.line,
-          {
-            width: arrowLength,
-            transform: [{ rotate: '-45deg' }, { translateX: offset }],
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.line,
-          {
-            width: arrowLength,
-            transform: [{ rotate: '45deg' }, { translateX: offset }],
-          },
-        ]}
-      />
-    </TouchableOpacity>
-  );
-};
+  color = DS_COLORS.textMuted,
+}) => (
+  <Pressable
+    accessibilityRole="button"
+    accessibilityLabel="Back"
+    onPress={onPress}
+    hitSlop={DS_HIT_SLOP}
+    style={styles.hitTarget}
+  >
+    <Chevron direction="left" size={size} color={color} />
+  </Pressable>
+);
 
 const styles = StyleSheet.create({
-  container: {
+  hitTarget: {
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    overflow: 'hidden',
-  },
-  line: {
-    position: 'absolute',
-    height: 3,
-    borderRadius: 1,
-    backgroundColor: COLORS.black7,
+    alignItems: 'center',
   },
 });
 
-export default BackButton;
+export default memo(BackButton);

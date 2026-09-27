@@ -6,8 +6,6 @@ import {
 } from '../../../constants/appConstants';
 import { COLORS } from '../../../constants/colors';
 
-const PROFILE_BUTTON_EDGE = HEADER_SLAB_HEIGHT / 1.7;
-
 const styles = StyleSheet.create({
   headerContainer: {
     height: HEADER_SLAB_HEIGHT,
@@ -29,15 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: STD_MARGIN * 1.2,
   },
-  headerProfileButton: {
-    height: PROFILE_BUTTON_EDGE,
-    width: PROFILE_BUTTON_EDGE,
-    borderRadius: PROFILE_BUTTON_EDGE / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.black,
-    marginLeft: STD_MARGIN,
-  },
   headerCenterSection: {
     flex: 2,
     justifyContent: 'center',
@@ -48,24 +37,12 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     fontWeight: 'bold',
   },
-  actionButtonClickable: {
-    padding: STD_MARGIN,
-  },
-  actionButtonText: {
-    fontSize: HEADER_SLAB_HEIGHT / 2.5,
-    color: COLORS.black7,
-    fontWeight: 'bold',
-  },
   alignStart: {
     alignItems: 'flex-start',
   },
   headerLogo: {
     width: HEADER_SLAB_HEIGHT * 2,
     flex: 1,
-  },
-  profileInitial: {
-    fontSize: HEADER_SLAB_HEIGHT / 3,
-    color: COLORS.white,
   },
 });
 

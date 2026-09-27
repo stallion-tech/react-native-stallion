@@ -1,9 +1,17 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Button, Text, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Button,
+  Text,
+  Alert,
+  Modal,
+  SafeAreaView,
+} from 'react-native';
 import {
   withStallion,
-  useStallionModal,
+  StallionDevMenu,
   useStallionUpdate,
   addEventListener,
   restart,
@@ -11,19 +19,20 @@ import {
 } from 'react-native-stallion';
 
 const App: React.FC = () => {
-  const { showModal } = useStallionModal();
+  const [isDevMenuVisible, setIsDevMenuVisible] = React.useState(false);
   const { isRestartRequired, newReleaseBundle } = useStallionUpdate();
-
-  // console.log(isRestartRequired, 'isRestartRequired', newReleaseBundle);
 
   React.useEffect(() => {
     if (isRestartRequired) {
-      Alert.alert('New Release installed', JSON.stringify(newReleaseBundle), [
-        {
-          text: 'Restart',
-          onPress: restart,
-        },
-      ]);
+      Alert.alert(
+        'New Release installed',
+        JSON.stringify(newReleaseBundle),
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Restart', onPress: restart },
+        ],
+        { cancelable: true }
+      );
     }
   }, [isRestartRequired, newReleaseBundle]);
 
@@ -37,9 +46,20 @@ const App: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>Hello world</Text>
-      <Button title="OpenModal" onPress={showModal} />
+      <Button title="OpenModal" onPress={() => setIsDevMenuVisible(true)} />
       <Text>Active Bundle Hash: {ACTIVE_RELEASE_HASH}</Text>
       {isRestartRequired ? <Text>Restart the app</Text> : null}
+
+      <Modal
+        animationType="slide"
+        presentationStyle="fullScreen"
+        visible={isDevMenuVisible}
+        onRequestClose={() => setIsDevMenuVisible(false)}
+      >
+        <SafeAreaView style={styles.devMenuSafeArea}>
+          <StallionDevMenu onClosePress={() => setIsDevMenuVisible(false)} />
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 };
@@ -53,9 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  devMenuSafeArea: {
+    flex: 1,
   },
 });
