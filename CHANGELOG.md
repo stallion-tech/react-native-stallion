@@ -1,3 +1,10 @@
+## [2.4.3-alpha.3](https://github.com/stallion-tech/[secure]-stallion/compare/v2.4.3-alpha.2...v2.4.3-alpha.3) (2026-09-27)
+
+
+### Bug Fixes
+
+* stabilize logic platform parity, file cleanup refactor ([#140](https://github.com/stallion-tech/[secure]-stallion/issues/140)) ([be24e13](https://github.com/stallion-tech/[secure]-stallion/commit/be24e13efe801015c91e70741b0a2268f997e500))
+
 ## [2.4.3-alpha.2](https://github.com/stallion-tech/react-native-stallion/compare/v2.4.3-alpha.1...v2.4.3-alpha.2) (2026-08-26)
 
 
