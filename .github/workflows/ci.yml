@@ -7,6 +7,8 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    # Must match the Environment on npm's trusted publisher for this package
+    environment: prod
     # Prevent the app's own release commit from re-triggering this workflow
     if: github.actor != 'stallion-release-bot[bot]'
     # id-token: write mints the OIDC token npm's trusted publisher verifies
