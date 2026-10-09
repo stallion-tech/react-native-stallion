@@ -231,6 +231,7 @@ class StallionSyncHandler {
       guard let fromUrl = URL(string: urlToDownload + "?projectId=" + projectId) else { return }
 
       emitDownloadStarted(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents)
+      let downloadStartMs = Int(Date().timeIntervalSince1970 * 1000)
 
       StallionFileDownloader().downloadBundle(
         url: fromUrl,
@@ -239,6 +240,7 @@ class StallionSyncHandler {
           emitDownloadProgress(releaseHash: newReleaseHash, progress: progress)
         },
         resolve: { _ in
+          let downloadTimeMs = Int(Date().timeIntervalSince1970 * 1000) - downloadStartMs
           completeDownload()
           
           // If this was a diff download, handle patch
@@ -287,7 +289,7 @@ class StallionSyncHandler {
               StallionSlotManager.stabilizeProd()
           }
           stateManager.syncStallionMeta()
-          emitDownloadSuccess(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents)
+          emitDownloadSuccess(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents, downloadTimeMs: downloadTimeMs)
         },
         reject: { code, prefix, error  in
           completeDownload()
@@ -326,8 +328,12 @@ class StallionSyncHandler {
       )
     }
 
-    private static func emitDownloadSuccess(releaseHash: String, bundleDiffId: String?) {
+    private static func emitDownloadSuccess(releaseHash: String, bundleDiffId: String?, downloadTimeMs: Int) {
       var successPayload: [String: Any] = ["releaseHash": releaseHash]
+      if let metaData = try? JSONSerialization.data(withJSONObject: ["downloadTime": downloadTimeMs]),
+         let metaString = String(data: metaData, encoding: .utf8) {
+          successPayload["meta"] = metaString
+      }
       if let bundleDiffId = bundleDiffId, !bundleDiffId.isEmpty {
           successPayload["diffId"] = bundleDiffId
       }
