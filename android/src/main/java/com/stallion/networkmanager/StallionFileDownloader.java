@@ -69,6 +69,10 @@ public class StallionFileDownloader {
 
       } catch (Exception e) {
         Log.e(TAG, "Error in downloadBundle: " + e.getMessage(), e);
+        stallionDownloadCallback.onReject(
+          StallionApiConstants.DOWNLOAD_ERROR_PREFIX,
+          e.getMessage() != null ? e.getMessage() : "Unknown download error"
+        );
       }
     });
   }
@@ -159,8 +163,8 @@ public class StallionFileDownloader {
         return;
       }
     } catch (IOException e) {
-      callback.onReject(StallionApiConstants.DOWNLOAD_ERROR_PREFIX, "IOException occurred: ");
-      throw e;
+      String message = e.getMessage() != null ? e.getMessage() : "Unknown IO error";
+      throw new IOException("IOException occurred: " + message, e);
     } finally {
       connection.disconnect();
     }
@@ -176,6 +180,8 @@ public class StallionFileDownloader {
     URL url = new URL(downloadUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
+    connection.setConnectTimeout(StallionApiConstants.CONNECT_TIMEOUT_MS);
+    connection.setReadTimeout(StallionApiConstants.READ_TIMEOUT_MS);
 
     if (offset > 0) {
       connection.setRequestProperty("Range", "bytes=" + offset + "-");

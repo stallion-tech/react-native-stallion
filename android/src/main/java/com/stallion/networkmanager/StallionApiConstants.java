@@ -4,6 +4,10 @@ public class StallionApiConstants {
   // Buffer Size
   public static final int DOWNLOAD_BUFFER_SIZE = 1024 * 256;
 
+  // Network timeouts (aligned with iOS URLSession defaults)
+  public static final int CONNECT_TIMEOUT_MS = 30_000;
+  public static final int READ_TIMEOUT_MS = 60_000;
+
   // File and Folder Names
   public static final String ZIP_FILE_NAME = "build.zip";
   public static final String UNZIP_FOLDER_NAME = "/build";

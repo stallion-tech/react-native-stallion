@@ -67,6 +67,7 @@ class StallionSyncHandler {
 
           var request = URLRequest(url: url)
           request.httpMethod = "POST"
+          request.timeoutInterval = StallionConstants.READ_TIMEOUT_MS / 1000
           request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
           // Add tokens
