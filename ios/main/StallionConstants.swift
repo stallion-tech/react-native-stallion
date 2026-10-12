@@ -35,6 +35,10 @@ class StallionConstants {
     }
     static let PROGRESS_EVENT_THRESHOLD: Float = 0.05;
     static let PROGRESS_THROTTLE_INTERVAL_MS: TimeInterval = 0.3; // 300ms
+
+    // Network timeouts (aligned with Android HttpURLConnection)
+    static let CONNECT_TIMEOUT_MS: TimeInterval = 30_000
+    static let READ_TIMEOUT_MS: TimeInterval = 60_000
   
     static let PROD_DIRECTORY = "StallionProd"
     static let STAGE_DIRECTORY = "StallionStage"

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
-import android.provider.Settings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +52,7 @@ public class StallionConfig {
     );
     this.publicSigningKey = stallionPublicKeyRes != 0 ? context.getString(stallionPublicKeyRes) : "";
 
-    // get or generate UID
+    // get or generate UID (random install-scoped UUID)
     String cachedUniqueId = sharedPreferences.getString(
       StallionConfigConstants.UNIQUE_ID_IDENTIFIER,
       ""
@@ -61,14 +60,7 @@ public class StallionConfig {
     if(!cachedUniqueId.isEmpty()) {
       this.uid = cachedUniqueId;
     } else {
-      try {
-        this.uid = Settings.Secure.getString(
-          context.getContentResolver(),
-          Settings.Secure.ANDROID_ID
-        );
-      } catch (Exception ignored) {
-        this.uid = UUID.randomUUID().toString();
-      }
+      this.uid = UUID.randomUUID().toString();
       SharedPreferences.Editor editor = sharedPreferences.edit();
       editor.putString(StallionConfigConstants.UNIQUE_ID_IDENTIFIER, this.uid);
       editor.apply();

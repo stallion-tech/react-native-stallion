@@ -1,11 +1,13 @@
-import { useContext } from "react";
-import { GlobalContext } from "../state";
+import { useContext } from 'react';
+import { GlobalContext } from '../state';
 
 const useStallionConfig = () => {
-    const { actions: { refreshConfig } } = useContext(GlobalContext);
-    return {
-        updateStallionConfig: refreshConfig,
-    };
+  const {
+    actions: { refreshConfig },
+  } = useContext(GlobalContext);
+  return {
+    updateStallionConfig: refreshConfig,
+  };
 };
 
 export default useStallionConfig;

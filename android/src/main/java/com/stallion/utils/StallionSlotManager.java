@@ -69,6 +69,7 @@ public class StallionSlotManager {
       File newSlot = new File(baseFolderPath, StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.NEW_FOLDER_SLOT);
       File stableSlot = new File(baseFolderPath, StallionConfigConstants.PROD_DIRECTORY + StallionConfigConstants.STABLE_FOLDER_SLOT);
 
+      StallionFileManager.deleteFileOrFolderSilently(stableSlot);
       StallionFileManager.copyDirectory(newSlot, stableSlot);
 
       String newReleaseHash = stateManager.stallionMeta.getProdNewHash();

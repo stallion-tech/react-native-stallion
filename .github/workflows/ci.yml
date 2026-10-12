@@ -7,13 +7,20 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    # Must match the Environment on npm's trusted publisher for this package
+    environment: prod
     # Prevent the app's own release commit from re-triggering this workflow
     if: github.actor != 'stallion-release-bot[bot]'
-    permissions: write-all
+    # id-token: write mints the OIDC token npm's trusted publisher verifies
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
@@ -42,11 +49,13 @@ jobs:
       - name: Prep release
         run: yarn prepare-release
 
+      # Publishes to npm via trusted publishing, so no NPM_TOKEN is needed.
+      # npm binds the trusted publisher to this workflow's file name: renaming
+      # ci.yml means updating the publisher on npmjs.com in the same change.
       - name: Release package
         run: yarn semantic-release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GIT_AUTHOR_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}
           GIT_AUTHOR_NAME: ${{ secrets.GH_DEPLOY_NAME }}
           GIT_COMMITTER_EMAIL: ${{ secrets.GH_DEPLOY_EMAIL }}

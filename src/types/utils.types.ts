@@ -26,6 +26,10 @@ export interface IUseStallionModal {
   showModal: () => void;
 }
 
+export interface IStallionDevMenuProps {
+  onClosePress: () => void;
+}
+
 export type TextChangeEventType =
   NativeSyntheticEvent<TextInputChangeEventData>;
 

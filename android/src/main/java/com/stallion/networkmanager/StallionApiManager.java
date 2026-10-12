@@ -28,6 +28,8 @@ public class StallionApiManager {
       URL url = new URL(urlString);
       urlConnection = (HttpURLConnection) url.openConnection();
       urlConnection.setRequestMethod("POST");
+      urlConnection.setConnectTimeout(StallionApiConstants.CONNECT_TIMEOUT_MS);
+      urlConnection.setReadTimeout(StallionApiConstants.READ_TIMEOUT_MS);
       urlConnection.setRequestProperty("Content-Type", "application/json");
 
       String appToken = stallionConfig.getAppToken();

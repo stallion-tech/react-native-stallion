@@ -26,6 +26,7 @@ if (StallionNativeModule?.getStallionConfig) {
   useStallionModal = useStallionModalNoop;
 }
 
+export { default as StallionDevMenu } from './main/components/StallionDevMenu';
 export { sync, restart } from './main/utils/StallionNativeUtils';
 export { useStallionUpdate } from './main/utils/useStallionUpdate';
 export { default as useStallionConfig } from './main/utils/useStallionConfig';
