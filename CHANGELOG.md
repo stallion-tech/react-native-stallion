@@ -1,3 +1,15 @@
+# [2.5.0-alpha.1](https://github.com/stallion-tech/[secure]-stallion/compare/v2.4.3-alpha.3...v2.5.0-alpha.1) (2026-10-12)
+
+
+### Bug Fixes
+
+* added network request and connection timeouts for [secure] and ios ([cb5d966](https://github.com/stallion-tech/[secure]-stallion/commit/cb5d96684bc3b8775480046b23d8c46579d131b1))
+
+
+### Features
+
+* added download time payload in download complete event ([7a0320b](https://github.com/stallion-tech/[secure]-stallion/commit/7a0320b1cb06f6cf09d63d032f78b55114be670d))
+
 ## [2.4.3-alpha.3](https://github.com/stallion-tech/[secure]-stallion/compare/v2.4.3-alpha.2...v2.4.3-alpha.3) (2026-09-27)
 
 
