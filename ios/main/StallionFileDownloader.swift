@@ -9,9 +9,13 @@ import Foundation
 import ZIPFoundation
 
 class StallionFileDownloader: NSObject {
-    private lazy var urlSession = URLSession(configuration: .default,
-                                             delegate: self,
-                                             delegateQueue: nil)
+    private lazy var urlSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = StallionConstants.READ_TIMEOUT_MS / 1000
+        return URLSession(configuration: configuration,
+                          delegate: self,
+                          delegateQueue: nil)
+    }()
     private var downloadTask: URLSessionDownloadTask?
     private var _resolve: RCTPromiseResolveBlock?
     private var _reject: RCTPromiseRejectBlock?

@@ -29,6 +29,7 @@ public class StallionStageManager {
       long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, receivedDownloadUrl, downloadPath);
 
       emitDownloadStartedStage(receivedHash, alreadyDownloaded > 0);
+      final long downloadStartMs = System.currentTimeMillis();
 
       StallionFileDownloader.downloadBundle(
         receivedDownloadUrl,
@@ -43,10 +44,11 @@ public class StallionStageManager {
 
           @Override
           public void onSuccess(String successPayload) {
+            long downloadTimeMs = System.currentTimeMillis() - downloadStartMs;
             stallionStateManager.stallionMeta.setCurrentStageSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
             stallionStateManager.stallionMeta.setStageTempHash(receivedHash);
             stallionStateManager.syncStallionMeta();
-            emitDownloadSuccessStage(receivedHash);
+            emitDownloadSuccessStage(receivedHash, downloadTimeMs);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
             promise.resolve(successPayload);
           }
@@ -60,10 +62,13 @@ public class StallionStageManager {
     }
   }
 
-  private static void emitDownloadSuccessStage(String releaseHash) {
+  private static void emitDownloadSuccessStage(String releaseHash, long downloadTimeMs) {
     JSONObject successPayload = new JSONObject();
     try {
       successPayload.put("releaseHash", releaseHash);
+      JSONObject meta = new JSONObject();
+      meta.put("downloadTime", downloadTimeMs);
+      successPayload.put("meta", meta.toString());
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       StallionEventConstants.NativeStageEventTypes.DOWNLOAD_COMPLETE_STAGE.toString(),

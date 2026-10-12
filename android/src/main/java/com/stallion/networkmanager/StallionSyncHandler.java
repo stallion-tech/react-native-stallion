@@ -171,6 +171,7 @@ public class StallionSyncHandler {
       long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, downloadUrl, downloadPath);
 
       emitDownloadStarted(newReleaseHash, alreadyDownloaded > 0, bundleDiffIdForEvents);
+      final long downloadStartMs = System.currentTimeMillis();
 
       StallionFileDownloader.downloadBundle(
         downloadUrl,
@@ -185,6 +186,7 @@ public class StallionSyncHandler {
 
           @Override
           public void onSuccess(String successPayload) {
+            long downloadTimeMs = System.currentTimeMillis() - downloadStartMs;
             isDownloadInProgress.set(false);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
 
@@ -224,14 +226,14 @@ public class StallionSyncHandler {
               }
             }
 
-          stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
-          stateManager.stallionMeta.setProdTempHash(newReleaseHash);
-          String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
-          if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
-            StallionSlotManager.stabilizeProd();
-          }
-          stateManager.syncStallionMeta();
-          emitDownloadSuccess(newReleaseHash, bundleDiffIdForEvents);
+            stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
+            stateManager.stallionMeta.setProdTempHash(newReleaseHash);
+            String currentProdNewHash = stateManager.stallionMeta.getProdNewHash();
+            if(currentProdNewHash != null && !currentProdNewHash.isEmpty()) {
+              StallionSlotManager.stabilizeProd();
+            }
+            stateManager.syncStallionMeta();
+            emitDownloadSuccess(newReleaseHash, bundleDiffIdForEvents, downloadTimeMs);
           }
 
           @Override
@@ -282,13 +284,16 @@ public class StallionSyncHandler {
     );
   }
 
-  private static void emitDownloadSuccess(String releaseHash, String bundleDiffId) {
+  private static void emitDownloadSuccess(String releaseHash, String bundleDiffId, long downloadTimeMs) {
     JSONObject successPayload = new JSONObject();
     try {
       successPayload.put("releaseHash", releaseHash);
       if (bundleDiffId != null && !bundleDiffId.isEmpty()) {
         successPayload.put("diffId", bundleDiffId);
       }
+      JSONObject meta = new JSONObject();
+      meta.put("downloadTime", downloadTimeMs);
+      successPayload.put("meta", meta.toString());
     } catch (Exception ignored) { }
     StallionEventManager.getInstance().sendEvent(
       NativeProdEventTypes.DOWNLOAD_COMPLETE_PROD.toString(),

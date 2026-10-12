@@ -44,6 +44,8 @@ export interface IStallionNativeEventData {
   releaseHash?: string;
   error?: string;
   progress?: string;
+  /** String meta; DOWNLOAD_COMPLETE_* uses stringified JSON e.g. '{"downloadTime":1523}' */
+  meta?: string;
 }
 
 const STALLION_EVENT_DEBOUNCE_INTERVAL = 3000; // 3s

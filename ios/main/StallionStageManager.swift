@@ -43,6 +43,7 @@ class StallionStageManager: NSObject {
         }
         
         emitDownloadStartedStage(releaseHash: receivedHash)
+        let downloadStartMs = Int(Date().timeIntervalSince1970 * 1000)
       
         // Start bundle download
         StallionFileDownloader().downloadBundle(
@@ -52,10 +53,11 @@ class StallionStageManager: NSObject {
                 emitDownloadProgressStage(releaseHash: receivedHash, progress: progress)
             },
             resolve: { _ in
+                let downloadTimeMs = Int(Date().timeIntervalSince1970 * 1000) - downloadStartMs
                 stallionStateManager.stallionMeta.currentStageSlot = SlotStates.newSlot
                 stallionStateManager.stallionMeta.stageTempHash = receivedHash
                 stallionStateManager.syncStallionMeta()
-                emitDownloadSuccessStage(releaseHash: receivedHash)
+                emitDownloadSuccessStage(releaseHash: receivedHash, downloadTimeMs: downloadTimeMs)
                 resolveClosure("Stage download success")
             },
             reject: { code, prefix, error in
@@ -79,9 +81,13 @@ class StallionStageManager: NSObject {
     )
   }
     
-    private static func emitDownloadSuccessStage(releaseHash: String) {
-      let successPayload: NSDictionary = ["releaseHash": releaseHash]
-      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE,eventBody: successPayload,
+    private static func emitDownloadSuccessStage(releaseHash: String, downloadTimeMs: Int) {
+      var successPayload: [String: Any] = ["releaseHash": releaseHash]
+      if let metaData = try? JSONSerialization.data(withJSONObject: ["downloadTime": downloadTimeMs]),
+         let metaString = String(data: metaData, encoding: .utf8) {
+          successPayload["meta"] = metaString
+      }
+      Stallion.sendEventToRn(eventName: StallionConstants.NativeEventTypesStage.DOWNLOAD_COMPLETE_STAGE,eventBody: successPayload as NSDictionary,
                              shouldCache: true
       )
     }
