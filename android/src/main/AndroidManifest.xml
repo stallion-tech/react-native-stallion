@@ -2,7 +2,9 @@
           package="com.stallion">
   <application>
     <activity
-      android:name="com.stallion.utils.StallionErrorActivity">
+      android:name="com.stallion.utils.StallionErrorActivity"
+      android:exported="false"
+      android:noHistory="true">
     </activity>
     <activity
       android:name="com.stallion.utils.ProcessPhoenix"

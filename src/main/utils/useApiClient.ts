@@ -1,7 +1,7 @@
-import { useCallback, useState, useEffect } from 'react';
-import { getApiBaseUrl, DEFAULT_API_BASE_URL } from './getApiBaseUrl';
+import { useCallback } from 'react';
 import { API_PATHS } from '../constants/apiConstants';
 import { IStallionConfigJson } from '../../types/config.types';
+import { parseTokenRegion, regionalApiBaseUrl } from './parseTokenRegion';
 
 type IAuthHandler = (loginRequired: boolean) => void;
 
@@ -9,15 +9,11 @@ export const useApiClient = (
   configState: IStallionConfigJson,
   authHandler?: IAuthHandler
 ) => {
-  const [baseUrl, setBaseUrl] = useState<string>(DEFAULT_API_BASE_URL);
-
-  // Load base URL on mount
-  useEffect(() => {
-    getApiBaseUrl().then(setBaseUrl);
-  }, []);
-
   const getData = useCallback(
     (apiPath: API_PATHS, apiBody: object): Promise<any> => {
+      const baseUrl =
+        configState.baseUrl ||
+        regionalApiBaseUrl(parseTokenRegion(configState.appToken));
       const dataRequest = fetch(baseUrl + apiPath, {
         method: 'POST',
         body: JSON.stringify(apiBody),
@@ -37,7 +33,7 @@ export const useApiClient = (
         });
       } else return dataRequest.then((res) => res.json());
     },
-    [baseUrl, configState, authHandler]
+    [configState, authHandler]
   );
   return {
     getData,

@@ -6,8 +6,11 @@ public class StallionConfigConstants {
   public static final String PLATFORM = "android";
 
   public static final String STALLION_PROJECT_ID_IDENTIFIER = "StallionProjectId";
+  public static final String STALLION_PROJECT_ID_FALLBACK_IDENTIFIER = "stallion_project_id";
   public static final String STALLION_APP_TOKEN_IDENTIFIER = "StallionAppToken";
+  public static final String STALLION_APP_TOKEN_FALLBACK_IDENTIFIER = "stallion_app_token";
   public static final String STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER = "StallionPublicSigningKey";
+  public static final String STALLION_PUBLIC_SIGNING_KEY_FALLBACK_IDENTIFIER = "stallion_public_signing_key";
   public static final String UNIQUE_ID_IDENTIFIER = "stallionDeviceId";
   public static final String API_KEY_IDENTIFIER = "x-sdk-access-token";
   public static final String LAST_DOWNLOADING_URL_IDENTIFIER = "StallionLastDownloadingUrl";

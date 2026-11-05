@@ -81,7 +81,7 @@ export const useStallionEvents = (
               const eventIds = stallionEvents.map((event) => event.eventId);
               const eventIdString = JSON.stringify(eventIds);
               acknowledgeEventsNative(eventIdString);
-            } catch (_) {}
+            } catch (_) { }
           }
         });
       }
@@ -97,7 +97,7 @@ export const useStallionEvents = (
           syncStallionEvents(eventsArr);
           requestAnimationFrame(refreshMeta);
         }
-      } catch (_) {}
+      } catch (_) { }
     });
   }, [syncStallionEvents, refreshMeta]);
 
@@ -144,7 +144,7 @@ export const useStallionEvents = (
               if (progress) {
                 setProgress(progress);
               }
-            } catch (_) {}
+            } catch (_) { }
             break;
         }
       }
@@ -179,5 +179,6 @@ export const useStallionEvents = (
 
   useEffect(() => {
     popEventsDebounced();
+    return () => popEventsDebounced.cancel();
   }, [popEventsDebounced]);
 };

@@ -69,12 +69,27 @@ public final class ProcessPhoenix extends Activity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Process.killProcess(getIntent().getIntExtra(KEY_MAIN_PROCESS_PID, -1)); // Kill original main process
-
+        int mainPid = getIntent().getIntExtra(KEY_MAIN_PROCESS_PID, -1);
         ArrayList<Intent> intents = getIntent().getParcelableArrayListExtra(KEY_RESTART_INTENTS);
+        if (intents == null || intents.isEmpty()) {
+            relaunchDefaultAndFinish();
+            return;
+        }
+
+        Process.killProcess(mainPid); // Kill original main process
+
         startActivities(intents.toArray(new Intent[intents.size()]));
         finish();
         Runtime.getRuntime().exit(0); // Kill kill kill!
+    }
+
+    private void relaunchDefaultAndFinish() {
+        Intent fallback = getPackageManager().getLaunchIntentForPackage(getPackageName());
+        if (fallback != null) {
+            fallback.addFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(fallback);
+        }
+        finish();
     }
 
     /**

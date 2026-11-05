@@ -149,11 +149,15 @@ static void performStallionRollback(NSString *errorString) {
                                                     exceptionAlertDismissed.store(true);
                                                 }]];
 
-        UIApplication *app = [UIApplication sharedApplication];
-        UIViewController *rootViewController = app.delegate.window.rootViewController;
-
         dispatch_async(dispatch_get_main_queue(), ^{
-            [rootViewController presentViewController:alert animated:YES completion:nil];
+            // AppDelegate.window throws in UIScene apps (RN 0.88+). Resolve on the main thread.
+            UIViewController *presenter = RCTPresentedViewController();
+            if (presenter) {
+                [presenter presentViewController:alert animated:YES completion:nil];
+            } else {
+                // Nothing to present; release the waiter so the original handler still runs.
+                exceptionAlertDismissed.store(true);
+            }
         });
 
         // Wait for user to press the button (exceptionAlertDismissed becomes true)
