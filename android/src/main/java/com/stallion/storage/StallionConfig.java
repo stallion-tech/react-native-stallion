@@ -31,26 +31,27 @@ public class StallionConfig {
     Resources res = context.getResources();
     String parentPackageName= context.getPackageName();
 
-    int stallionProjectIdRes = res.getIdentifier(
+    this.projectId = resolveConfigString(
+      context,
+      res,
+      parentPackageName,
       StallionConfigConstants.STALLION_PROJECT_ID_IDENTIFIER,
-      "string",
-      parentPackageName
+      StallionConfigConstants.STALLION_PROJECT_ID_FALLBACK_IDENTIFIER
     );
-    this.projectId = stallionProjectIdRes != 0 ?context.getString(stallionProjectIdRes) : "";
-
-    int stallionAppTokenRes = res.getIdentifier(
+    this.appToken = resolveConfigString(
+      context,
+      res,
+      parentPackageName,
       StallionConfigConstants.STALLION_APP_TOKEN_IDENTIFIER,
-      "string",
-      parentPackageName
+      StallionConfigConstants.STALLION_APP_TOKEN_FALLBACK_IDENTIFIER
     );
-    this.appToken = stallionAppTokenRes != 0 ? context.getString(stallionAppTokenRes) : "";
-
-    int stallionPublicKeyRes = res.getIdentifier(
+    this.publicSigningKey = resolveConfigString(
+      context,
+      res,
+      parentPackageName,
       StallionConfigConstants.STALLION_PUBLIC_SIGNING_KEY_IDENTIFIER,
-      "string",
-      parentPackageName
+      StallionConfigConstants.STALLION_PUBLIC_SIGNING_KEY_FALLBACK_IDENTIFIER
     );
-    this.publicSigningKey = stallionPublicKeyRes != 0 ? context.getString(stallionPublicKeyRes) : "";
 
     // get or generate UID (random install-scoped UUID)
     String cachedUniqueId = sharedPreferences.getString(
@@ -96,6 +97,21 @@ public class StallionConfig {
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putString(StallionConfigConstants.LAST_UNVERIFIED_HASH, newUnverifiedHash);
     editor.apply();
+  }
+
+  private static String resolveConfigString(
+    Context context,
+    Resources res,
+    String packageName,
+    String... names
+  ) {
+    for (String name : names) {
+      int id = res.getIdentifier(name, "string", packageName);
+      if (id != 0) {
+        return context.getString(id);
+      }
+    }
+    return "";
   }
 
   private String fetchAppVersion(Context context) {
