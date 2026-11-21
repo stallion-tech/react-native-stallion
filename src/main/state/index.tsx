@@ -52,6 +52,8 @@ const GlobalProvider: React.FC<{
     pendingReleaseHash: null,
   });
 
+  console.log('Stallion configState', configState);
+
   useUpdateMetaActions(
     updateMetaState,
     metaState,

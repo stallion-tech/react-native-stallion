@@ -14,6 +14,7 @@
 @property (nonatomic, copy, readonly) NSString *appToken;
 @property (nonatomic, copy) NSString *sdkToken;
 @property (nonatomic, copy, readonly) NSString *appVersion;
+@property (nonatomic, copy, readonly) NSString *nativeFingerprint;
 @property (nonatomic, copy, readonly) NSString *filesDirectory;
 @property (nonatomic, copy, readonly) NSString *publicSigningKey;
 @property (nonatomic, copy) NSString *lastUnverifiedHash;

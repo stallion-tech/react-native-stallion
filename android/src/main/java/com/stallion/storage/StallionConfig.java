@@ -19,6 +19,7 @@ public class StallionConfig {
   private final String appToken;
   private String sdkToken;
   private final String appVersion;
+  private final String nativeFingerprint;
   private final SharedPreferences sharedPreferences;
   private final String filesDirectory;
   private String lastDownloadingUrl;
@@ -69,6 +70,7 @@ public class StallionConfig {
     this.sdkToken = sharedPreferences.getString(StallionConfigConstants.API_KEY_IDENTIFIER, "");
 
     this.appVersion = fetchAppVersion(context);
+    this.nativeFingerprint = fetchNativeFingerprint(context, res, parentPackageName);
     this.filesDirectory = context.getFilesDir().getAbsolutePath();
     this.lastDownloadingUrl = sharedPreferences.getString(StallionConfigConstants.LAST_DOWNLOADING_URL_IDENTIFIER, "");
     this.lastUnverifiedHash = sharedPreferences.getString(StallionConfigConstants.LAST_UNVERIFIED_HASH, "");
@@ -107,8 +109,29 @@ public class StallionConfig {
     }
   }
 
+  private String fetchNativeFingerprint(Context context, Resources res, String packageName) {
+    try {
+      int id = res.getIdentifier("stallion_fingerprint", "string", packageName);
+      if (id == 0) {
+        return "unknown";
+      }
+      String value = context.getString(id);
+      if (value == null) {
+        return "unknown";
+      }
+      value = value.trim();
+      return value.isEmpty() ? "unknown" : value;
+    } catch (Exception ignored) {
+      return "unknown";
+    }
+  }
+
   public String getAppVersion() {
     return this.appVersion;
+  }
+
+  public String getNativeFingerprint() {
+    return this.nativeFingerprint != null ? this.nativeFingerprint : "unknown";
   }
 
   public String getProjectId() {
@@ -165,6 +188,7 @@ public class StallionConfig {
       configJson.put("appToken", this.appToken);
       configJson.put("sdkToken", this.sdkToken);
       configJson.put("appVersion", this.appVersion);
+      configJson.put("nativeFingerprint", getNativeFingerprint());
       configJson.put("baseUrl", StallionApiBaseUrl.get());
       return configJson;
     } catch (JSONException ignored) {
