@@ -50,6 +50,49 @@ Pod::Spec.new do |s|
     s.dependency "ZIPFoundation"
     # Link libbz2 for bspatch (bsdiff/bspatch uses bzip2 compression)
     s.libraries = "bz2"
+
+    # Stable marker so CocoaPods creates StallionFingerprint.bundle.
+    # The hash itself is written into the built bundle by the script phase.
+    s.resource_bundles = {
+      "StallionFingerprint" => ["ios/Resources/StallionFingerprint/marker.txt"]
+    }
+
+    stallion_fingerprint_script = 'set +e
+if [ -f "${PODS_TARGET_SRCROOT}/scripts/ios-fingerprint.sh" ]; then
+  /bin/sh "${PODS_TARGET_SRCROOT}/scripts/ios-fingerprint.sh"
+else
+  echo "warning: Stallion native fingerprint script missing. Embedding unknown." >&2
+  mkdir -p "${CONFIGURATION_BUILD_DIR}/StallionFingerprint.bundle" 2>/dev/null || true
+  printf "%s\n" "unknown" > "${CONFIGURATION_BUILD_DIR}/StallionFingerprint.bundle/stallion_fingerprint.txt" 2>/dev/null || true
+fi
+exit 0
+'
+    stallion_fingerprint_phase = {
+      :name => "Generate Stallion native fingerprint",
+      :execution_position => :before_compile,
+      # File inputs only. A directory input of the app (or this pod, when
+      # it is a dev pod) includes ios/build and Xcode then cycles the script
+      # with the aggregate Pods target. CocoaPods leaves pod script sandboxing
+      # off, which is what lets node read the project. The output path is
+      # still declared so a sandboxed phase can write the hash.
+      :input_files => [
+        "${PODS_TARGET_SRCROOT}/scripts/ios-fingerprint.sh",
+        "${PODS_TARGET_SRCROOT}/scripts/fingerprint.js",
+      ],
+      :output_files => [
+        "${CONFIGURATION_BUILD_DIR}/StallionFingerprint.bundle/stallion_fingerprint.txt",
+      ],
+      :script => stallion_fingerprint_script,
+    }
+    if defined?(Pod::VERSION)
+      begin
+        if Pod::Version.new(Pod::VERSION) >= Pod::Version.new("1.13.0")
+          stallion_fingerprint_phase[:always_out_of_date] = "1"
+        end
+      rescue StandardError
+      end
+    end
+    s.script_phases = [stallion_fingerprint_phase]
   end
 
   if respond_to?(:install_modules_dependencies, true)

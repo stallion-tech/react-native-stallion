@@ -1,4 +1,11 @@
 import groovy.json.JsonSlurper
+import java.util.concurrent.TimeUnit
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 buildscript {
   repositories {
@@ -89,6 +96,360 @@ android {
     }
   }
 
+}
+
+class StallionFingerprintTask extends DefaultTask {
+  @OutputDirectory
+  final DirectoryProperty outputDirectory
+
+  @Internal
+  final Property<String> scriptPath
+
+  @Internal
+  final Property<String> skipFlag
+
+  @Internal
+  final Property<String> nodeBinary
+
+  StallionFingerprintTask() {
+    outputDirectory = project.objects.directoryProperty()
+    scriptPath = project.objects.property(String)
+    skipFlag = project.objects.property(String)
+    nodeBinary = project.objects.property(String)
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+  }
+
+  @TaskAction
+  void generate() {
+    File outDir
+    try {
+      outDir = outputDirectory.present ? outputDirectory.get().asFile : null
+    } catch (Throwable ignored) {
+      outDir = null
+    }
+    if (outDir == null) {
+      outDir = new File(project.buildDir, "generated/res/stallionFingerprint/unspecified")
+    }
+    try {
+      writeResources(outDir, computeFingerprint())
+    } catch (Throwable error) {
+      logger.warn("Stallion: native fingerprint task failed (${error.message}). Embedding unknown.")
+      writeResources(outDir, "unknown")
+    }
+  }
+
+  private String computeFingerprint() {
+    if ("1" == skipFlag.orNull) {
+      logger.lifecycle("Stallion: STALLION_FINGERPRINT_SKIP=1, embedding skipped")
+      return "skipped"
+    }
+
+    String script = scriptPath.orNull
+    if (script == null || !(new File(script).isFile())) {
+      logger.warn("Stallion: native fingerprint script not found at ${script}. Embedding unknown.")
+      return "unknown"
+    }
+
+    File jsRoot = resolveJsRoot(project)
+    if (jsRoot == null) {
+      logger.warn("Stallion: could not resolve the app project root. Embedding unknown.")
+      return "unknown"
+    }
+
+    String node = nodeBinary.orNull
+    if (node != null) {
+      node = node.trim()
+    }
+    if (node == null || node.isEmpty()) {
+      node = "node"
+    }
+
+    Process process = null
+    try {
+      process = new ProcessBuilder(node, script, jsRoot.absolutePath)
+        .directory(jsRoot)
+        .start()
+    } catch (Throwable error) {
+      logger.warn("Stallion: native fingerprint could not start node (${error.message}). Embedding unknown.")
+      return "unknown"
+    }
+
+    ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream()
+    ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream()
+    Thread stdoutThread = startDrain(process.getInputStream(), stdoutBuffer)
+    Thread stderrThread = startDrain(process.getErrorStream(), stderrBuffer)
+    boolean finished = false
+    try {
+      finished = process.waitFor(5, TimeUnit.MINUTES)
+    } catch (InterruptedException interrupted) {
+      Thread.currentThread().interrupt()
+      process.destroyForcibly()
+      logger.warn("Stallion: native fingerprint was interrupted. Embedding unknown.")
+      return "unknown"
+    }
+    stdoutThread.join(1000)
+    stderrThread.join(1000)
+    String stderrText = stderrBuffer.toString("UTF-8").trim()
+
+    if (!finished) {
+      process.destroyForcibly()
+      logger.warn("Stallion: native fingerprint timed out. Embedding unknown.")
+      if (!stderrText.isEmpty()) {
+        logger.warn(stderrText)
+      }
+      return "unknown"
+    }
+
+    int exitCode = process.exitValue()
+    String stdoutText = stdoutBuffer.toString("UTF-8")
+    String hash = null
+    for (String line : stdoutText.readLines()) {
+      String trimmed = line.trim()
+      if (!trimmed.isEmpty()) {
+        hash = trimmed
+        break
+      }
+    }
+    if (exitCode != 0 || hash == null) {
+      logger.warn("Stallion: native fingerprint failed (exit ${exitCode}). Embedding unknown.")
+      if (!stderrText.isEmpty()) {
+        logger.warn(stderrText)
+      }
+      return "unknown"
+    }
+    if (!stderrText.isEmpty()) {
+      logger.warn(stderrText)
+    }
+    return hash
+  }
+
+  private static Thread startDrain(InputStream stream, OutputStream sink) {
+    Thread thread = new Thread({
+      byte[] buffer = new byte[4096]
+      int read
+      while ((read = stream.read(buffer)) != -1) {
+        sink.write(buffer, 0, read)
+      }
+    })
+    thread.setDaemon(true)
+    thread.start()
+    return thread
+  }
+
+  private static void writeResources(File outDir, String value) {
+    String fingerprint = value == null ? "" : value.trim()
+    if (fingerprint.isEmpty()) {
+      fingerprint = "unknown"
+    }
+    File valuesDir = new File(outDir, "values")
+    File rawDir = new File(outDir, "raw")
+    if (!valuesDir.mkdirs() && !valuesDir.isDirectory()) {
+      throw new IOException("Could not create ${valuesDir}")
+    }
+    if (!rawDir.mkdirs() && !rawDir.isDirectory()) {
+      throw new IOException("Could not create ${rawDir}")
+    }
+    String escaped = escapeXml(fingerprint)
+    new File(valuesDir, "stallion_fingerprint.xml").setText("""<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stallion_fingerprint" translatable="false">${escaped}</string>
+</resources>
+""", "UTF-8")
+    new File(rawDir, "keep.xml").setText("""<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/stallion_fingerprint" />
+""", "UTF-8")
+  }
+
+  private static String escapeXml(String value) {
+    return value
+      .replace("&", "&amp;")
+      .replace("<", "&lt;")
+      .replace(">", "&gt;")
+      .replace("\"", "&quot;")
+      .replace("'", "&apos;")
+  }
+
+  private static File resolveJsRoot(Project gradleProject) {
+    File fromReact = reactRoot(gradleProject)
+    if (fromReact != null) {
+      return fromReact
+    }
+    File parent = gradleProject.rootDir != null ? gradleProject.rootDir.parentFile : null
+    File walked = packageJsonDir(parent)
+    if (walked != null) {
+      return walked
+    }
+    return parent != null ? parent : gradleProject.rootDir
+  }
+
+  private static File reactRoot(Project gradleProject) {
+    try {
+      def appProject = gradleProject.rootProject.allprojects.find { candidate ->
+        candidate.plugins.hasPlugin("com.android.application")
+      }
+      if (appProject == null) {
+        return null
+      }
+      def reactExt = appProject.extensions.findByName("react")
+      if (reactExt == null) {
+        return null
+      }
+      File candidate = coerceToFile(reactExt.root)
+      if (candidate != null && new File(candidate, "package.json").isFile()) {
+        return candidate
+      }
+    } catch (Throwable ignored) {
+    }
+    return null
+  }
+
+  private static File coerceToFile(value) {
+    if (value instanceof File) {
+      return (File) value
+    }
+    if (value == null) {
+      return null
+    }
+    def current = value
+    try {
+      if (current.metaClass.respondsTo(current, "getOrNull")) {
+        current = current.getOrNull()
+      }
+    } catch (Throwable ignored) {
+      return null
+    }
+    if (current instanceof File) {
+      return (File) current
+    }
+    if (current == null) {
+      return null
+    }
+    try {
+      def asFile = current.hasProperty("asFile") ? current.asFile : null
+      if (asFile instanceof File) {
+        return (File) asFile
+      }
+      if (asFile != null && asFile.metaClass.respondsTo(asFile, "getOrNull")) {
+        def file = asFile.getOrNull()
+        if (file instanceof File) {
+          return (File) file
+        }
+      }
+    } catch (Throwable ignored) {
+    }
+    return null
+  }
+
+  private static File packageJsonDir(File start) {
+    File cursor = start
+    int hops = 0
+    while (cursor != null && hops < 8) {
+      if (new File(cursor, "package.json").isFile()) {
+        return cursor
+      }
+      File parent = cursor.parentFile
+      if (parent == null || parent.equals(cursor)) {
+        break
+      }
+      cursor = parent
+      hops++
+    }
+    return null
+  }
+}
+
+def stallionAgpVersion = "0.0.0"
+try {
+  stallionAgpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+} catch (Throwable ignored) {
+  stallionAgpVersion = "0.0.0"
+}
+
+def stallionAgpAtLeast = { int major, int minor ->
+  def matcher = (stallionAgpVersion =~ /(\d+)(?:\.(\d+))?/)
+  if (!matcher.find()) {
+    return false
+  }
+  def foundMajor = matcher.group(1).toInteger()
+  def foundMinor = matcher.group(2) != null ? matcher.group(2).toInteger() : 0
+  return foundMajor > major || (foundMajor == major && foundMinor >= minor)
+}
+
+def stallionCapitalize = { String value ->
+  if (value == null || value.length() == 0) {
+    return "Variant"
+  }
+  return value.substring(0, 1).toUpperCase(java.util.Locale.US) + value.substring(1)
+}
+
+def stallionFingerprintScript = new File(projectDir.parentFile, "scripts/fingerprint.js").absolutePath
+
+def stallionRegisterFingerprintTask = { String variantName, File explicitOutDir ->
+  def taskName = "generateStallionFingerprint${stallionCapitalize(variantName)}"
+  return tasks.register(taskName, StallionFingerprintTask) { task ->
+    task.scriptPath.set(stallionFingerprintScript)
+    try {
+      task.skipFlag.set(project.providers.environmentVariable("STALLION_FINGERPRINT_SKIP").orElse(""))
+      task.nodeBinary.set(project.providers.environmentVariable("NODE_BINARY").orElse("node"))
+    } catch (Throwable ignored) {
+      task.skipFlag.set(System.getenv("STALLION_FINGERPRINT_SKIP") ?: "")
+      task.nodeBinary.set(System.getenv("NODE_BINARY") ?: "node")
+    }
+    if (explicitOutDir != null) {
+      task.outputDirectory.set(explicitOutDir)
+    }
+  }
+}
+
+// AGP 7.3 exposes addGeneratedSourceDirectory, but packageResources does not
+// read those directories until AGP 8. Older plugins use libraryVariants.
+def stallionSourcesWired = false
+if (stallionAgpVersion == "0.0.0" || stallionAgpAtLeast(8, 0)) {
+  try {
+    androidComponents {
+      onVariants(selector().all()) { variant ->
+        try {
+          def resSources = variant.sources != null ? variant.sources.res : null
+          if (resSources == null) {
+            logger.warn("Stallion: AGP variant ${variant.name} has no res sources. Native fingerprint will be unknown.")
+            return
+          }
+          def taskProvider = stallionRegisterFingerprintTask(variant.name, null)
+          def wiredWith = { task -> task.outputDirectory } as kotlin.jvm.functions.Function1
+          resSources.addGeneratedSourceDirectory(taskProvider, wiredWith)
+        } catch (Throwable error) {
+          logger.warn("Stallion: could not wire native fingerprint for ${variant.name} (${error.message}). Builds will embed unknown.")
+        }
+      }
+    }
+    stallionSourcesWired = true
+  } catch (Throwable error) {
+    logger.warn("Stallion: AGP sources API is unavailable (${error.message}). Falling back to libraryVariants.")
+    stallionSourcesWired = false
+  }
+}
+
+if (!stallionSourcesWired) {
+  try {
+    android.libraryVariants.all { variant ->
+      try {
+        def outDir = new File(project.buildDir, "generated/res/stallionFingerprint/${variant.name}")
+        def taskProvider = stallionRegisterFingerprintTask(variant.name, outDir)
+        if (variant.respondsTo("registerGeneratedResFolders")) {
+          variant.registerGeneratedResFolders(project.files(outDir).builtBy(taskProvider))
+        } else if (variant.respondsTo("registerResGeneratingTask")) {
+          variant.registerResGeneratingTask(taskProvider.get(), outDir)
+        } else {
+          logger.warn("Stallion: AGP ${stallionAgpVersion} cannot register generated resources. Native fingerprint will be unknown.")
+        }
+      } catch (Throwable error) {
+        logger.warn("Stallion: could not register native fingerprint for ${variant.name} (${error.message}). Builds will embed unknown.")
+      }
+    }
+  } catch (Throwable error) {
+    logger.warn("Stallion: could not register native fingerprint tasks (${error.message}). Builds will embed unknown.")
+  }
 }
 
 repositories {

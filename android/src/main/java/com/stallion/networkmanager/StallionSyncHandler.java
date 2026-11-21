@@ -42,6 +42,7 @@ public class StallionSyncHandler {
         // Prepare payload for API call
         JSONObject requestPayload = new JSONObject();
         requestPayload.put("appVersion", appVersion);
+        requestPayload.put("nativeFingerprint", config.getNativeFingerprint());
         requestPayload.put("platform", "android");
         requestPayload.put("projectId", projectId);
         requestPayload.put("appliedBundleHash", appliedBundleHash);

@@ -1,6 +1,6 @@
 {
   "name": "react-native-stallion",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Official React Native OTA updates SDK — CodePush alternative with patch updates, rollback, and bundle signing.",
   "main": "src/index",
   "types": "types/index.d.ts",
@@ -13,6 +13,8 @@
     "ios",
     "cpp",
     "*.podspec",
+    "scripts/fingerprint.js",
+    "scripts/ios-fingerprint.sh",
     "!lib/typescript/example",
     "!ios/build",
     "!android/build",
@@ -178,5 +180,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@expo/fingerprint": "0.21.9"
   }
 }

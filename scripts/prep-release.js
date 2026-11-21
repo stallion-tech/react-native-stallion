@@ -36,6 +36,16 @@ async function prepRelease() {
     //copy podspec
     await fs.copyFile(podspecPath, `${rootPath}/react-native-stallion.podspec`);
 
+    await fs.mkdir(`${rootPath}/scripts`, { recursive: true });
+    await fs.copyFile(
+      path.resolve(__dirname, '../scripts/fingerprint.js'),
+      `${rootPath}/scripts/fingerprint.js`
+    );
+    await fs.copyFile(
+      path.resolve(__dirname, '../scripts/ios-fingerprint.sh'),
+      `${rootPath}/scripts/ios-fingerprint.sh`
+    );
+
     // copy package.json to package root
     await fs.copyFile(pkgJsonPath, `${rootPath}/package.json`);
 

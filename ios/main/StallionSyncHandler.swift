@@ -43,6 +43,7 @@ class StallionSyncHandler {
                   // Prepare payload for API call
                   let requestPayload: [String: Any] = [
                       "appVersion": appVersion,
+                      "nativeFingerprint": config.nativeFingerprint ?? "unknown",
                       "platform": StallionConstants.PlatformValue,
                       "projectId": projectId,
                       "appliedBundleHash": appliedBundleHash,

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">StallionExample</string>
-    <string name="StallionProjectId">67210b6f3e19d894c6a1a4fb</string>
-    <string name="StallionAppToken">spb_KLNEjOkETM48i3N1SffGDvEl-OsSiHZrhxER2kq3Ok</string>
+    <string name="stallion_project_id">6aea44a92cca093b3e968aba</string>
+    <string name="stallion_app_token">spb_us_X9Tg93K3HttSMw9ZSwOuzLRG2A2p2nfirNnM8F-Gxd</string>
 </resources>
