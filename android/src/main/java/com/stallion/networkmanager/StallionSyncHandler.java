@@ -12,6 +12,8 @@ import com.stallion.utils.StallionSignatureVerification;
 import com.stallion.utils.StallionSlotManager;
 import com.stallion.events.StallionEventConstants.NativeProdEventTypes;
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -21,12 +23,19 @@ public class StallionSyncHandler {
 
   private static final AtomicBoolean isSyncInProgress = new AtomicBoolean(false);
   private static final AtomicBoolean isDownloadInProgress = new AtomicBoolean(false);
+  private static final String DEBUG_TAG = "StallionDebug";
+
+  private static void debug(String message) {
+    Log.i(DEBUG_TAG, message + " thread=" + Thread.currentThread().getName());
+  }
 
   public static void sync() {
     // Ensure only one sync job runs at a time
     if (!isSyncInProgress.compareAndSet(false, true)) {
+      debug("sync skipped, already in progress");
       return; // Exit if another job is already running
     }
+    debug("sync started");
 
     new Thread(() -> {
       try {
@@ -55,13 +64,17 @@ public class StallionSyncHandler {
         );
 
         // Process API response
+        debug("sync response received mounted=" + stateManager.getIsMounted()
+          + " success=" + releaseMeta.optBoolean("success"));
         processReleaseMeta(releaseMeta, appVersion);
         stateManager.setIsSyncSuccessful(true);
       } catch (Exception e) {
+        debug("sync failed: " + e.getMessage());
         emitSyncError(e);
       } finally {
         // Reset the flag to allow new jobs
         isSyncInProgress.set(false);
+        debug("sync lock released");
       }
     }).start();
   }
@@ -86,7 +99,10 @@ public class StallionSyncHandler {
   }
 
   private static void handleNewReleaseData(JSONObject newReleaseData) {
-    if (newReleaseData == null) return;
+    if (newReleaseData == null) {
+      debug("new bundle data missing");
+      return;
+    }
 
     String newReleaseUrl = newReleaseData.optString("downloadUrl");
     String newReleaseHash = newReleaseData.optString("checksum");
@@ -112,6 +128,14 @@ public class StallionSyncHandler {
     String lastRolledBackHash = stateManager.stallionMeta.getLastRolledBackHash();
     String lastUnverifiedHash = stateManager.getStallionConfig().getLastUnverifiedHash();
 
+    boolean hasDiff = diffUrl != null && !diffUrl.isEmpty();
+    debug("new release hash=" + newReleaseHash
+      + " hasDiff=" + hasDiff
+      + " diffId=" + bundleDiffId
+      + " isBundlePatched=" + isBundlePatched
+      + " mounted=" + stateManager.getIsMounted()
+      + " lastRolledBack=" + lastRolledBackHash
+      + " lastUnverified=" + lastUnverifiedHash);
     if (
           !newReleaseHash.isEmpty()
           && !newReleaseUrl.isEmpty()
@@ -119,10 +143,14 @@ public class StallionSyncHandler {
           && !newReleaseHash.equals(lastUnverifiedHash)
     ) {
       if(stateManager.getIsMounted()) {
+        debug("starting download from sync");
         downloadNewRelease(newReleaseHash, newReleaseUrl, diffUrl, isBundlePatched, bundleDiffId);
       } else {
+        debug("storing pending release");
         stateManager.setPendingRelease(newReleaseUrl, newReleaseHash, diffUrl, isBundlePatched, bundleDiffId);
       }
+    } else {
+      debug("skipping release");
     }
   }
 
@@ -144,6 +172,7 @@ public class StallionSyncHandler {
   public static void downloadNewRelease(String newReleaseHash, String newReleaseUrl, String diffUrl, boolean isBundlePatched, String bundleDiffId) {
     // Ensure only one download job runs at a time
     if (!isDownloadInProgress.compareAndSet(false, true)) {
+      debug("download skipped, already in progress hash=" + newReleaseHash);
       return; // Exit if another job is already running
     }
     try {
@@ -170,6 +199,11 @@ public class StallionSyncHandler {
 
       long alreadyDownloaded = StallionDownloadCacheManager.getDownloadCache(config, downloadUrl, downloadPath);
 
+      debug("download accepted hash=" + newReleaseHash
+        + " isDiff=" + isDiffDownload
+        + " diffId=" + bundleDiffIdForEvents
+        + " alreadyDownloaded=" + alreadyDownloaded
+        + " hasSigningKey=" + (publicSigningKey != null && !publicSigningKey.isEmpty()));
       emitDownloadStarted(newReleaseHash, alreadyDownloaded > 0, bundleDiffIdForEvents);
       final long downloadStartMs = System.currentTimeMillis();
 
@@ -180,6 +214,7 @@ public class StallionSyncHandler {
         new StallionDownloadCallback() {
           @Override
           public void onReject(String prefix, String error) {
+            debug("download rejected hash=" + newReleaseHash + " error=" + prefix + error);
             isDownloadInProgress.set(false);
             emitDownloadError(newReleaseHash, prefix + error);
           }
@@ -187,7 +222,9 @@ public class StallionSyncHandler {
           @Override
           public void onSuccess(String successPayload) {
             long downloadTimeMs = System.currentTimeMillis() - downloadStartMs;
-            isDownloadInProgress.set(false);
+            debug("download finished hash=" + newReleaseHash
+              + " isDiff=" + isDiffDownload
+              + " elapsedMs=" + downloadTimeMs);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
 
             // If this was a diff download, handle patch
@@ -203,27 +240,33 @@ public class StallionSyncHandler {
                 StallionPatchHandler.applyPatch(baseBundlePath, downloadPath, isBundlePatchedFlag);
               } catch (Exception e) {
                 // Patch application failed, retry with full bundle download
-                // Clean up the failed diff download
+                debug("patch failed, retrying full bundle hash=" + newReleaseHash + " error=" + e.getMessage());
                 StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
                 isDownloadInProgress.set(false);
-                // Retry download with full bundle (no diffUrl)
                 downloadNewRelease(newReleaseHash, originalNewReleaseUrl, null, false, null);
                 return;
               }
             }
 
             if(publicSigningKey != null && !publicSigningKey.isEmpty()) {
+              String verifyPath = downloadPath + StallionConfigConstants.UNZIP_FOLDER_NAME;
+              debug("verifying signature hash=" + newReleaseHash + " path=" + verifyPath);
               if(
                 !StallionSignatureVerification.verifyReleaseSignature(
-                downloadPath + StallionConfigConstants.UNZIP_FOLDER_NAME,
+                verifyPath,
                 publicSigningKey)
               ) {
                 // discard the downloaded release
+                debug("signature verification failed hash=" + newReleaseHash);
                 config.setLastUnverifiedHash(newReleaseHash);
                 emitSignatureVerificationFailed(newReleaseHash);
                 StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
+                isDownloadInProgress.set(false);
                 return;
               }
+              debug("signature verification passed hash=" + newReleaseHash);
+            } else {
+              debug("signature verification skipped, no public key hash=" + newReleaseHash);
             }
 
             stateManager.stallionMeta.setCurrentProdSlot(StallionMetaConstants.SlotStates.NEW_SLOT);
@@ -233,7 +276,9 @@ public class StallionSyncHandler {
               StallionSlotManager.stabilizeProd();
             }
             stateManager.syncStallionMeta();
+            debug("emitting download complete hash=" + newReleaseHash);
             emitDownloadSuccess(newReleaseHash, bundleDiffIdForEvents, downloadTimeMs);
+            isDownloadInProgress.set(false);
           }
 
           @Override
@@ -243,7 +288,8 @@ public class StallionSyncHandler {
           }
         }
       );
-    } catch (Exception ignored) {
+    } catch (Exception error) {
+      debug("download setup failed hash=" + newReleaseHash + " error=" + error.getMessage());
       isDownloadInProgress.set(false);
     }
   }
