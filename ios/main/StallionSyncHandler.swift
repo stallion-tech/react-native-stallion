@@ -13,10 +13,6 @@ class StallionSyncHandler {
     private static var isDownloadInProgress = false
     private static let syncQueue = DispatchQueue(label: "com.stallion.syncQueue")
 
-    private static func debug(_ message: String) {
-        NSLog("StallionDebug: %@", message)
-    }
-
     static func sync() {
         var shouldProceed = false
 
@@ -27,18 +23,13 @@ class StallionSyncHandler {
             }
         }
 
-        guard shouldProceed else {
-            debug("sync skipped, already in progress")
-            return
-        }
-        debug("sync started")
+        guard shouldProceed else { return }
 
           DispatchQueue.global().async {
               do {
                   // Fetch StallionStateManager and StallionConfig
                   let stateManager = StallionStateManager.sharedInstance()
                   guard let config = stateManager?.stallionConfig else {
-                      debug("sync aborted, config missing")
                       completeSync()
                       return
                   }
@@ -62,7 +53,6 @@ class StallionSyncHandler {
                   makeApiCall(payload: requestPayload, appVersion: appVersion)
 
               } catch {
-                  debug("sync failed: \(error.localizedDescription)")
                   completeSync()
                   emitSyncError(error)
               }
@@ -71,7 +61,6 @@ class StallionSyncHandler {
 
       private static func makeApiCall(payload: [String: Any], appVersion: String) {
           guard let url = URL(string: StallionConstants.STALLION_API_BASE + StallionConstants.STALLION_INFO_API_PATH) else {
-              debug("sync failed: invalid url")
               emitSyncError(NSError(domain: "Invalid URL", code: -1))
               return
           }
@@ -91,7 +80,6 @@ class StallionSyncHandler {
               let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
               request.httpBody = jsonData
           } catch {
-              debug("sync failed: \(error.localizedDescription)")
               completeSync()
               emitSyncError(error)
               return
@@ -99,15 +87,12 @@ class StallionSyncHandler {
 
           let task = URLSession.shared.dataTask(with: request) { data, response, error in
               if let error = error {
-                  debug("sync failed: \(error.localizedDescription)")
                   completeSync()
                   emitSyncError(error)
                   return
               }
             
               guard let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                  let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-                  debug("sync failed: invalid response status=\(status)")
                   completeSync()
                   let responseError = NSError(domain: "Invalid response from server", code: -2)
                   emitSyncError(responseError)
@@ -117,18 +102,14 @@ class StallionSyncHandler {
               // Parse the JSON response
               do {
                   if let releaseMeta = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                      let mounted = StallionStateManager.sharedInstance()?.isMounted == true
-                      debug("sync response received mounted=\(mounted) success=\(releaseMeta["success"] ?? "nil")")
                       completeSync()
                       processReleaseMeta(releaseMeta, appVersion: appVersion)
                   } else {
-                      debug("sync failed: invalid json")
                       completeSync()
                       let parsingError = NSError(domain: "Invalid JSON format", code: -3)
                       emitSyncError(parsingError)
                   }
               } catch {
-                  debug("sync failed: \(error.localizedDescription)")
                   completeSync()
                   emitSyncError(error)
               }
@@ -141,18 +122,11 @@ class StallionSyncHandler {
         syncQueue.sync {
             isSyncInProgress = false
         }
-        debug("sync lock released")
     }
   
     private static func processReleaseMeta(_ releaseMeta: [String: Any], appVersion: String) {
-        guard let success = releaseMeta["success"] as? Bool, success else {
-            debug("sync payload not successful")
-            return
-        }
-        guard let data = releaseMeta["data"] as? [String: Any] else {
-            debug("sync payload missing data")
-            return
-        }
+        guard let success = releaseMeta["success"] as? Bool, success else { return }
+        guard let data = releaseMeta["data"] as? [String: Any] else { return }
 
         if let appliedBundleData = data["appliedBundleData"] as? [String: Any] {
             handleAppliedReleaseData(appliedBundleData, appVersion: appVersion)
@@ -176,10 +150,7 @@ class StallionSyncHandler {
         guard let newReleaseUrl = newReleaseData["downloadUrl"] as? String,
               let newReleaseHash = newReleaseData["checksum"] as? String,
               !newReleaseUrl.isEmpty,
-              !newReleaseHash.isEmpty else {
-            debug("new bundle data missing download url or checksum")
-            return
-        }
+              !newReleaseHash.isEmpty else { return }
 
         // Extract diffData if it exists
         var diffUrl: String? = nil
@@ -201,22 +172,16 @@ class StallionSyncHandler {
         let lastRolledBackHash = stateManager?.stallionMeta?.getLastRolledBackHash() ?? ""
         let lastUnverifiedHash = stateManager?.stallionConfig?.lastUnverifiedHash ?? ""
 
-        let hasDiff = diffUrl?.isEmpty == false
-        debug("new release hash=\(newReleaseHash) hasDiff=\(hasDiff) diffId=\(bundleDiffId ?? "nil") isBundlePatched=\(isBundlePatched) mounted=\(stateManager?.isMounted == true) lastRolledBack=\(lastRolledBackHash) lastUnverified=\(lastUnverifiedHash)")
         if newReleaseHash != lastRolledBackHash && newReleaseHash != lastUnverifiedHash {
             if stateManager?.isMounted == true {
-                debug("starting download from sync")
                 downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: newReleaseUrl, diffUrl: diffUrl, isBundlePatched: isBundlePatched, bundleDiffId: bundleDiffId)
             } else {
-              debug("storing pending release")
               stateManager?.pendingReleaseUrl = newReleaseUrl
               stateManager?.pendingReleaseHash = newReleaseHash
               stateManager?.pendingReleaseDiffUrl = diffUrl
               stateManager?.pendingReleaseIsBundlePatched = isBundlePatched
               stateManager?.pendingReleaseBundleDiffId = bundleDiffId
             }
-        } else {
-            debug("skipping release")
         }
     }
 
@@ -246,10 +211,7 @@ class StallionSyncHandler {
                 shouldDownload = true
             }
         }
-        guard shouldDownload else {
-            debug("download skipped, already in progress hash=\(newReleaseHash)")
-            return
-        }
+        guard shouldDownload else { return }
 
       let downloadPath = config.filesDirectory + "/" + StallionConstants.PROD_DIRECTORY + "/" + StallionConstants.TEMP_FOLDER_SLOT
       let projectId = config.projectId ?? ""
@@ -267,14 +229,8 @@ class StallionSyncHandler {
       // Store bundleDiffId for events
       let bundleDiffIdForEvents = bundleDiffId
       
-      guard let fromUrl = URL(string: urlToDownload + "?projectId=" + projectId) else {
-          debug("download setup failed, invalid url hash=\(newReleaseHash)")
-          completeDownload()
-          return
-      }
+      guard let fromUrl = URL(string: urlToDownload + "?projectId=" + projectId) else { return }
 
-      let hasSigningKey = !publicSigningKey.isEmpty
-      debug("download accepted hash=\(newReleaseHash) isDiff=\(isDiffDownload) diffId=\(bundleDiffIdForEvents ?? "nil") hasSigningKey=\(hasSigningKey)")
       emitDownloadStarted(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents)
       let downloadStartMs = Int(Date().timeIntervalSince1970 * 1000)
 
@@ -286,14 +242,12 @@ class StallionSyncHandler {
         },
         resolve: { _ in
           let downloadTimeMs = Int(Date().timeIntervalSince1970 * 1000) - downloadStartMs
-          debug("download finished hash=\(newReleaseHash) isDiff=\(isDiffDownload) elapsedMs=\(downloadTimeMs)")
           
           // If this was a diff download, handle patch
           if isDiffDownload {
               // Get base bundle path from current slot
               guard let slotPath = stateManager.stallionMeta?.getCurrentProdSlotPath() else {
                   // No valid slot path (e.g., default slot), skip patch and retry with full bundle
-                  debug("no base slot, retrying full bundle hash=\(newReleaseHash)")
                   StallionFileManager.deleteFileOrFolderSilently(downloadPath)
                   completeDownload()
                   downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
@@ -307,34 +261,29 @@ class StallionSyncHandler {
                   try StallionPatchHandler.applyPatch(baseBundlePath: baseBundlePath, diffPath: downloadPath, isBundlePatched: isBundlePatchedFlag)
               } catch {
                   // Patch application failed, retry with full bundle download
-                  debug("patch failed, retrying full bundle hash=\(newReleaseHash) error=\(error.localizedDescription)")
+                  // Clean up the failed diff download
                   StallionFileManager.deleteFileOrFolderSilently(downloadPath)
                   completeDownload()
+                  // Retry download with full bundle (no diffUrl)
                   downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
                   return
               }
           }
-
+          
           if(publicSigningKey != nil && !publicSigningKey.isEmpty) {
-            let verifyPath = downloadPath + "/" + StallionConstants.FilePaths.ZipFolderName
-            debug("verifying signature hash=\(newReleaseHash) path=\(verifyPath)")
             if(
               !StallionSignatureVerification.verifyReleaseSignature(
-                downloadedBundlePath: verifyPath,
+                downloadedBundlePath: downloadPath + "/" + StallionConstants.FilePaths.ZipFolderName,
                 publicKeyPem: publicSigningKey
               )
             ) {
               // discard downloaded release
-              debug("signature verification failed hash=\(newReleaseHash)")
               config.updateLastUnverifiedHash(newReleaseHash)
               emitSignatureVerificationFailed(releaseHash: newReleaseHash)
               StallionFileManager.deleteFileOrFolderSilently(downloadPath)
               completeDownload()
               return;
             }
-            debug("signature verification passed hash=\(newReleaseHash)")
-          } else {
-            debug("signature verification skipped, no public key hash=\(newReleaseHash)")
           }
           stateManager.stallionMeta?.currentProdSlot =  SlotStates.newSlot
           stateManager.stallionMeta?.prodTempHash =  newReleaseHash
@@ -343,12 +292,10 @@ class StallionSyncHandler {
               StallionSlotManager.stabilizeProd()
           }
           stateManager.syncStallionMeta()
-          debug("emitting download complete hash=\(newReleaseHash)")
           emitDownloadSuccess(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents, downloadTimeMs: downloadTimeMs)
           completeDownload()
         },
         reject: { code, prefix, error  in
-          debug("download rejected hash=\(newReleaseHash) error=\(String(describing: prefix))\(String(describing: error))")
           completeDownload()
           emitDownloadError(
             releaseHash: newReleaseHash,
@@ -362,7 +309,6 @@ class StallionSyncHandler {
         syncQueue.sync {
             isDownloadInProgress = false
         }
-        debug("download lock released")
     }
 
     // MARK: - Event Emission

@@ -136,6 +136,7 @@ export const useStallionEvents = (
           case NativeEventTypesProd.STABILIZED_PROD:
           case NativeEventTypesProd.EXCEPTION_PROD:
           case NativeEventTypesProd.AUTO_ROLLED_BACK_PROD:
+          case NativeEventTypesProd.SIGNATURE_VERIFICATION_FAILED:
             stallionEventEmitter.emit(eventData);
             break;
           case NativeEventTypesStage.DOWNLOAD_PROGRESS_STAGE:
