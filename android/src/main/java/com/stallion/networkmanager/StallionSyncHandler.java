@@ -187,7 +187,6 @@ public class StallionSyncHandler {
           @Override
           public void onSuccess(String successPayload) {
             long downloadTimeMs = System.currentTimeMillis() - downloadStartMs;
-            isDownloadInProgress.set(false);
             StallionDownloadCacheManager.deleteDownloadCache(downloadPath);
 
             // If this was a diff download, handle patch
@@ -222,6 +221,7 @@ public class StallionSyncHandler {
                 config.setLastUnverifiedHash(newReleaseHash);
                 emitSignatureVerificationFailed(newReleaseHash);
                 StallionFileManager.deleteFileOrFolderSilently(new File(downloadPath));
+                isDownloadInProgress.set(false);
                 return;
               }
             }
@@ -234,6 +234,7 @@ public class StallionSyncHandler {
             }
             stateManager.syncStallionMeta();
             emitDownloadSuccess(newReleaseHash, bundleDiffIdForEvents, downloadTimeMs);
+            isDownloadInProgress.set(false);
           }
 
           @Override

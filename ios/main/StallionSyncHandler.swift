@@ -242,7 +242,6 @@ class StallionSyncHandler {
         },
         resolve: { _ in
           let downloadTimeMs = Int(Date().timeIntervalSince1970 * 1000) - downloadStartMs
-          completeDownload()
           
           // If this was a diff download, handle patch
           if isDiffDownload {
@@ -250,6 +249,7 @@ class StallionSyncHandler {
               guard let slotPath = stateManager.stallionMeta?.getCurrentProdSlotPath() else {
                   // No valid slot path (e.g., default slot), skip patch and retry with full bundle
                   StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+                  completeDownload()
                   downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
                   return
               }
@@ -263,6 +263,7 @@ class StallionSyncHandler {
                   // Patch application failed, retry with full bundle download
                   // Clean up the failed diff download
                   StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+                  completeDownload()
                   // Retry download with full bundle (no diffUrl)
                   downloadNewRelease(newReleaseHash: newReleaseHash, newReleaseUrl: originalNewReleaseUrl, diffUrl: nil, isBundlePatched: false, bundleDiffId: nil)
                   return
@@ -280,6 +281,7 @@ class StallionSyncHandler {
               config.updateLastUnverifiedHash(newReleaseHash)
               emitSignatureVerificationFailed(releaseHash: newReleaseHash)
               StallionFileManager.deleteFileOrFolderSilently(downloadPath)
+              completeDownload()
               return;
             }
           }
@@ -291,6 +293,7 @@ class StallionSyncHandler {
           }
           stateManager.syncStallionMeta()
           emitDownloadSuccess(releaseHash: newReleaseHash, bundleDiffId: bundleDiffIdForEvents, downloadTimeMs: downloadTimeMs)
+          completeDownload()
         },
         reject: { code, prefix, error  in
           completeDownload()
